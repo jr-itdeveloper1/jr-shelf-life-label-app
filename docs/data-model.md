@@ -39,9 +39,17 @@ Fields:
 - companyId
 - name
 - code
+- shortCode
 - status
 - createdAt
 - updatedAt
+
+Constraints:
+
+- code should be unique within the same company.
+- shortCode should be unique within the same company.
+- shortCode should be 1 to 5 uppercase alphanumeric characters.
+- Outlet custom product categories should use the outlet shortCode as their product code prefix.
 
 ## User
 
@@ -68,11 +76,28 @@ Fields:
 
 - id
 - companyId
+- outletId
 - name
+- codePrefix
+- scope
+- isCustom
 - sortOrder
 - status
 - createdAt
 - updatedAt
+
+Recommended scope values:
+
+- company
+- outlet
+
+Constraints:
+
+- codePrefix should be 1 to 5 uppercase alphanumeric characters.
+- codePrefix should be unique within the same company.
+- Company master categories use company-defined prefixes.
+- Outlet custom categories use the outlet shortCode as their prefix.
+- Each outlet may have one default outlet custom category in Phase 1.
 
 ## Product
 
@@ -82,8 +107,11 @@ Fields:
 
 - id
 - companyId
+- outletId
 - categoryId
 - productCode
+- productSequence
+- source
 - nameEn
 - nameZh
 - daysToExpire
@@ -98,11 +126,33 @@ Fields:
 Constraints:
 
 - productCode must be unique within the same company.
+- source should indicate whether the product is a company master product or an outlet custom product.
+- outletId is required for outlet custom products and should be empty for company master products.
 - daysToExpire must be a non-negative integer.
 - hoursToExpire must be a non-negative integer.
 - At least one of daysToExpire or hoursToExpire must be greater than 0.
 - A product can be printed only when Product.active is true and the selected outlet's OutletProduct.active is true.
 - If a product is blocked from printing, the app should show the reason.
+- imageUri is optional. Products without an image remain usable and should use a text-focused fallback display with larger English and Chinese product names.
+
+Product code generation:
+
+- productCode = category codePrefix + 3-digit productSequence.
+- Example: DAI001, NUT002, CK001.
+- productSequence should start at 1 for each prefix and display as 001, 002, 003.
+- The full productCode should normally stay within 8 characters.
+- The generated productCode is stored on Product and should remain stable.
+- Changing ProductCategory.codePrefix should default to future products only.
+- If a category already has products, the admin may choose whether to keep existing productCode values or renumber existing products under the new prefix.
+- Renumbering existing products must preview old/new product codes, check for conflicts, require explicit confirmation, and keep existing PrintJob.productCode snapshots unchanged.
+- If a prefix reaches 999, the admin should create a new prefix or revise the code rule.
+
+Outlet custom products:
+
+- Outlet custom products are created under the outlet custom category.
+- The outlet custom category should use the outlet shortCode as its codePrefix.
+- Outlet custom products are visible only to that outlet unless a later sync rule explicitly shares them.
+- Meal box labels with names entered on the day can be represented as outlet custom products.
 
 Phase 1 image sources:
 
@@ -265,6 +315,8 @@ Cloud-owned:
 - Product
 - OutletProduct
 - LabelTemplate
+
+In Phase 2, cloud-owned master data should be edited on server-backed admin screens only. Product and category edits should require network access and save directly to the server so devices remain consistent.
 
 Device-owned then synced:
 

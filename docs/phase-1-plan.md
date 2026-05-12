@@ -14,16 +14,18 @@
 ### Must Have
 
 - English UI
+- Portrait-only UI
 - Offline operation
 - Local product database
 - Product category list
 - Product search
+- Responsive image-first product grid, using 2 or 3 columns depending on portrait screen width
 - Product images in the app
-- Product detail screen
-- Label preview screen
+- Product detail screen with embedded label preview
 - Open date/time defaulting to current time
 - Expiry date/time calculated from shelf-life rule
 - Label quantity selection
+- Quick quantity presets and direct quantity entry
 - Product code scanning
 - Bluetooth printer connection
 - Print 60 x 40 mm labels
@@ -33,12 +35,15 @@
 - Local outlet setup
 - Outlet product sub-list selection
 - Basic local PrintJob saving
+- Local ProductCategory maintenance
+- Local Product maintenance
+- Product code prefix and sequence generation
+- Outlet custom product category and outlet custom products
 
 ### Should Have
 
 - Simple print history list
 - Import product seed data from Excel-derived JSON
-- Edit product information locally
 - Enable or disable products per outlet
 - Basic backup/export option for local data
 
@@ -67,6 +72,7 @@
 ### Day 2
 
 - Define data model
+- Define product code generation rules
 - Convert sample Excel product list to seed data
 - Build local SQLite schema
 
@@ -86,6 +92,7 @@
 
 - Build outlet selection
 - Build local company admin product maintenance
+- Build outlet custom product maintenance
 - Build outlet sub-list selection
 
 ### Day 6
