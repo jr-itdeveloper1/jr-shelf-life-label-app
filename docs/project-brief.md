@@ -62,7 +62,9 @@ https://github.com/jr-jhshen/jr-shelf-life-label-app
 - The printer will arrive around six days after initial planning
 - App must work without network access
 - Product images are shown in the app only and are not printed
+- Phase 1 product images may come from bundled app assets, the device photo library, or local file URIs
 - QR/barcode scan value is the product code
+- Product codes are unique within the same company
 - Main label size is 60 x 40 mm
 - Secondary test label size is 50 x 30 mm
 

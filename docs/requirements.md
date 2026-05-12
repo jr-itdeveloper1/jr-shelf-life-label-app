@@ -18,7 +18,8 @@ Each product should support:
 - Category
 - Days to expire
 - Hours to expire
-- Storage method
+- Storage method in English
+- Storage method in Chinese
 - Product image
 - Active/inactive status
 - Company ownership
@@ -31,7 +32,24 @@ Initial sample fields from Excel:
 - Product Name (Chinese)
 - Days to Expire
 - Hours to Expire
-- Storage Method
+- Storage Method (English)
+- Storage Method (Chinese)
+
+Recommended app fields:
+
+- `storageMethodEn`
+- `storageMethodZh`
+
+This keeps Phase 1 simple while allowing future multi-language UI and print formatting.
+
+Validation rules:
+
+- `Product Code` must be unique within the same company.
+- `Days to Expire` must be a non-negative integer.
+- `Hours to Expire` must be a non-negative integer.
+- At least one of `Days to Expire` or `Hours to Expire` must be greater than 0.
+- A product can be printed only when `Product.active = true` and the selected outlet's `OutletProduct.active = true`.
+- If a product cannot be printed, the app must show the reason, such as inactive product, unavailable for the selected outlet, or invalid shelf-life rule.
 
 ## Label Content
 
@@ -95,6 +113,8 @@ The app must work without network access for:
 - Managing local outlet sub-lists
 - Saving print history locally
 
+Phase 1 should save a basic local `PrintJob` record for each print attempt. A simple print history list is acceptable for Phase 1.
+
 ## Outlet Requirements
 
 Future structure:
@@ -116,10 +136,10 @@ Phase 1 local structure:
 Phase 1:
 
 - Local company admin mode
+- Simple local admin toggle/PIN to avoid accidental product and outlet configuration changes
 
 Phase 2:
 
 - Site admin
 - Company admin
 - Outlet user
-

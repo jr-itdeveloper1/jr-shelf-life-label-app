@@ -29,12 +29,14 @@
 - Print 60 x 40 mm labels
 - Support 50 x 30 mm test labels
 - Local company admin mode
+- Simple local admin toggle/PIN
 - Local outlet setup
 - Outlet product sub-list selection
+- Basic local PrintJob saving
 
 ### Should Have
 
-- Print history saved locally
+- Simple print history list
 - Import product seed data from Excel-derived JSON
 - Edit product information locally
 - Enable or disable products per outlet

@@ -16,11 +16,20 @@ Install these on the development computer:
 
 - Codex
 - Git for Windows
-- Node.js LTS
+- Node.js LTS, preferably the current LTS line rather than a current/non-LTS release
 - Android Studio
 - GitHub CLI
-- 7-Zip
+- 7-Zip, with `7z.exe` available on PATH if possible
 - VS Code, optional
+
+Android Studio should install:
+
+- Android SDK Platform
+- Android SDK Platform-Tools, including `adb`
+- Android SDK Build-Tools
+- Android Emulator, optional if testing mainly on a real Oppo phone
+
+For React Native / Expo development builds, Java should be available through Android Studio's bundled JDK or another compatible JDK. Verify that Android Studio can build a blank Android project before starting printer SDK integration.
 
 ## Verify Installation
 
@@ -31,12 +40,16 @@ git --version
 node --version
 npm --version
 npx --version
+gh --version
+7z
 ```
 
 After Android Studio is installed:
 
 ```powershell
 adb version
+java -version
+javac -version
 ```
 
 If `adb` is not found, add Android SDK platform-tools to the Windows PATH.
@@ -105,6 +118,12 @@ adb devices
 
 Do not commit the full Gprinter SDK package to GitHub at the beginning.
 
+Current local SDK folder:
+
+```text
+C:\Users\ShenJianhua\Documents\Projects\GPrinter-SDK
+```
+
 Use a local-only folder if needed:
 
 ```text
@@ -116,4 +135,6 @@ Add this to `.gitignore`:
 ```text
 vendor/gprinter-sdk/
 ```
+
+For Phase 1, use the SDK folder as a local reference. Only copy the minimal Android wrapper code or small required SDK artifacts into the app project after licensing and repository-size impact are reviewed.
 
