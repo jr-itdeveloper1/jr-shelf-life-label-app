@@ -1,0 +1,32 @@
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+.expo-template/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native generated folders
+/ios
+/android
+
+# local SDK/vendor material
+vendor/gprinter-sdk/
+
+# debug logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+expo-start.log
+expo-start.err
+
+# local env files
+.env*.local
+
+# TypeScript
+*.tsbuildinfo
+
+# OS/editor
+.DS_Store
