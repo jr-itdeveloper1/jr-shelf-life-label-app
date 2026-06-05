@@ -1,89 +1,194 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { getProductImageSource } from '../data/productImages';
 import type { Product } from '../domain/models';
 import { colors } from '../theme/colors';
 
 type Props = {
   product: Product;
   onPress: () => void;
+  mode?: 'compact' | 'regular';
 };
 
-export function ProductTile({ product, onPress }: Props) {
+export function ProductTile({ product, onPress, mode = 'compact' }: Props) {
+  const imageSource = getProductImageSource(product.imageUri);
+
+  if (mode === 'regular') {
+    return (
+      <Pressable
+        style={styles.regularCard}
+        onPress={onPress}
+        android_ripple={{ color: colors.surfacePressed, borderless: false }}
+      >
+        {imageSource ? (
+          <View style={styles.imageBox}>
+            <Image source={imageSource} style={styles.productImage} />
+          </View>
+        ) : (
+          <View style={styles.imageFallback}>
+            <Text style={styles.fallbackName} numberOfLines={2}>
+              {product.nameEn}
+            </Text>
+            <Text style={styles.fallbackNameZh} numberOfLines={1}>
+              {product.nameZh}
+            </Text>
+          </View>
+        )}
+        <View style={styles.regularBody}>
+          <Text style={styles.regularName} numberOfLines={1}>
+            {product.nameEn}
+          </Text>
+          <Text style={styles.regularNameZh} numberOfLines={1}>
+            {product.nameZh}
+          </Text>
+          <View style={styles.regularMetaRow}>
+            <Text style={styles.storageBadge} numberOfLines={1}>
+              {product.storageMethod.en}
+            </Text>
+            <Text style={styles.regularCode} numberOfLines={1}>
+              {product.productCode}
+            </Text>
+          </View>
+        </View>
+      </Pressable>
+    );
+  }
+
   return (
-    <Pressable style={styles.card} onPress={onPress}>
-      <View style={styles.imageFallback}>
-        <Text style={styles.fallbackName} numberOfLines={2}>
-          {product.nameEn}
-        </Text>
-        <Text style={styles.fallbackNameZh} numberOfLines={1}>
-          {product.nameZh}
-        </Text>
-      </View>
-      <View style={styles.body}>
-        <Text style={styles.name} numberOfLines={1}>
+    <Pressable
+      style={styles.compactCard}
+      onPress={onPress}
+      android_ripple={{ color: colors.surfacePressed, borderless: false }}
+    >
+      <View style={styles.compactBody}>
+        <Text style={styles.name} numberOfLines={2}>
           {product.nameEn}
         </Text>
         <Text style={styles.nameZh} numberOfLines={1}>
           {product.nameZh}
         </Text>
-        <Text style={styles.tag} numberOfLines={1}>
-          {product.storageMethod.en} {product.storageMethod.zh}
-        </Text>
       </View>
+      <View style={styles.tapHint} />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
+  compactCard: {
     flex: 1,
-    minWidth: 148,
+    height: 74,
+    borderRadius: 8,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    justifyContent: 'center',
+    elevation: 1,
+  },
+  compactBody: {
+    gap: 4,
+  },
+  name: {
+    color: colors.text,
+    fontSize: 13.5,
+    fontWeight: '900',
+    lineHeight: 17,
+  },
+  nameZh: {
+    color: colors.textMuted,
+    fontSize: 12.5,
+    fontWeight: '800',
+  },
+  tapHint: {
+    position: 'absolute',
+    left: 0,
+    top: 10,
+    bottom: 10,
+    width: 3,
+    borderTopRightRadius: 3,
+    borderBottomRightRadius: 3,
+    backgroundColor: colors.primarySoft,
+  },
+  code: {
+    color: colors.textMuted,
+    fontSize: 9,
+    fontWeight: '900',
+    flexShrink: 0,
+  },
+  regularCard: {
+    flex: 1,
     overflow: 'hidden',
     borderRadius: 8,
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
+    elevation: 1,
+  },
+  imageBox: {
+    height: 84,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surfaceMuted,
+  },
+  productImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
   imageFallback: {
-    minHeight: 104,
+    height: 84,
     justifyContent: 'center',
-    padding: 12,
     backgroundColor: colors.surfaceMuted,
+    padding: 10,
   },
   fallbackName: {
     color: colors.text,
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '900',
   },
   fallbackNameZh: {
-    marginTop: 6,
-    color: colors.textMuted,
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  body: {
-    padding: 10,
-    gap: 3,
-  },
-  name: {
-    color: colors.text,
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  nameZh: {
+    marginTop: 4,
     color: colors.textMuted,
     fontSize: 14,
+    fontWeight: '800',
   },
-  tag: {
-    alignSelf: 'flex-start',
-    marginTop: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 999,
+  regularBody: {
+    padding: 9,
+  },
+  regularName: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  regularNameZh: {
+    marginTop: 2,
+    color: colors.textMuted,
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  regularMetaRow: {
+    marginTop: 7,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  storageBadge: {
     overflow: 'hidden',
+    borderRadius: 999,
+    backgroundColor: colors.primarySoft,
     color: colors.primaryDark,
-    backgroundColor: '#dff3ea',
-    fontSize: 12,
-    fontWeight: '700',
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    fontSize: 10,
+    fontWeight: '900',
+  },
+  regularCode: {
+    flexShrink: 1,
+    color: colors.textMuted,
+    fontSize: 10,
+    fontWeight: '900',
+    textAlign: 'right',
   },
 });

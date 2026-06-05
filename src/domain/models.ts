@@ -8,6 +8,7 @@ export type StorageMethod = {
 export type Outlet = {
   id: string;
   name: string;
+  code: string;
   shortCode: string;
 };
 
@@ -15,6 +16,7 @@ export type ProductCategory = {
   id: string;
   name: string;
   codePrefix: string;
+  color?: string;
   scope: 'company' | 'outlet';
 };
 
@@ -31,4 +33,39 @@ export type Product = {
   storageMethod: StorageMethod;
   imageUri?: string;
   active: boolean;
+};
+
+export type OutletProduct = {
+  id: string;
+  outletId: string;
+  productId: string;
+  active: boolean;
+};
+
+export type PrintJob = {
+  id: string;
+  labelType?: 'product' | 'timestamp';
+  outletId: string;
+  outletName: string;
+  productId: string;
+  productCode: string;
+  productNameEn: string;
+  productNameZh: string;
+  quantity: number;
+  printedAt: string;
+  expiresAt: string;
+  labelBitmapUri?: string;
+  labelBitmapWidthPx?: number;
+  labelBitmapHeightPx?: number;
+  printerName?: string;
+  printerAddress?: string;
+  status: 'mock-saved' | 'printed' | 'failed';
+};
+
+export type AppDataImport = {
+  categories?: ProductCategory[];
+  outlets?: Outlet[];
+  products?: Product[];
+  outletProducts?: OutletProduct[];
+  printJobs?: PrintJob[];
 };

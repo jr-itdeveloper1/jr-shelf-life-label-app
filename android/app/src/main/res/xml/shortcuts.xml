@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+  <shortcut
+    android:shortcutId="products"
+    android:enabled="true"
+    android:icon="@mipmap/ic_launcher"
+    android:shortcutShortLabel="@string/shortcut_products_short"
+    android:shortcutLongLabel="@string/shortcut_products_long">
+    <intent
+      android:action="android.intent.action.VIEW"
+      android:data="jrshelflife://products"
+      android:targetClass="com.jrfoods.shelflifelabels.MainActivity"
+      android:targetPackage="com.jrfoods.shelflifelabels" />
+  </shortcut>
+
+  <shortcut
+    android:shortcutId="categories"
+    android:enabled="true"
+    android:icon="@mipmap/ic_launcher"
+    android:shortcutShortLabel="@string/shortcut_categories_short"
+    android:shortcutLongLabel="@string/shortcut_categories_long">
+    <intent
+      android:action="android.intent.action.VIEW"
+      android:data="jrshelflife://categories"
+      android:targetClass="com.jrfoods.shelflifelabels.MainActivity"
+      android:targetPackage="com.jrfoods.shelflifelabels" />
+  </shortcut>
+
+  <shortcut
+    android:shortcutId="history"
+    android:enabled="true"
+    android:icon="@mipmap/ic_launcher"
+    android:shortcutShortLabel="@string/shortcut_history_short"
+    android:shortcutLongLabel="@string/shortcut_history_long">
+    <intent
+      android:action="android.intent.action.VIEW"
+      android:data="jrshelflife://history"
+      android:targetClass="com.jrfoods.shelflifelabels.MainActivity"
+      android:targetPackage="com.jrfoods.shelflifelabels" />
+  </shortcut>
+
+  <shortcut
+    android:shortcutId="admin"
+    android:enabled="true"
+    android:icon="@mipmap/ic_launcher"
+    android:shortcutShortLabel="@string/shortcut_admin_short"
+    android:shortcutLongLabel="@string/shortcut_admin_long">
+    <intent
+      android:action="android.intent.action.VIEW"
+      android:data="jrshelflife://admin"
+      android:targetClass="com.jrfoods.shelflifelabels.MainActivity"
+      android:targetPackage="com.jrfoods.shelflifelabels" />
+  </shortcut>
+</shortcuts>

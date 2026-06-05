@@ -16,7 +16,18 @@ export function QuantitySelector({ quantity, onChange }: Props) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Quantity</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Quantity</Text>
+        <View style={styles.stepper}>
+          <Pressable style={styles.stepperButton} onPress={() => setQuantity(quantity - 1)}>
+            <Text style={styles.stepperText}>-</Text>
+          </Pressable>
+          <Text style={styles.quantity}>{quantity}</Text>
+          <Pressable style={styles.stepperButton} onPress={() => setQuantity(quantity + 1)}>
+            <Text style={styles.stepperText}>+</Text>
+          </Pressable>
+        </View>
+      </View>
       <View style={styles.row}>
         {PRESETS.map((preset) => (
           <Pressable
@@ -29,15 +40,6 @@ export function QuantitySelector({ quantity, onChange }: Props) {
             </Text>
           </Pressable>
         ))}
-        <View style={styles.stepper}>
-          <Pressable style={styles.stepperButton} onPress={() => setQuantity(quantity - 1)}>
-            <Text style={styles.stepperText}>-</Text>
-          </Pressable>
-          <Text style={styles.quantity}>{quantity}</Text>
-          <Pressable style={styles.stepperButton} onPress={() => setQuantity(quantity + 1)}>
-            <Text style={styles.stepperText}>+</Text>
-          </Pressable>
-        </View>
       </View>
       {quantity > 5 ? (
         <Text style={styles.warning}>Printing more than 5 labels will require confirmation.</Text>
@@ -48,7 +50,19 @@ export function QuantitySelector({ quantity, onChange }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    gap: 10,
+    gap: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    padding: 12,
+    elevation: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
   },
   title: {
     color: colors.text,
@@ -57,18 +71,17 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
   },
   preset: {
-    minWidth: 46,
+    flex: 1,
     alignItems: 'center',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.surface,
-    paddingVertical: 10,
+    paddingVertical: 8,
   },
   presetActive: {
     borderColor: colors.primary,
@@ -76,7 +89,7 @@ const styles = StyleSheet.create({
   },
   presetText: {
     color: colors.text,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '800',
   },
   presetTextActive: {
@@ -91,10 +104,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   stepperButton: {
-    minWidth: 44,
+    minWidth: 38,
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    paddingVertical: 10,
+    backgroundColor: colors.surfaceMuted,
+    paddingVertical: 8,
   },
   stepperText: {
     color: colors.text,
@@ -102,7 +115,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   quantity: {
-    minWidth: 42,
+    minWidth: 38,
     textAlign: 'center',
     color: colors.text,
     fontSize: 16,

@@ -1,0 +1,13 @@
+<resources>
+  <string name="app_name">JR Shelf Life Labels</string>
+  <string name="shortcut_products_short">Products</string>
+  <string name="shortcut_products_long">Open Products</string>
+  <string name="shortcut_categories_short">Categories</string>
+  <string name="shortcut_categories_long">Choose Category</string>
+  <string name="shortcut_history_short">History</string>
+  <string name="shortcut_history_long">Open Print History</string>
+  <string name="shortcut_admin_short">Admin</string>
+  <string name="shortcut_admin_long">Open Admin</string>
+  <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
+  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+</resources>
