@@ -18,6 +18,7 @@ export type PreferredBluetoothPrinter = {
 };
 
 const preferredPrinterStorageKey = 'jr-shelf-life-preferred-printer-v1';
+const hiddenPrinterStorageKey = 'jr-shelf-life-hidden-printers-v1';
 
 type NativePrintResult = {
   status: 'printed';
@@ -91,7 +92,9 @@ export async function getPairedBluetoothPrinters(): Promise<BluetoothPrinterDevi
 
   const gPrinterBluetooth = getGPrinterBluetoothModule();
   await requestBluetoothPrinterPermissions();
-  return filterSupportedBluetoothPrinters(await gPrinterBluetooth.getPairedPrinters());
+  const hiddenPrinterAddresses = await getHiddenBluetoothPrinterAddresses();
+  return filterSupportedBluetoothPrinters(await gPrinterBluetooth.getPairedPrinters())
+    .filter((printer) => !hiddenPrinterAddresses.includes(printer.address));
 }
 
 export async function getPreferredBluetoothPrinter(): Promise<PreferredBluetoothPrinter | null> {
@@ -117,6 +120,39 @@ export async function getPreferredBluetoothPrinter(): Promise<PreferredBluetooth
   return null;
 }
 
+export async function checkPreferredBluetoothPrinterReadiness() {
+  if (Platform.OS !== 'android') {
+    throw new Error('Bluetooth label printing is currently available on Android only.');
+  }
+
+  const preferredPrinter = await getPreferredBluetoothPrinter();
+
+  if (!preferredPrinter) {
+    return {
+      status: 'missing' as const,
+      printer: null,
+    };
+  }
+
+  const gPrinterBluetooth = getGPrinterBluetoothModule();
+  await requestBluetoothPrinterPermissions();
+
+  try {
+    await gPrinterBluetooth.connect(preferredPrinter.address);
+    return {
+      status: 'ready' as const,
+      printer: preferredPrinter,
+    };
+  } catch {
+    return {
+      status: 'offline' as const,
+      printer: preferredPrinter,
+    };
+  } finally {
+    await safeDisconnect(gPrinterBluetooth);
+  }
+}
+
 export async function setPreferredBluetoothPrinter(printer: BluetoothPrinterDevice) {
   await SecureStore.setItemAsync(
     preferredPrinterStorageKey,
@@ -125,6 +161,40 @@ export async function setPreferredBluetoothPrinter(printer: BluetoothPrinterDevi
       name: printer.name,
     }),
   );
+}
+
+export async function clearPreferredBluetoothPrinter() {
+  await SecureStore.deleteItemAsync(preferredPrinterStorageKey);
+}
+
+export async function hideBluetoothPrinter(printer: BluetoothPrinterDevice) {
+  const hiddenPrinterAddresses = await getHiddenBluetoothPrinterAddresses();
+
+  if (hiddenPrinterAddresses.includes(printer.address)) {
+    return;
+  }
+
+  await SecureStore.setItemAsync(
+    hiddenPrinterStorageKey,
+    JSON.stringify([...hiddenPrinterAddresses, printer.address]),
+  );
+}
+
+async function getHiddenBluetoothPrinterAddresses() {
+  const storedPrinters = await SecureStore.getItemAsync(hiddenPrinterStorageKey);
+
+  if (!storedPrinters) {
+    return [];
+  }
+
+  try {
+    const parsedPrinters = JSON.parse(storedPrinters);
+    return Array.isArray(parsedPrinters)
+      ? parsedPrinters.filter((address): address is string => typeof address === 'string' && address.trim().length > 0)
+      : [];
+  } catch {
+    return [];
+  }
 }
 
 async function printWithFreshConnection(

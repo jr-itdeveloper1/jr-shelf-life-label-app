@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Linking } from 'react-native';
 
 import {
@@ -20,20 +20,30 @@ import { AdminOutletDetailScreen } from '../screens/AdminOutletDetailScreen';
 import { AdminOutletListScreen } from '../screens/AdminOutletListScreen';
 import { AdminOutletProductDetailScreen } from '../screens/AdminOutletProductDetailScreen';
 import { AdminOutletProductListScreen } from '../screens/AdminOutletProductListScreen';
-import { AdminPinScreen } from '../screens/AdminPinScreen';
 import { AdminPrinterScreen } from '../screens/AdminPrinterScreen';
 import { AdminProductDetailScreen } from '../screens/AdminProductDetailScreen';
 import { AdminProductListScreen } from '../screens/AdminProductListScreen';
 import { CategorySelectionScreen } from '../screens/CategorySelectionScreen';
+import { LoginScreen } from '../screens/LoginScreen';
 import { OutletSelectionScreen } from '../screens/OutletSelectionScreen';
 import { ProductDetailScreen } from '../screens/ProductDetailScreen';
 import { ProductGridScreen, type ProductViewMode } from '../screens/ProductGridScreen';
 import { PrintHistoryScreen } from '../screens/PrintHistoryScreen';
 import { TimestampPrintScreen } from '../screens/TimestampPrintScreen';
+import {
+  clearCloudSession,
+  cloudLogin,
+  fetchCloudBootstrap,
+  loadCloudSession,
+  uploadPrintJobs,
+  type CloudSession,
+} from '../services/cloudApi';
 
 const adminDataStorageKey = `jr-shelf-life-admin-data-${seedDataVersion}`;
 const legacyCategoryStorageKey = `jr-shelf-life-categories-${seedDataVersion}`;
 const productLabelModeStorageKey = 'jr-shelf-life-product-label-mode-v1';
+const printHistoryAutoSyncIntervalMs = 30 * 60 * 1000;
+const localAdminDataSaveDelayMs = 600;
 
 type LocalAdminData = {
   categories: ProductCategory[];
@@ -50,7 +60,6 @@ type Screen =
   | 'product-detail'
   | 'timestamp-print'
   | 'history'
-  | 'admin-pin'
   | 'admin-home'
   | 'admin-backup-export'
   | 'admin-categories'
@@ -63,8 +72,11 @@ type Screen =
   | 'admin-products'
   | 'admin-product-detail';
 
+type TimestampReturnScreen = 'product-categories' | 'products';
+
 export function RootApp() {
   const [screen, setScreen] = useState<Screen>('outlets');
+  const [timestampReturnScreen, setTimestampReturnScreen] = useState<TimestampReturnScreen>('product-categories');
   const [categories, setCategories] = useState<ProductCategory[]>(seedCategories);
   const [outlets, setOutlets] = useState<Outlet[]>(seedOutlets);
   const [products, setProducts] = useState<Product[]>(seedProducts);
@@ -81,8 +93,193 @@ export function RootApp() {
   const [productViewMode, setProductViewMode] = useState<ProductViewMode>('compact');
   const [productLabelMode, setProductLabelMode] = useState<ProductLabelMode>('full');
   const [quantity, setQuantity] = useState(1);
-  const [adminPin, setAdminPin] = useState('');
   const [initialUrl, setInitialUrl] = useState<string | null>(null);
+  const [cloudSession, setCloudSession] = useState<CloudSession | null>(null);
+  const [hasLoadedCloudSession, setHasLoadedCloudSession] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [syncMessage, setSyncMessage] = useState('');
+  const [isSyncing, setIsSyncing] = useState(false);
+  const cloudSessionRef = useRef<CloudSession | null>(null);
+  const printJobsRef = useRef<PrintJob[]>([]);
+  const isAutoSyncingPrintHistoryRef = useRef(false);
+
+  const applyCloudData = useCallback((cloudData: {
+    categories: ProductCategory[];
+    outlets: Outlet[];
+    products: Product[];
+    outletProducts: OutletProduct[];
+  }) => {
+    setCategories(cloudData.categories);
+    setOutlets(cloudData.outlets);
+    setProducts(cloudData.products);
+    setOutletProducts(cloudData.outletProducts);
+    setSelectedOutlet((currentOutlet) => {
+      if (!currentOutlet) return null;
+      return cloudData.outlets.find((outlet) => outlet.id === currentOutlet.id) ?? null;
+    });
+    setSelectedProduct(null);
+    setSelectedProductCategoryId('all');
+  }, []);
+
+  const syncFromCloud = useCallback(async (session: CloudSession) => {
+    setIsSyncing(true);
+    try {
+      const cloudData = await fetchCloudBootstrap(session);
+      applyCloudData(cloudData);
+      const productImageCount = cloudData.products.filter((product) => Boolean(product.imageUri)).length;
+      setSyncMessage(`Synced ${cloudData.outlets.length} outlet(s), ${cloudData.categories.length} category(s), and ${cloudData.products.length} product(s), including ${productImageCount} image(s).`);
+      return cloudData;
+    } catch (error) {
+      setSyncMessage(error instanceof Error ? error.message : 'Cloud sync failed. Cached data remains available.');
+      throw error;
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [applyCloudData]);
+
+  const signIn = useCallback(async (email: string, password: string) => {
+    setIsSigningIn(true);
+    setLoginError('');
+    try {
+      const session = await cloudLogin(email, password);
+      setCloudSession(session);
+      await syncFromCloud(session);
+      setScreen('outlets');
+    } catch (error) {
+      setLoginError(error instanceof Error ? error.message : 'Unable to sign in.');
+    } finally {
+      setIsSigningIn(false);
+    }
+  }, [syncFromCloud]);
+
+  const signOut = useCallback(async () => {
+    await clearCloudSession();
+    setCloudSession(null);
+    setSelectedOutlet(null);
+    setSelectedProduct(null);
+    setAdminSelectedOutlet(null);
+    setSyncMessage('');
+    setScreen('outlets');
+  }, []);
+
+  const uploadPendingPrintJobs = useCallback(async (session: CloudSession) => {
+    if (isAutoSyncingPrintHistoryRef.current) {
+      return { attempted: 0, uploaded: 0, message: 'Print history sync already running' };
+    }
+
+    const pendingPrintJobs = getPrintJobsForSync(printJobsRef.current);
+
+    if (pendingPrintJobs.length === 0) {
+      return { attempted: 0, uploaded: 0, message: 'Print history already synced' };
+    }
+
+    const pendingPrintJobIds = new Set(pendingPrintJobs.map((printJob) => printJob.id));
+    isAutoSyncingPrintHistoryRef.current = true;
+    setPrintJobs((currentPrintJobs) =>
+      currentPrintJobs.map((printJob) =>
+        pendingPrintJobIds.has(printJob.id)
+          ? { ...printJob, syncStatus: 'syncing', syncError: undefined }
+          : printJob,
+      ),
+    );
+
+    try {
+      const result = await uploadPrintJobs(session, pendingPrintJobs);
+      const syncedAt = new Date().toISOString();
+
+      setPrintJobs((currentPrintJobs) =>
+        currentPrintJobs.map((printJob) =>
+          pendingPrintJobIds.has(printJob.id)
+            ? { ...printJob, syncStatus: 'synced', syncedAt, syncError: undefined }
+            : printJob,
+        ),
+      );
+
+      return {
+        attempted: pendingPrintJobs.length,
+        uploaded: result.uploaded,
+        message: result.message,
+      };
+    } catch (error) {
+      const syncError = error instanceof Error ? error.message : 'Print history sync failed.';
+
+      setPrintJobs((currentPrintJobs) =>
+        currentPrintJobs.map((printJob) =>
+          pendingPrintJobIds.has(printJob.id)
+            ? { ...printJob, syncStatus: 'failed', syncError }
+            : printJob,
+        ),
+      );
+
+      throw error;
+    } finally {
+      isAutoSyncingPrintHistoryRef.current = false;
+    }
+  }, []);
+
+  const syncNow = useCallback(async () => {
+    if (!cloudSession) return;
+    try {
+      const cloudData = await syncFromCloud(cloudSession);
+      const productImageCount = cloudData.products.filter((product) => Boolean(product.imageUri)).length;
+      try {
+        const result = await uploadPendingPrintJobs(cloudSession);
+        const historyMessage = result.attempted > 0 ? result.message : 'Print history already synced';
+        setSyncMessage(`${historyMessage}. Master data refreshed with ${productImageCount} product image(s).`);
+      } catch (error) {
+        setSyncMessage(`Master data refreshed with ${productImageCount} product image(s). Print history upload failed: ${error instanceof Error ? error.message : 'try again later.'}`);
+      }
+    } catch {
+      // syncFromCloud already set the user-facing message.
+    }
+  }, [cloudSession, syncFromCloud, uploadPendingPrintJobs]);
+
+  useEffect(() => {
+    cloudSessionRef.current = cloudSession;
+  }, [cloudSession]);
+
+  useEffect(() => {
+    printJobsRef.current = printJobs;
+  }, [printJobs]);
+
+  useEffect(() => {
+    if (!hasLoadedAdminData || !hasLoadedCloudSession || !cloudSession) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const syncPrintHistory = async () => {
+      const currentSession = cloudSessionRef.current;
+      const pendingPrintJobs = getPrintJobsForSync(printJobsRef.current);
+
+      if (!currentSession || pendingPrintJobs.length === 0) {
+        return;
+      }
+
+      try {
+        const result = await uploadPendingPrintJobs(currentSession);
+
+        if (!cancelled && result.attempted > 0) {
+          setSyncMessage(`${result.message}. Print history auto-synced.`);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setSyncMessage(error instanceof Error ? error.message : 'Print history auto-sync failed.');
+        }
+      }
+    };
+
+    const intervalId = setInterval(() => {
+      void syncPrintHistory();
+    }, printHistoryAutoSyncIntervalMs);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, [cloudSession, hasLoadedAdminData, hasLoadedCloudSession, uploadPendingPrintJobs]);
 
   const openAppShortcut = useCallback((url: string) => {
     const shortcutTarget = (url
@@ -107,8 +304,7 @@ export function RootApp() {
     setSelectedOutlet(outletForShortcut);
 
     if (shortcutTarget === 'admin') {
-      setAdminPin('');
-      setScreen('admin-pin');
+      setScreen('admin-home');
       return;
     }
 
@@ -118,6 +314,7 @@ export function RootApp() {
     }
 
     if (shortcutTarget === 'timestamp') {
+      setTimestampReturnScreen('products');
       setScreen('timestamp-print');
       return;
     }
@@ -158,7 +355,7 @@ export function RootApp() {
           setOutlets(Array.isArray(parsedData.outlets) ? parsedData.outlets : seedOutlets);
           setProducts(Array.isArray(parsedData.products) ? parsedData.products : seedProducts);
           setOutletProducts(Array.isArray(parsedData.outletProducts) ? parsedData.outletProducts : seedOutletProducts);
-          setPrintJobs(Array.isArray(parsedData.printJobs) ? parsedData.printJobs : []);
+          setPrintJobs(Array.isArray(parsedData.printJobs) ? normalizeStoredPrintJobs(parsedData.printJobs) : []);
           return;
         }
 
@@ -184,6 +381,37 @@ export function RootApp() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSession() {
+      try {
+        const storedSession = await loadCloudSession();
+        if (cancelled) return;
+        setCloudSession(storedSession);
+        if (storedSession) {
+          syncFromCloud(storedSession).catch(() => undefined);
+        }
+      } finally {
+        if (!cancelled) {
+          setHasLoadedCloudSession(true);
+        }
+      }
+    }
+
+    if (!hasLoadedAdminData) {
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    void loadSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hasLoadedAdminData, syncFromCloud]);
 
   useEffect(() => {
     if (!hasLoadedProductLabelMode) {
@@ -251,16 +479,36 @@ export function RootApp() {
       return;
     }
 
-    const adminData: LocalAdminData = {
-      categories,
-      outlets,
-      products,
-      outletProducts,
-      printJobs,
-    };
+    const saveTimeoutId = setTimeout(() => {
+      const adminData: LocalAdminData = {
+        categories,
+        outlets,
+        products,
+        outletProducts,
+        printJobs,
+      };
 
-    void SecureStore.setItemAsync(adminDataStorageKey, JSON.stringify(adminData)).catch(() => undefined);
+      void SecureStore.setItemAsync(adminDataStorageKey, JSON.stringify(adminData)).catch(() => undefined);
+    }, localAdminDataSaveDelayMs);
+
+    return () => clearTimeout(saveTimeoutId);
   }, [categories, hasLoadedAdminData, outletProducts, outlets, printJobs, products]);
+
+  useEffect(() => {
+    if (!hasLoadedAdminData || !hasLoadedCloudSession || !cloudSession || isSyncing) {
+      return;
+    }
+
+    const singleOutlet = outlets[0];
+
+    if (screen !== 'outlets' || selectedOutlet || outlets.length !== 1 || !singleOutlet) {
+      return;
+    }
+
+    setSelectedOutlet(singleOutlet);
+    setSelectedProductCategoryId('all');
+    setScreen('product-categories');
+  }, [cloudSession, hasLoadedAdminData, hasLoadedCloudSession, isSyncing, outlets, screen, selectedOutlet]);
 
   const visibleProducts = useMemo(() => {
     if (!selectedOutlet) {
@@ -276,6 +524,42 @@ export function RootApp() {
       return eligibleForOutlet && product.active && (outletProduct?.active ?? true);
     });
   }, [outletProducts, products, selectedOutlet]);
+
+  const availableProductCategoryIds = useMemo(() => {
+    const categoryCounts = visibleProducts.reduce((counts, product) => {
+      counts.set(product.categoryId, (counts.get(product.categoryId) ?? 0) + 1);
+      return counts;
+    }, new Map<string, number>());
+
+    const visibleCategoryIds = visibleProducts.length === 0
+      ? categories.map((category) => category.id)
+      : categories
+          .filter((category) => categoryCounts.has(category.id))
+          .map((category) => category.id);
+    const hasCustomProducts = visibleProducts.some((product) => product.source === 'outlet');
+
+    return [
+      ...visibleCategoryIds,
+      ...(hasCustomProducts ? ['custom'] : []),
+    ];
+  }, [categories, visibleProducts]);
+
+  useEffect(() => {
+    const singleCategoryId = availableProductCategoryIds[0];
+
+    if (
+      screen !== 'product-categories'
+      || !selectedOutlet
+      || availableProductCategoryIds.length !== 1
+      || !singleCategoryId
+    ) {
+      return;
+    }
+
+    setSelectedProduct(null);
+    setSelectedProductCategoryId(singleCategoryId);
+    setScreen('products');
+  }, [availableProductCategoryIds, screen, selectedOutlet]);
 
   const selectedProductCategoryLabel = useMemo(() => {
     if (selectedProductCategoryId === 'all') {
@@ -448,9 +732,29 @@ export function RootApp() {
       ),
     );
     setPrintJobs((currentPrintJobs) =>
-      mergeByKey(currentPrintJobs, importData.printJobs ?? [], (printJob) => printJob.id),
+      mergeByKey(currentPrintJobs, normalizeStoredPrintJobs(importData.printJobs ?? []), (printJob) => printJob.id),
     );
   };
+
+  const addPrintJob = useCallback((printJob: PrintJob) => {
+    setPrintJobs((currentPrintJobs) => [
+      {
+        ...printJob,
+        syncStatus: 'pending',
+        syncedAt: undefined,
+        syncError: undefined,
+      },
+      ...currentPrintJobs,
+    ]);
+  }, []);
+
+  if (!hasLoadedAdminData || !hasLoadedCloudSession) {
+    return <LoginScreen isLoading onLogin={signIn} errorMessage="Loading saved login..." />;
+  }
+
+  if (!cloudSession) {
+    return <LoginScreen isLoading={isSigningIn} onLogin={signIn} errorMessage={loginError} />;
+  }
 
   if (screen === 'outlets' || !selectedOutlet) {
     return (
@@ -471,6 +775,7 @@ export function RootApp() {
         outlet={selectedOutlet}
         products={visibleProducts}
         categories={categories}
+        canChangeOutlet={outlets.length > 1}
         onChangeOutlet={() => {
           setSelectedOutlet(null);
           setSelectedProductCategoryId('all');
@@ -480,9 +785,13 @@ export function RootApp() {
           setSelectedProductCategoryId(categoryId);
           setScreen('products');
         }}
-        onOpenTimestamp={() => setScreen('timestamp-print')}
+        onOpenTimestamp={() => {
+          setTimestampReturnScreen('product-categories');
+          setScreen('timestamp-print');
+        }}
         onOpenHistory={() => setScreen('history')}
-        onOpenAdmin={() => setScreen('admin-pin')}
+        onOpenAdmin={() => setScreen('admin-home')}
+        onSignOut={() => void signOut()}
       />
     );
   }
@@ -491,8 +800,9 @@ export function RootApp() {
     return (
       <TimestampPrintScreen
         outlet={selectedOutlet}
-        onPrint={(printJob) => setPrintJobs((currentPrintJobs) => [printJob, ...currentPrintJobs])}
-        onBack={() => setScreen('product-categories')}
+        onPrint={addPrintJob}
+        backLabel={timestampReturnScreen === 'products' ? '< Products' : '< Categories'}
+        onBack={() => setScreen(timestampReturnScreen)}
       />
     );
   }
@@ -506,29 +816,19 @@ export function RootApp() {
         labelMode={productLabelMode}
         onChangeQuantity={setQuantity}
         onChangeLabelMode={setProductLabelMode}
-        onPrint={(printJob) => setPrintJobs((currentPrintJobs) => [printJob, ...currentPrintJobs])}
+        onPrint={addPrintJob}
         onBack={() => setScreen('products')}
       />
     );
   }
 
   if (screen === 'history') {
-    return <PrintHistoryScreen printJobs={printJobs} onBack={() => setScreen('products')} />;
-  }
-
-  if (screen === 'admin-pin') {
     return (
-      <AdminPinScreen
-        pin={adminPin}
-        onChangePin={setAdminPin}
-        onCancel={() => {
-          setAdminPin('');
-          setScreen('products');
-        }}
-        onSuccess={() => {
-          setAdminPin('');
-          setScreen('admin-home');
-        }}
+      <PrintHistoryScreen
+        printJobs={printJobs}
+        onOpenProducts={() => setScreen('products')}
+        onOpenAdmin={() => setScreen('admin-home')}
+        onSignOut={() => void signOut()}
       />
     );
   }
@@ -536,7 +836,13 @@ export function RootApp() {
   if (screen === 'admin-home') {
     return (
       <AdminHomeScreen
-        onBack={() => setScreen('products')}
+        canManageData={cloudSession.user.role === 'COMPANY_ADMIN'}
+        syncMessage={syncMessage}
+        isSyncing={isSyncing}
+        onSyncNow={() => void syncNow()}
+        onOpenProductPage={() => setScreen('products')}
+        onOpenHistory={() => setScreen('history')}
+        onSignOut={() => void signOut()}
         onOpenBackupExport={() => setScreen('admin-backup-export')}
         onOpenCategories={() => setScreen('admin-categories')}
         onOpenOutletProducts={() => setScreen('admin-outlet-products')}
@@ -548,7 +854,7 @@ export function RootApp() {
   }
 
   if (screen === 'admin-printers') {
-    return <AdminPrinterScreen onBack={() => setScreen('admin-home')} />;
+    return <AdminPrinterScreen session={cloudSession} outlet={selectedOutlet} onBack={() => setScreen('admin-home')} />;
   }
 
   if (screen === 'admin-backup-export') {
@@ -693,15 +999,23 @@ export function RootApp() {
       categoryName={selectedProductCategoryLabel}
       categoryColor={selectedProductCategoryColor}
       viewMode={productViewMode}
+      canChangeOutlet={outlets.length > 1}
+      canChangeCategory={availableProductCategoryIds.length > 1}
       onChangeViewMode={setProductViewMode}
-      onOpenAdmin={() => setScreen('admin-pin')}
+      onOpenAdmin={() => setScreen('admin-home')}
       onOpenHistory={() => setScreen('history')}
+      onOpenTimestamp={() => {
+        setTimestampReturnScreen('products');
+        setScreen('timestamp-print');
+      }}
       onChangeOutlet={() => {
         setSelectedOutlet(null);
+        setSelectedProduct(null);
         setSelectedProductCategoryId('all');
         setScreen('outlets');
       }}
       onChangeCategory={() => setScreen('product-categories')}
+      onSignOut={() => void signOut()}
       onSelectProduct={(product) => {
         setSelectedProduct(product);
         setQuantity(1);
@@ -731,4 +1045,15 @@ function mergeByKey<T>(currentItems: T[], importedItems: T[], getKey: (item: T) 
   });
 
   return mergedItems;
+}
+
+function getPrintJobsForSync(printJobs: PrintJob[]) {
+  return printJobs.filter((printJob) => printJob.syncStatus !== 'synced');
+}
+
+function normalizeStoredPrintJobs(printJobs: PrintJob[]) {
+  return printJobs.map((printJob) => ({
+    ...printJob,
+    syncStatus: printJob.syncStatus === 'syncing' ? 'pending' : printJob.syncStatus,
+  }));
 }

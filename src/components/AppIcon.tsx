@@ -31,9 +31,11 @@ export type AppIconName =
   | 'scan'
   | 'sauce'
   | 'search'
+  | 'signOut'
   | 'store'
   | 'tag'
-  | 'vegetable';
+  | 'vegetable'
+  | 'warning';
 
 type Props = {
   name: AppIconName;
@@ -223,17 +225,23 @@ export function AppIcon({ name, color = colors.text, size = 20 }: Props) {
     );
   }
 
+  if (name === 'signOut') {
+    return (
+      <View style={[styles.icon, { width: size, height: size }]}>
+        <View style={[styles.signOutDoor, border]} />
+        <View style={[styles.signOutArrowLine, line]} />
+        <View style={[styles.signOutArrowHead, border]} />
+      </View>
+    );
+  }
+
   if (name === 'admin') {
     return (
       <View style={[styles.icon, { width: size, height: size }]}>
-        <View style={[styles.gearToothVertical, line]} />
-        <View style={[styles.gearToothVertical, styles.gearToothVerticalBottom, line]} />
-        <View style={[styles.gearToothHorizontal, line]} />
-        <View style={[styles.gearToothHorizontal, styles.gearToothHorizontalRight, line]} />
-        <View style={[styles.gearToothDiagonalLeft, line]} />
-        <View style={[styles.gearToothDiagonalRight, line]} />
-        <View style={[styles.gearRing, border]} />
-        <View style={[styles.gearCenter, border]} />
+        <View style={[styles.clipboardBody, border]} />
+        <View style={[styles.clipboardClip, border]} />
+        <View style={[styles.clipboardLineTop, line]} />
+        <View style={[styles.clipboardLineBottom, line]} />
       </View>
     );
   }
@@ -274,6 +282,16 @@ export function AppIcon({ name, color = colors.text, size = 20 }: Props) {
       <View style={[styles.checkIcon, { width: size, height: size }]}>
         <View style={[styles.checkShort, line]} />
         <View style={[styles.checkLong, line]} />
+      </View>
+    );
+  }
+
+  if (name === 'warning') {
+    return (
+      <View style={[styles.icon, { width: size, height: size }]}>
+        <View style={[styles.warningTriangle, border]} />
+        <View style={[styles.warningStem, line]} />
+        <View style={[styles.warningDot, dot]} />
       </View>
     );
   }
@@ -896,56 +914,61 @@ const styles = StyleSheet.create({
     right: '22%',
     borderRadius: 1,
   },
-  gearToothVertical: {
+  signOutDoor: {
     position: 'absolute',
-    top: 0,
-    width: 3,
-    height: '22%',
-    borderRadius: 2,
+    left: '8%',
+    width: '48%',
+    height: '68%',
+    borderWidth: 2,
+    borderRightWidth: 0,
+    borderRadius: 3,
   },
-  gearToothVerticalBottom: {
-    top: undefined,
-    bottom: 0,
-  },
-  gearToothHorizontal: {
+  signOutArrowLine: {
     position: 'absolute',
-    left: 0,
-    width: '22%',
-    height: 3,
-    borderRadius: 2,
+    left: '36%',
+    width: '46%',
+    height: 2,
+    borderRadius: 1,
   },
-  gearToothHorizontalRight: {
-    left: undefined,
-    right: 0,
-  },
-  gearToothDiagonalLeft: {
+  signOutArrowHead: {
     position: 'absolute',
-    width: '72%',
-    height: 3,
-    borderRadius: 2,
+    right: '12%',
+    width: '24%',
+    height: '24%',
+    borderTopWidth: 2,
+    borderRightWidth: 2,
     transform: [{ rotate: '45deg' }],
   },
-  gearToothDiagonalRight: {
+  clipboardBody: {
     position: 'absolute',
+    bottom: '8%',
     width: '72%',
-    height: 3,
-    borderRadius: 2,
-    transform: [{ rotate: '-45deg' }],
-  },
-  gearRing: {
-    width: '66%',
-    height: '66%',
+    height: '78%',
     borderWidth: 2,
-    borderRadius: 999,
-    backgroundColor: colors.surface,
+    borderRadius: 3,
   },
-  gearCenter: {
+  clipboardClip: {
     position: 'absolute',
-    width: '26%',
-    height: '26%',
+    top: '2%',
+    width: '42%',
+    height: '24%',
     borderWidth: 2,
-    borderRadius: 999,
+    borderRadius: 3,
     backgroundColor: colors.surface,
+  },
+  clipboardLineTop: {
+    position: 'absolute',
+    top: '43%',
+    width: '42%',
+    height: 2,
+    borderRadius: 1,
+  },
+  clipboardLineBottom: {
+    position: 'absolute',
+    top: '60%',
+    width: '42%',
+    height: 2,
+    borderRadius: 1,
   },
   scanIcon: {
     position: 'relative',
@@ -1047,6 +1070,28 @@ const styles = StyleSheet.create({
     height: 3,
     borderRadius: 2,
     transform: [{ rotate: '-45deg' }],
+  },
+  warningTriangle: {
+    width: '82%',
+    height: '82%',
+    borderLeftWidth: 2,
+    borderTopWidth: 2,
+    borderRadius: 3,
+    transform: [{ rotate: '45deg' }, { translateY: 3 }],
+  },
+  warningStem: {
+    position: 'absolute',
+    top: '28%',
+    width: 3,
+    height: '30%',
+    borderRadius: 2,
+  },
+  warningDot: {
+    position: 'absolute',
+    bottom: '18%',
+    width: 4,
+    height: 4,
+    borderRadius: 2,
   },
   imageIcon: {
     position: 'relative',

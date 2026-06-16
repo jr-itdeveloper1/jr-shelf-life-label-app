@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login / Company Selection - JR Label Cloud Wireframes</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fa;
+      --panel: #ffffff;
+      --ink: #101828;
+      --muted: #667085;
+      --line: #d0d5dd;
+      --accent: #b42318;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .shell {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+    .sidebar {
+      background: #101828;
+      color: #fff;
+      padding: 28px 20px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+    }
+    .brand {
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+    .sub {
+      color: #98a2b3;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 28px;
+    }
+    .nav-group {
+      color: #98a2b3;
+      font-size: 12px;
+      font-weight: 800;
+      margin: 24px 0 10px;
+      text-transform: uppercase;
+    }
+    .nav-link {
+      display: block;
+      color: #eaecf0;
+      padding: 9px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .nav-link.active,
+    .nav-link:hover {
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+    }
+    main {
+      padding: 32px;
+      min-width: 0;
+    }
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 1.2;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .button {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px 12px;
+      background: #fff;
+      color: #344054;
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .mockup {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 24px;
+    }
+    .mockup img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      border: 1px solid #eaecf0;
+      background: #fff;
+    }
+    .sections {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 16px;
+    }
+    .card ul {
+      margin: 0;
+      padding-left: 18px;
+      color: #475467;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .card p {
+      margin: 0;
+      color: #475467;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    @media (max-width: 900px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar { position: relative; height: auto; }
+      .sections { grid-template-columns: 1fr; }
+      main { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">JR Label Cloud</div>
+      <div class="sub">Wireframe Viewer / 页面示意图</div>
+      <a class="nav-link" href="../index.html">All Pages Index</a>
+      
+      <div class="nav-group">Site Admin Pages</div>
+      <a class="nav-link " href="site-admin-login.html">Login</a>
+<a class="nav-link " href="site-admin-dashboard.html">Site Admin Dashboard</a>
+<a class="nav-link " href="site-admin-company-list.html">Company List</a>
+<a class="nav-link " href="site-admin-company-detail.html">Company Detail</a>
+<a class="nav-link " href="site-admin-company-edit.html">Create/Edit Company</a>
+<a class="nav-link " href="site-admin-company-admin-users.html">Company Admin Users</a>
+<a class="nav-link " href="site-admin-global-audit-log.html">Global Audit Log</a>
+<a class="nav-link " href="site-admin-system-health-backups.html">System Health / Backups</a>
+    
+
+      <div class="nav-group">Company Admin Pages</div>
+      <a class="nav-link " href="company-admin-dashboard.html">Company Dashboard</a>
+<a class="nav-link " href="company-admin-outlet-list.html">Outlet List</a>
+<a class="nav-link " href="company-admin-outlet-detail.html">Outlet Detail</a>
+<a class="nav-link " href="company-admin-user-list.html">User List</a>
+<a class="nav-link " href="company-admin-user-detail-outlet-access.html">User Detail / Outlet Access</a>
+<a class="nav-link " href="company-admin-master-label-product-list.html">Master Label/Product List</a>
+<a class="nav-link " href="company-admin-product-detail.html">Product Detail</a>
+<a class="nav-link " href="company-admin-category-list.html">Category List</a>
+<a class="nav-link " href="company-admin-category-detail.html">Category Detail</a>
+<a class="nav-link " href="company-admin-outlet-product-availability-matrix.html">Outlet Product Availability Matrix</a>
+<a class="nav-link " href="company-admin-product-image-management.html">Product Image Management</a>
+<a class="nav-link " href="company-admin-import-export.html">Import/Export</a>
+<a class="nav-link " href="company-admin-company-audit-log.html">Company Audit Log</a>
+    
+
+      <div class="nav-group">Mobile Cloud-Sync Pages</div>
+      <a class="nav-link active" href="mobile-login-company-selection.html">Login / Company Selection</a>
+<a class="nav-link " href="mobile-outlet-selection-synced.html">Outlet Selection</a>
+<a class="nav-link " href="mobile-product-category-selection-cache-status.html">Category Selection</a>
+<a class="nav-link " href="mobile-product-grid-offline-ready.html">Product Grid Offline Ready</a>
+<a class="nav-link " href="mobile-product-detail-print-offline.html">Product Detail / Print Offline</a>
+<a class="nav-link " href="mobile-print-history-sync-status.html">Print History Sync Status</a>
+<a class="nav-link " href="mobile-sync-status-pending-uploads.html">Sync Status / Pending Uploads</a>
+<a class="nav-link " href="mobile-admin-local-device-settings.html">Local Device Settings Admin</a>
+    
+    </aside>
+    <main>
+      <div class="topbar">
+        <div>
+          <h1>Login / Company Selection</h1>
+          <div class="meta">Mobile Cloud-Sync Pages / SVG mockup and bilingual page spec</div>
+        </div>
+        <div class="actions">
+          <a class="button" href="../mobile-login-company-selection.md">Open Markdown</a>
+          <a class="button primary" href="../assets/mobile-login-company-selection.svg">Open SVG</a>
+        </div>
+      </div>
+      <section class="mockup">
+        <img src="../assets/mobile-login-company-selection.svg" alt="Login / Company Selection mockup">
+      </section>
+      <section class="sections">
+        <section class="card"><h2>Purpose / 页面目的</h2><p>Authenticate mobile users and choose company context. / 移动端登录并选择公司上下文。</p></section>
+<section class="card"><h2>Roles Allowed / 可访问角色</h2><ul><li>Company Admin</li><li>Outlet User</li></ul></section>
+<section class="card"><h2>Main Actions / 主要操作</h2><ul><li>Login with email/password</li><li>Store refresh token securely</li><li>Select company if multiple</li><li>Download initial cache</li></ul></section>
+<section class="card"><h2>Data Shown / 显示数据</h2><ul><li>User profile</li><li>Company list</li><li>Assigned outlets</li><li>Bootstrap status</li></ul></section>
+<section class="card"><h2>Empty/Error/Loading States / 空状态、错误、加载状态</h2><ul><li>Offline first launch blocked</li><li>Invalid login</li><li>Company disabled</li><li>Bootstrap complete</li></ul></section>
+<section class="card"><h2>Permissions / 权限规则</h2><ul><li>Outlet User sees assigned outlets only.</li><li>Tokens stored in SecureStore.</li><li>First login requires network.</li></ul></section>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

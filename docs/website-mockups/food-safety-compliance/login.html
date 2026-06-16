@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="public">
+  <div class="floating-language"><label class="language-select"><span>Language</span><select><option>English</option></select></label></div>
+  <main class="public-main">
+    <section class="login-layout">
+      <div class="login-panel">
+        <div class="eyebrow">JR Label Cloud</div>
+        <h1>Food safety label operations</h1>
+        <p>Manage companies, outlets, product labels, audit logs, and offline sync readiness.</p>
+        <div class="safety-list">
+          <span><span class="status ok">Cloud master data</span></span>
+          <span><span class="status warn">Offline print queue</span></span>
+          <span><span class="status ok">Audit trail enabled</span></span>
+        </div>
+      </div>
+      <form class="login-form">
+        <h2>Sign in</h2>
+        <label><span>Email</span><input value="admin@jrfoods.example"></label>
+        <label><span>Password</span><input type="password" value="password"></label>
+        <label><span>Open as</span><select id="loginRole"><option value="company-dashboard.html">Company Admin</option><option value="site-dashboard.html">Site Admin</option></select></label>
+        <button class="button primary full" type="button" data-login-submit>Sign in</button>
+        <button class="button ghost full" type="button" data-action="toast">Send password reset</button>
+      </form>
+    </section>
+  </main>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

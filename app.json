@@ -26,6 +26,7 @@
     },
     "android": {
       "package": "com.jrfoods.shelflifelabels",
+      "usesCleartextTraffic": true,
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "BLUETOOTH",
@@ -45,7 +46,8 @@
     },
     "plugins": [
       "expo-sqlite",
-      "expo-secure-store"
+      "expo-secure-store",
+      "@react-native-community/datetimepicker"
     ],
     "extra": {
       "eas": {

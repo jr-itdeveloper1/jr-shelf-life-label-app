@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Category List - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="company-dashboard.html"><span>Dashboard</span></a><a class="" href="company-outlets.html"><span>Outlets</span></a><a class="" href="company-users.html"><span>Users</span></a><a class="" href="company-products.html"><span>Products</span></a><a class="active" href="company-categories.html"><span>Categories</span></a><a class="" href="company-availability.html"><span>Availability</span></a><a class="" href="company-images.html"><span>Images</span></a><a class="" href="company-import-export.html"><span>Import/Export</span></a><a class="" href="company-audit-log.html"><span>Audit Log</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" selected>Company Admin</option>
+          <option value="site-dashboard.html" >Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Company Admin</div>
+        <h1>Category List</h1>
+        <p>Product categories and code prefixes</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar"><a class="button primary" href="company-category-detail.html">Create Category</a></div>
+    
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Categories</h2>
+        
+      </div>
+      
+    <div class="table-shell">
+      <input class="search-input" type="search" placeholder="Search categories..." data-table-filter="categories">
+      <table id="categories">
+        <thead>
+          <tr><th>Name</th><th>Prefix</th><th>Scope</th><th>Products</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          
+            <tr data-search="&lt;a href=&quot;company-category-detail.html&quot;&gt;Eggs&lt;/a&gt; EG Company 2 &lt;span class=&quot;status ok&quot;&gt;Active&lt;/span&gt; &lt;a href=&quot;company-category-detail.html&quot;&gt;Edit&lt;/a&gt;">
+              <td><a href="company-category-detail.html">Eggs</a></td><td>EG</td><td>Company</td><td>2</td><td><span class="status ok">Active</span></td><td><a href="company-category-detail.html">Edit</a></td>
+            </tr>
+          
+            <tr data-search="&lt;a href=&quot;company-category-detail.html&quot;&gt;Ready To Eat&lt;/a&gt; RTE Company 12 &lt;span class=&quot;status ok&quot;&gt;Active&lt;/span&gt; &lt;a href=&quot;company-category-detail.html&quot;&gt;Edit&lt;/a&gt;">
+              <td><a href="company-category-detail.html">Ready To Eat</a></td><td>RTE</td><td>Company</td><td>12</td><td><span class="status ok">Active</span></td><td><a href="company-category-detail.html">Edit</a></td>
+            </tr>
+          
+            <tr data-search="&lt;a href=&quot;company-category-detail.html&quot;&gt;Central Kitchen Custom&lt;/a&gt; CK Outlet 4 &lt;span class=&quot;status ok&quot;&gt;Active&lt;/span&gt; &lt;a href=&quot;company-category-detail.html&quot;&gt;Edit&lt;/a&gt;">
+              <td><a href="company-category-detail.html">Central Kitchen Custom</a></td><td>CK</td><td>Outlet</td><td>4</td><td><span class="status ok">Active</span></td><td><a href="company-category-detail.html">Edit</a></td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  
+    </section>
+  
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

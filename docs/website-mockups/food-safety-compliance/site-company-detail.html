@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Company Detail: JR Foods - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="site-dashboard.html"><span>Dashboard</span></a><a class="" href="site-companies.html"><span>Companies</span></a><a class="" href="site-company-admin-users.html"><span>Company Admins</span></a><a class="" href="site-audit-log.html"><span>Global Audit</span></a><a class="" href="site-system-health.html"><span>Health &amp; Backups</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" >Company Admin</option>
+          <option value="site-dashboard.html" selected>Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Site Admin</div>
+        <h1>Company Detail: JR Foods</h1>
+        <p>Tenant profile, sync summary, and admin access</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar"><a class="button primary" href="site-company-form.html">Edit Company</a><a class="button" href="site-company-admin-users.html">Open Company Admins</a><button class="button warn" data-action="confirm-danger">Disable Company</button></div>
+    <section class="metrics">
+      
+    <article class="metric">
+      <div class="metric-label">Status</div>
+      <div class="metric-value">Active</div>
+      <div class="metric-meta ok">company enabled</div>
+    </article>
+  
+      
+    <article class="metric">
+      <div class="metric-label">Outlets</div>
+      <div class="metric-value">12</div>
+      <div class="metric-meta ok">11 synced</div>
+    </article>
+  
+      
+    <article class="metric">
+      <div class="metric-label">Products</div>
+      <div class="metric-value">86</div>
+      <div class="metric-meta ok">active master labels</div>
+    </article>
+  
+      
+    <article class="metric">
+      <div class="metric-label">Storage</div>
+      <div class="metric-value">4.8 GB</div>
+      <div class="metric-meta ok">image storage</div>
+    </article>
+  
+    </section>
+    <section class="grid two">
+      
+    <section class="panel ">
+      <div class="panel-head">
+        <h2>Company Profile</h2>
+        
+      </div>
+      <div class="form-grid">
+    <label>
+      <span>Company Name</span>
+      <input value="JR Foods">
+    </label>
+  
+    <label>
+      <span>Company Code</span>
+      <input value="JRFOODS">
+    </label>
+  
+    <label>
+      <span>Status</span>
+      <select><option>Active</option><option>Active</option><option>Inactive</option><option>Disabled</option></select>
+    </label>
+  
+    <label>
+      <span>Primary Contact</span>
+      <input value="ops@jrfoods.example">
+    </label>
+  </div>
+    </section>
+  
+      
+    <section class="panel ">
+      <div class="panel-head">
+        <h2>Sync Risk Notes</h2>
+        
+      </div>
+      
+        <ul class="work-list">
+          <li><span>3 devices have pending print uploads</span><span class="status warn">Attention</span></li>
+          <li><span>Latest backup completed at 02:00</span><span class="status ok">Safe</span></li>
+          <li><span>No critical API errors today</span><span class="status ok">Safe</span></li>
+        </ul>
+      
+    </section>
+  
+    </section>
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

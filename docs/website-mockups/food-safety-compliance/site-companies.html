@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Companies - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="site-dashboard.html"><span>Dashboard</span></a><a class="active" href="site-companies.html"><span>Companies</span></a><a class="" href="site-company-admin-users.html"><span>Company Admins</span></a><a class="" href="site-audit-log.html"><span>Global Audit</span></a><a class="" href="site-system-health.html"><span>Health &amp; Backups</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" >Company Admin</option>
+          <option value="site-dashboard.html" selected>Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Site Admin</div>
+        <h1>Companies</h1>
+        <p>Create, inspect, disable, and reactivate tenant companies</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar"><a class="button primary" href="site-company-form.html">Create Company</a><button class="button" data-modal-target="inviteAdmin">Invite Admin</button><button class="button" data-action="toast">Export CSV</button></div>
+    
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Company Directory</h2>
+        
+      </div>
+      
+    <div class="table-shell">
+      <input class="search-input" type="search" placeholder="Filter by name, code, or status..." data-table-filter="companyDirectory">
+      <table id="companyDirectory">
+        <thead>
+          <tr><th>Company</th><th>Code</th><th>Status</th><th>Company Admins</th><th>Outlets</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          
+            <tr data-search="&lt;a href=&quot;site-company-detail.html&quot;&gt;JR Foods&lt;/a&gt; JRFOODS &lt;span class=&quot;status ok&quot;&gt;Active&lt;/span&gt; 3 12 &lt;a href=&quot;site-company-detail.html&quot;&gt;Open&lt;/a&gt;">
+              <td><a href="site-company-detail.html">JR Foods</a></td><td>JRFOODS</td><td><span class="status ok">Active</span></td><td>3</td><td>12</td><td><a href="site-company-detail.html">Open</a></td>
+            </tr>
+          
+            <tr data-search="&lt;a href=&quot;site-company-detail.html&quot;&gt;Demo Bakery&lt;/a&gt; DEMOBAK &lt;span class=&quot;status warn&quot;&gt;Setup&lt;/span&gt; 1 0 &lt;a href=&quot;site-company-form.html&quot;&gt;Edit&lt;/a&gt;">
+              <td><a href="site-company-detail.html">Demo Bakery</a></td><td>DEMOBAK</td><td><span class="status warn">Setup</span></td><td>1</td><td>0</td><td><a href="site-company-form.html">Edit</a></td>
+            </tr>
+          
+            <tr data-search="&lt;a href=&quot;site-company-detail.html&quot;&gt;Old Tenant&lt;/a&gt; OLDTEN &lt;span class=&quot;status danger&quot;&gt;Disabled&lt;/span&gt; 0 4 &lt;button class=&quot;link-button&quot; data-action=&quot;toast&quot;&gt;Reactivate&lt;/button&gt;">
+              <td><a href="site-company-detail.html">Old Tenant</a></td><td>OLDTEN</td><td><span class="status danger">Disabled</span></td><td>0</td><td>4</td><td><button class="link-button" data-action="toast">Reactivate</button></td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  
+    </section>
+  
+    
+    <div class="modal-backdrop" id="inviteAdmin" aria-hidden="true">
+      <div class="modal">
+        <div class="modal-head">
+          <h2>Invite Company Admin</h2>
+          <button class="icon-button" data-close-modal>&times;</button>
+        </div>
+        <div class="form-grid">
+    <label>
+      <span>Company</span>
+      <input value="JR Foods">
+    </label>
+  
+    <label>
+      <span>Admin Email</span>
+      <input value="new.admin@jrfoods.example">
+    </label>
+  
+    <label>
+      <span>Role</span>
+      <select><option>Company Admin</option><option>Active</option><option>Inactive</option><option>Disabled</option></select>
+    </label>
+  </div>
+        <div class="modal-actions">
+          <button class="button ghost" data-action="close-modal">Cancel</button>
+          <button class="button primary" data-action="save-modal">Save</button>
+        </div>
+      </div>
+    </div>
+  
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

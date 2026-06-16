@@ -75,8 +75,8 @@ Rules:
 - `sequence` should be a 3-digit zero-padded number, such as `001`, `002`, `010`.
 - The full product code should normally stay within 8 characters.
 - Product category prefixes must be unique within the company.
-- Outlet short codes must be unique within the company.
-- Outlet custom product categories should use the outlet short code as the product code prefix.
+- Outlet codes must be unique within the company.
+- Product codes should use the selected category prefix, not an outlet short-code prefix.
 
 Examples:
 

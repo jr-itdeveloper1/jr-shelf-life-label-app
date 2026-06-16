@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1440" height="960" viewBox="0 0 1440 960" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="960" fill="#f5f7fa"/>
+  <rect x="0" y="0" width="260" height="960" fill="#101828"/>
+  <text x="32" y="54" font-size="20" font-weight="900" fill="#ffffff">JR Label Cloud</text>
+  <text x="32" y="82" font-size="12" font-weight="700" fill="#98a2b3">Company Admin</text>
+  <rect x="20" y="102" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="128" font-size="14" font-weight="700" fill="#d0d5dd">Dashboard</text>
+<rect x="20" y="150" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="176" font-size="14" font-weight="700" fill="#d0d5dd">Outlets</text>
+<rect x="20" y="198" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="224" font-size="14" font-weight="700" fill="#d0d5dd">Users</text>
+<rect x="20" y="246" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="272" font-size="14" font-weight="700" fill="#d0d5dd">Products</text>
+<rect x="20" y="294" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="320" font-size="14" font-weight="700" fill="#d0d5dd">Categories</text>
+<rect x="20" y="342" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="368" font-size="14" font-weight="700" fill="#d0d5dd">Availability</text>
+<rect x="20" y="390" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="416" font-size="14" font-weight="700" fill="#d0d5dd">Images</text>
+<rect x="20" y="438" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="464" font-size="14" font-weight="700" fill="#d0d5dd">Import/Export</text>
+<rect x="20" y="486" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="512" font-size="14" font-weight="700" fill="#d0d5dd">Audit Log</text>
+  <rect x="260" y="0" width="1180" height="76" fill="#ffffff" stroke="#eaecf0"/>
+  <text x="300" y="45" font-size="24" font-weight="900" fill="#101828">Outlet List</text>
+  <rect x="1140" y="23" width="119" height="30" rx="15" fill="#fff1f0" stroke="#d0d5dd"/><text x="1154" y="43" font-size="12" font-weight="700" fill="#b42318">Company Admin</text>
+  <text x="300" y="116" font-size="15" font-weight="700" fill="#475467">Manage outlets, central kitchen, and production points. / 管理门店、中央厨房和生产点。</text>
+  
+  
+  <rect x="300" y="150" width="328" height="170" rx="8" fill="#ffffff" stroke="#d0d5dd"/>
+  <text x="320" y="184" font-size="16" font-weight="800" fill="#101828">Primary Tasks</text>
+  <text x="320" y="214" font-size="13" font-weight="500" fill="#475467">Create outlet</text>
+<text x="320" y="238" font-size="13" font-weight="500" fill="#475467">Search outlets</text>
+<text x="320" y="262" font-size="13" font-weight="500" fill="#475467">Open outlet detail</text>
+<text x="320" y="286" font-size="13" font-weight="500" fill="#475467">Disable outlet</text>
+  
+
+  <rect x="656" y="150" width="328" height="170" rx="8" fill="#ffffff" stroke="#d0d5dd"/>
+  <text x="676" y="184" font-size="16" font-weight="800" fill="#101828">Data Summary</text>
+  <text x="676" y="214" font-size="13" font-weight="500" fill="#475467">Outlet name</text>
+<text x="676" y="238" font-size="13" font-weight="500" fill="#475467">Code</text>
+<text x="676" y="262" font-size="13" font-weight="500" fill="#475467">Short code</text>
+<text x="676" y="286" font-size="13" font-weight="500" fill="#475467">Status</text>
+  
+
+  <rect x="1012" y="150" width="328" height="170" rx="8" fill="#ffffff" stroke="#d0d5dd"/>
+  <text x="1032" y="184" font-size="16" font-weight="800" fill="#101828">States</text>
+  <text x="1032" y="214" font-size="13" font-weight="500" fill="#475467">No outlets</text>
+<text x="1032" y="238" font-size="13" font-weight="500" fill="#475467">Duplicate short code</text>
+<text x="1032" y="262" font-size="13" font-weight="500" fill="#475467">Offline device warning</text>
+<text x="1032" y="286" font-size="13" font-weight="500" fill="#475467">Disabled outlet</text>
+  
+  
+  <rect x="300" y="358" width="1040" height="210" rx="8" fill="#ffffff" stroke="#d0d5dd"/>
+  <rect x="300" y="358" width="1040" height="42" rx="8" fill="#f9fafb" stroke="#d0d5dd"/>
+  <text x="316" y="386" font-size="12" font-weight="800" fill="#475467">Name</text>
+<text x="576" y="386" font-size="12" font-weight="800" fill="#475467">Status</text>
+<text x="836" y="386" font-size="12" font-weight="800" fill="#475467">Owner</text>
+<text x="1096" y="386" font-size="12" font-weight="800" fill="#475467">Last Updated</text>
+  
+      <rect x="300" y="400" width="1040" height="42" fill="#fcfcfd" stroke="#eaecf0"/>
+      <text x="316" y="427" font-size="12" font-weight="600" fill="#344054">Central Kitchen</text>
+<text x="576" y="427" font-size="12" font-weight="600" fill="#344054">Active</text>
+<text x="836" y="427" font-size="12" font-weight="600" fill="#344054">Company Admin</text>
+<text x="1096" y="427" font-size="12" font-weight="600" fill="#344054">Today 09:12</text>
+      
+
+      <rect x="300" y="442" width="1040" height="42" fill="#ffffff" stroke="#eaecf0"/>
+      <text x="316" y="469" font-size="12" font-weight="600" fill="#344054">Orchard Outlet</text>
+<text x="576" y="469" font-size="12" font-weight="600" fill="#344054">Active</text>
+<text x="836" y="469" font-size="12" font-weight="600" fill="#344054">Outlet Manager</text>
+<text x="1096" y="469" font-size="12" font-weight="600" fill="#344054">Today 08:41</text>
+      
+
+      <rect x="300" y="484" width="1040" height="42" fill="#fcfcfd" stroke="#eaecf0"/>
+      <text x="316" y="511" font-size="12" font-weight="600" fill="#344054">Tampines Outlet</text>
+<text x="576" y="511" font-size="12" font-weight="600" fill="#344054">Sync pending</text>
+<text x="836" y="511" font-size="12" font-weight="600" fill="#344054">Outlet User</text>
+<text x="1096" y="511" font-size="12" font-weight="600" fill="#344054">Yesterday 17:20</text>
+      
+
+      <rect x="300" y="526" width="1040" height="42" fill="#ffffff" stroke="#eaecf0"/>
+      <text x="316" y="553" font-size="12" font-weight="600" fill="#344054">Ready To Eat Labels</text>
+<text x="576" y="553" font-size="12" font-weight="600" fill="#344054">Active</text>
+<text x="836" y="553" font-size="12" font-weight="600" fill="#344054">System</text>
+<text x="1096" y="553" font-size="12" font-weight="600" fill="#344054">Yesterday 15:02</text>
+      
+  
+  <rect x="300" y="790" width="1040" height="112" rx="8" fill="#ffffff" stroke="#d0d5dd"/>
+  <text x="324" y="826" font-size="16" font-weight="900" fill="#101828">Permission Notes / 权限说明</text>
+  <text x="324" y="856" font-size="13" font-weight="600" fill="#475467">Outlet code and short code must be unique within company.</text>
+<text x="324" y="878" font-size="13" font-weight="600" fill="#475467">Disabled outlets are hidden from mobile login selection.</text>
+<text x="324" y="900" font-size="13" font-weight="600" fill="#475467">Existing print history remains.</text>
+</svg>

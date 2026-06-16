@@ -14,22 +14,26 @@ type Props = {
   outlet: Outlet;
   products: Product[];
   categories: ProductCategory[];
+  canChangeOutlet: boolean;
   onSelectCategory: (categoryId: string) => void;
   onChangeOutlet: () => void;
   onOpenTimestamp: () => void;
   onOpenAdmin: () => void;
   onOpenHistory: () => void;
+  onSignOut: () => void;
 };
 
 export function CategorySelectionScreen({
   outlet,
   products,
   categories,
+  canChangeOutlet,
   onSelectCategory,
   onChangeOutlet,
   onOpenTimestamp,
   onOpenAdmin,
   onOpenHistory,
+  onSignOut,
 }: Props) {
   const insets = useSafeAreaInsets();
   const categoryCounts = products.reduce((counts, product) => {
@@ -59,15 +63,17 @@ export function CategorySelectionScreen({
   return (
     <View style={[styles.container, { paddingTop: Math.max(insets.top + 12, 34) }]}>
       <View style={styles.header}>
-        <Pressable onLongPress={onOpenAdmin} delayLongPress={1200}>
+        <View>
           <Text style={styles.outletLabel}>Current Outlet</Text>
           <Text style={styles.outlet}>{outlet.name}</Text>
-        </Pressable>
+        </View>
         <View style={styles.headerActions}>
-          <Pressable style={styles.changeButton} onPress={onChangeOutlet}>
-            <AppIcon name="change" size={16} color={colors.primary} />
-            <Text style={styles.changeText}>Change</Text>
-          </Pressable>
+          {canChangeOutlet ? (
+            <Pressable style={styles.changeButton} onPress={onChangeOutlet}>
+              <AppIcon name="change" size={16} color={colors.primary} />
+              <Text style={styles.changeText}>Change</Text>
+            </Pressable>
+          ) : null}
           <Pressable style={styles.timestampButton} onPress={onOpenTimestamp}>
             <AppIcon name="history" size={16} color={colors.surface} />
             <Text style={styles.timestampText}>Timestamp</Text>
@@ -125,6 +131,14 @@ export function CategorySelectionScreen({
         <Pressable style={styles.navItem} onPress={onOpenHistory}>
           <AppIcon name="history" size={19} color={colors.textMuted} />
           <Text style={styles.navItemText}>History</Text>
+        </Pressable>
+        <Pressable style={styles.navItem} onPress={onOpenAdmin}>
+          <AppIcon name="admin" size={19} color={colors.textMuted} />
+          <Text style={styles.navItemText}>Manage</Text>
+        </Pressable>
+        <Pressable style={styles.navItem} onPress={onSignOut}>
+          <AppIcon name="signOut" size={19} color={colors.textMuted} />
+          <Text style={styles.navItemText}>Sign Out</Text>
         </Pressable>
       </View>
     </View>
@@ -257,7 +271,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   navItem: {
-    width: '50%',
+    width: '25%',
     alignItems: 'center',
     gap: 4,
     borderRadius: 8,

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Category Detail - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="company-dashboard.html"><span>Dashboard</span></a><a class="" href="company-outlets.html"><span>Outlets</span></a><a class="" href="company-users.html"><span>Users</span></a><a class="" href="company-products.html"><span>Products</span></a><a class="" href="company-categories.html"><span>Categories</span></a><a class="" href="company-availability.html"><span>Availability</span></a><a class="" href="company-images.html"><span>Images</span></a><a class="" href="company-import-export.html"><span>Import/Export</span></a><a class="" href="company-audit-log.html"><span>Audit Log</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" selected>Company Admin</option>
+          <option value="site-dashboard.html" >Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Company Admin</div>
+        <h1>Category Detail</h1>
+        <p>Category prefix and renumbering policy</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar"><button class="button primary" data-action="toast">Save Category</button><button class="button" data-modal-target="renumberPreview">Preview Renumber</button></div>
+    <section class="grid two">
+      
+    <section class="panel ">
+      <div class="panel-head">
+        <h2>Category Fields</h2>
+        
+      </div>
+      <div class="form-grid">
+    <label>
+      <span>Name</span>
+      <input value="Eggs">
+    </label>
+  
+    <label>
+      <span>Code Prefix</span>
+      <input value="EG">
+    </label>
+  
+    <label>
+      <span>Scope</span>
+      <select><option>Company</option><option>Active</option><option>Inactive</option><option>Disabled</option></select>
+    </label>
+  
+    <label>
+      <span>Status</span>
+      <select><option>Active</option><option>Active</option><option>Inactive</option><option>Disabled</option></select>
+    </label>
+  </div>
+    </section>
+  
+      
+    <section class="panel ">
+      <div class="panel-head">
+        <h2>Prefix Policy</h2>
+        
+      </div>
+      
+        <label class="check-row"><input type="radio" name="prefix" checked> Apply new prefix to future products only</label>
+        <label class="check-row"><input type="radio" name="prefix"> Renumber existing products after preview</label>
+        <div class="callout warn">Renumbering can affect scanned product codes and must be audited.</div>
+      
+    </section>
+  
+    </section>
+    
+    <div class="modal-backdrop" id="renumberPreview" aria-hidden="true">
+      <div class="modal">
+        <div class="modal-head">
+          <h2>Renumber Preview</h2>
+          <button class="icon-button" data-close-modal>&times;</button>
+        </div>
+        
+    <div class="table-shell">
+      
+      <table >
+        <thead>
+          <tr><th>Old Code</th><th>New Code</th><th>Product</th></tr>
+        </thead>
+        <tbody>
+          
+            <tr data-search="EG001 EGG001 Pasteurized Liquid Egg">
+              <td>EG001</td><td>EGG001</td><td>Pasteurized Liquid Egg</td>
+            </tr>
+          
+            <tr data-search="EG002 EGG002 Hard Boiled Egg">
+              <td>EG002</td><td>EGG002</td><td>Hard Boiled Egg</td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  
+        <div class="modal-actions">
+          <button class="button ghost" data-action="close-modal">Cancel</button>
+          <button class="button primary" data-action="save-modal">Save</button>
+        </div>
+      </div>
+    </div>
+  
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

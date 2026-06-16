@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Company Audit Log - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="company-dashboard.html"><span>Dashboard</span></a><a class="" href="company-outlets.html"><span>Outlets</span></a><a class="" href="company-users.html"><span>Users</span></a><a class="" href="company-products.html"><span>Products</span></a><a class="" href="company-categories.html"><span>Categories</span></a><a class="" href="company-availability.html"><span>Availability</span></a><a class="" href="company-images.html"><span>Images</span></a><a class="" href="company-import-export.html"><span>Import/Export</span></a><a class="active" href="company-audit-log.html"><span>Audit Log</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" selected>Company Admin</option>
+          <option value="site-dashboard.html" >Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Company Admin</div>
+        <h1>Company Audit Log</h1>
+        <p>Company-scoped admin changes and sync events</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar"><button class="button primary" data-action="toast">Export Audit CSV</button><button class="button" data-action="clear-filter">Clear Filters</button></div>
+    
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Audit Events</h2>
+        
+      </div>
+      
+    <div class="table-shell">
+      <input class="search-input" type="search" placeholder="Filter audit events..." data-table-filter="companyAudit">
+      <table id="companyAudit">
+        <thead>
+          <tr><th>Time</th><th>Actor</th><th>Action</th><th>Record</th><th>Before/After</th><th>Risk</th></tr>
+        </thead>
+        <tbody>
+          
+            <tr data-search="10:12 Grace Tan Updated shelf life Product EG001 1 day -&gt; 2 days &lt;span class=&quot;status warn&quot;&gt;Medium&lt;/span&gt;">
+              <td>10:12</td><td>Grace Tan</td><td>Updated shelf life</td><td>Product EG001</td><td>1 day -> 2 days</td><td><span class="status warn">Medium</span></td>
+            </tr>
+          
+            <tr data-search="09:58 Device CK-01 Uploaded print jobs PrintJob batch 12 jobs uploaded &lt;span class=&quot;status ok&quot;&gt;Low&lt;/span&gt;">
+              <td>09:58</td><td>Device CK-01</td><td>Uploaded print jobs</td><td>PrintJob batch</td><td>12 jobs uploaded</td><td><span class="status ok">Low</span></td>
+            </tr>
+          
+            <tr data-search="09:20 CK Shift Lead Printed label RTE002 10 labels &lt;span class=&quot;status ok&quot;&gt;Low&lt;/span&gt;">
+              <td>09:20</td><td>CK Shift Lead</td><td>Printed label</td><td>RTE002</td><td>10 labels</td><td><span class="status ok">Low</span></td>
+            </tr>
+          
+            <tr data-search="Yesterday Grace Tan Disabled product SE004 Active -&gt; Inactive &lt;span class=&quot;status danger&quot;&gt;High&lt;/span&gt;">
+              <td>Yesterday</td><td>Grace Tan</td><td>Disabled product</td><td>SE004</td><td>Active -> Inactive</td><td><span class="status danger">High</span></td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  
+    </section>
+  
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

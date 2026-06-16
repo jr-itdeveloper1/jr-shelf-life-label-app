@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1440" height="960" viewBox="0 0 1440 960" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="960" fill="#f5f7fa"/>
+  <rect x="0" y="0" width="260" height="960" fill="#101828"/>
+  <text x="32" y="54" font-size="20" font-weight="900" fill="#ffffff">JR Label Cloud</text>
+  <text x="32" y="82" font-size="12" font-weight="700" fill="#98a2b3">Company Admin</text>
+  <rect x="20" y="102" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="128" font-size="14" font-weight="700" fill="#d0d5dd">Dashboard</text>
+<rect x="20" y="150" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="176" font-size="14" font-weight="700" fill="#d0d5dd">Outlets</text>
+<rect x="20" y="198" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="224" font-size="14" font-weight="700" fill="#d0d5dd">Users</text>
+<rect x="20" y="246" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="272" font-size="14" font-weight="700" fill="#d0d5dd">Products</text>
+<rect x="20" y="294" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="320" font-size="14" font-weight="700" fill="#d0d5dd">Categories</text>
+<rect x="20" y="342" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="368" font-size="14" font-weight="700" fill="#d0d5dd">Availability</text>
+<rect x="20" y="390" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="416" font-size="14" font-weight="700" fill="#d0d5dd">Images</text>
+<rect x="20" y="438" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="464" font-size="14" font-weight="700" fill="#d0d5dd">Import/Export</text>
+<rect x="20" y="486" width="220" height="38" rx="6" fill="transparent"/><text x="40" y="512" font-size="14" font-weight="700" fill="#d0d5dd">Audit Log</text>
+  <rect x="260" y="0" width="1180" height="76" fill="#ffffff" stroke="#eaecf0"/>
+  <text x="300" y="45" font-size="24" font-weight="900" fill="#101828">Master Label/Product List</text>
+  <rect x="1140" y="23" width="119" height="30" rx="15" fill="#fff1f0" stroke="#d0d5dd"/><text x="1154" y="43" font-size="12" font-weight="700" fill="#b42318">Company Admin</text>
+  <text x="300" y="116" font-size="15" font-weight="700" fill="#475467">Company-owned master list for printable products and shelf-life rules. / 公司主标签/产品清单。</text>
+  
+  
+  <rect x="300" y="150" width="328" height="170" rx="8" fill="#ffffff" stroke="#d0d5dd"/>
+  <text x="320" y="184" font-size="16" font-weight="800" fill="#101828">Primary Tasks</text>
+  <text x="320" y="214" font-size="13" font-weight="500" fill="#475467">Create product</text>
+<text x="320" y="238" font-size="13" font-weight="500" fill="#475467">Search product code/name</text>
+<text x="320" y="262" font-size="13" font-weight="500" fill="#475467">Filter by category/status</text>
+<text x="320" y="286" font-size="13" font-weight="500" fill="#475467">Bulk import products</text>
+  
+
+  <rect x="656" y="150" width="328" height="170" rx="8" fill="#ffffff" stroke="#d0d5dd"/>
+  <text x="676" y="184" font-size="16" font-weight="800" fill="#101828">Data Summary</text>
+  <text x="676" y="214" font-size="13" font-weight="500" fill="#475467">Product code</text>
+<text x="676" y="238" font-size="13" font-weight="500" fill="#475467">English name</text>
+<text x="676" y="262" font-size="13" font-weight="500" fill="#475467">Chinese name</text>
+<text x="676" y="286" font-size="13" font-weight="500" fill="#475467">Shelf life</text>
+  
+
+  <rect x="1012" y="150" width="328" height="170" rx="8" fill="#ffffff" stroke="#d0d5dd"/>
+  <text x="1032" y="184" font-size="16" font-weight="800" fill="#101828">States</text>
+  <text x="1032" y="214" font-size="13" font-weight="500" fill="#475467">No products</text>
+<text x="1032" y="238" font-size="13" font-weight="500" fill="#475467">Invalid shelf life</text>
+<text x="1032" y="262" font-size="13" font-weight="500" fill="#475467">Duplicate product code</text>
+<text x="1032" y="286" font-size="13" font-weight="500" fill="#475467">Inactive product</text>
+  
+  
+  <rect x="300" y="358" width="1040" height="168" rx="8" fill="#ffffff" stroke="#d0d5dd"/>
+  <rect x="300" y="358" width="1040" height="42" rx="8" fill="#f9fafb" stroke="#d0d5dd"/>
+  <text x="316" y="386" font-size="12" font-weight="800" fill="#475467">Code</text>
+<text x="576" y="386" font-size="12" font-weight="800" fill="#475467">English Name</text>
+<text x="836" y="386" font-size="12" font-weight="800" fill="#475467">Chinese Name</text>
+<text x="1096" y="386" font-size="12" font-weight="800" fill="#475467">Shelf Life</text>
+  
+      <rect x="300" y="400" width="1040" height="42" fill="#fcfcfd" stroke="#eaecf0"/>
+      <text x="316" y="427" font-size="12" font-weight="600" fill="#344054">EG001</text>
+<text x="576" y="427" font-size="12" font-weight="600" fill="#344054">Pasteurized Liquid Egg</text>
+<text x="836" y="427" font-size="12" font-weight="600" fill="#344054">巴氏杀菌蛋液</text>
+<text x="1096" y="427" font-size="12" font-weight="600" fill="#344054">1 day</text>
+      
+
+      <rect x="300" y="442" width="1040" height="42" fill="#ffffff" stroke="#eaecf0"/>
+      <text x="316" y="469" font-size="12" font-weight="600" fill="#344054">RTE002</text>
+<text x="576" y="469" font-size="12" font-weight="600" fill="#344054">Cooked Food</text>
+<text x="836" y="469" font-size="12" font-weight="600" fill="#344054">熟食</text>
+<text x="1096" y="469" font-size="12" font-weight="600" fill="#344054">4 hours</text>
+      
+
+      <rect x="300" y="484" width="1040" height="42" fill="#fcfcfd" stroke="#eaecf0"/>
+      <text x="316" y="511" font-size="12" font-weight="600" fill="#344054">DY005</text>
+<text x="576" y="511" font-size="12" font-weight="600" fill="#344054">Butter / Margarine</text>
+<text x="836" y="511" font-size="12" font-weight="600" fill="#344054">黄油/牛油</text>
+<text x="1096" y="511" font-size="12" font-weight="600" fill="#344054">7 days</text>
+      
+  
+  <rect x="300" y="790" width="1040" height="112" rx="8" fill="#ffffff" stroke="#d0d5dd"/>
+  <text x="324" y="826" font-size="16" font-weight="900" fill="#101828">Permission Notes / 权限说明</text>
+  <text x="324" y="856" font-size="13" font-weight="600" fill="#475467">Product code unique within company.</text>
+<text x="324" y="878" font-size="13" font-weight="600" fill="#475467">Master products are server-owned.</text>
+<text x="324" y="900" font-size="13" font-weight="600" fill="#475467">Offline mobile app can print cached products but cannot edit master list.</text>
+</svg>

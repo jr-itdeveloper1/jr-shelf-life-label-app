@@ -108,10 +108,11 @@ export function AdminBackupExportScreen({
         (importData.categories?.length ?? 0) +
         (importData.outlets?.length ?? 0) +
         (importData.products?.length ?? 0) +
-        (importData.outletProducts?.length ?? 0);
+        (importData.outletProducts?.length ?? 0) +
+        (importData.printJobs?.length ?? 0);
 
       if (totalRows === 0) {
-        Alert.alert('No importable rows', 'No valid rows were found in Categories, Outlets, Products, or OutletProducts sheets.');
+        Alert.alert('No importable rows', 'No valid rows were found in Categories, Outlets, Products, OutletProducts, or PrintJobs sheets.');
         return;
       }
 
@@ -122,6 +123,7 @@ export function AdminBackupExportScreen({
         `${importData.outlets?.length ?? 0} outlets`,
         `${importData.products?.length ?? 0} products`,
         `${importData.outletProducts?.length ?? 0} outlet product settings`,
+        `${importData.printJobs?.length ?? 0} print jobs`,
       ].join(', ');
 
       setLastImportSummary(`${file.name}: ${summary}`);
@@ -170,7 +172,7 @@ export function AdminBackupExportScreen({
         <View style={styles.formatPanel}>
           <Text style={styles.pathTitle}>Excel Sheet Names</Text>
           <Text style={styles.pathText}>
-            Exported sheets: Categories, Outlets, Products, OutletProducts, PrintJobs. Import supports Categories, Outlets, Products, and OutletProducts.
+            Exported sheets: Categories, Outlets, Products, OutletProducts, PrintJobs. Import supports all exported sheets.
           </Text>
         </View>
 
@@ -234,12 +236,14 @@ function parseWorkbook(
     nextOutlets,
     nextProducts,
   );
+  const importedPrintJobs = parsePrintJobs(getSheetRows(workbook, ['PrintJobs', 'Print Jobs']));
 
   return {
     categories: importedCategories,
     outlets: importedOutlets,
     products: importedProducts,
     outletProducts: importedOutletProducts,
+    printJobs: importedPrintJobs,
   };
 }
 
@@ -326,6 +330,9 @@ function createExportWorkbook(data: {
     printerName: printJob.printerName ?? '',
     printerAddress: printJob.printerAddress ?? '',
     status: printJob.status,
+    syncStatus: printJob.syncStatus ?? 'pending',
+    syncedAt: printJob.syncedAt ?? '',
+    syncError: printJob.syncError ?? '',
   })));
 
   appendSheet(workbook, 'ExportInfo', [{
@@ -504,6 +511,43 @@ function parseOutletProducts(rows: SheetRow[], outlets: Outlet[], products: Prod
   });
 }
 
+function parsePrintJobs(rows: SheetRow[]): PrintJob[] {
+  return rows.flatMap((row) => {
+    const id = readCell(row, ['id']);
+    const outletId = readCell(row, ['outletId']);
+    const outletName = readCell(row, ['outletName']);
+    const productCode = readCell(row, ['productCode']);
+    const productNameEn = readCell(row, ['productNameEn']);
+    const printedAt = readCell(row, ['printedAt']);
+
+    if (!id || !outletId || !outletName || !productCode || !productNameEn || !printedAt) {
+      return [];
+    }
+
+    const syncStatus = parsePrintJobSyncStatus(readCell(row, ['syncStatus']));
+
+    return [{
+      id,
+      labelType: parsePrintJobLabelType(readCell(row, ['labelType'])),
+      outletId,
+      outletName,
+      productId: readCell(row, ['productId']),
+      productCode,
+      productNameEn,
+      productNameZh: readCell(row, ['productNameZh']),
+      quantity: toNonNegativeInt(readCell(row, ['quantity']), 1) || 1,
+      printedAt,
+      expiresAt: readCell(row, ['expiresAt']) || printedAt,
+      printerName: readCell(row, ['printerName']) || undefined,
+      printerAddress: readCell(row, ['printerAddress']) || undefined,
+      status: parsePrintJobStatus(readCell(row, ['status'])),
+      syncStatus,
+      syncedAt: syncStatus === 'synced' ? readCell(row, ['syncedAt']) || undefined : undefined,
+      syncError: syncStatus === 'failed' ? readCell(row, ['syncError']) || undefined : undefined,
+    }];
+  });
+}
+
 function SummaryRow({ label, value }: { label: string; value: number }) {
   return (
     <View style={styles.summaryRow}>
@@ -571,6 +615,27 @@ function readBoolean(row: SheetRow, aliases: string[], fallback: boolean) {
   }
 
   return ['1', 'true', 'yes', 'y', 'active', 'show', 'visible'].includes(value);
+}
+
+function parsePrintJobLabelType(value: string): PrintJob['labelType'] {
+  return value.toLowerCase() === 'timestamp' ? 'timestamp' : 'product';
+}
+
+function parsePrintJobStatus(value: string): PrintJob['status'] {
+  const normalizedValue = value.toLowerCase();
+
+  if (normalizedValue === 'failed') return 'failed';
+  if (normalizedValue === 'mock-saved') return 'mock-saved';
+  return 'printed';
+}
+
+function parsePrintJobSyncStatus(value: string): PrintJob['syncStatus'] {
+  const normalizedValue = value.toLowerCase();
+
+  if (normalizedValue === 'synced') return 'synced';
+  if (normalizedValue === 'syncing') return 'pending';
+  if (normalizedValue === 'failed') return 'failed';
+  return 'pending';
 }
 
 function toNonNegativeInt(value: string, fallback: number) {

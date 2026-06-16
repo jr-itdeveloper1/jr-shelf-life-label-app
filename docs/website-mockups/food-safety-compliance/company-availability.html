@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Outlet Product Availability Matrix - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="company-dashboard.html"><span>Dashboard</span></a><a class="" href="company-outlets.html"><span>Outlets</span></a><a class="" href="company-users.html"><span>Users</span></a><a class="" href="company-products.html"><span>Products</span></a><a class="" href="company-categories.html"><span>Categories</span></a><a class="active" href="company-availability.html"><span>Availability</span></a><a class="" href="company-images.html"><span>Images</span></a><a class="" href="company-import-export.html"><span>Import/Export</span></a><a class="" href="company-audit-log.html"><span>Audit Log</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" selected>Company Admin</option>
+          <option value="site-dashboard.html" >Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Company Admin</div>
+        <h1>Outlet Product Availability Matrix</h1>
+        <p>Enable or disable master products per outlet</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar"><button class="button primary" data-action="toast">Save Availability</button><button class="button" data-action="toast">Enable Category</button><button class="button warn" data-action="confirm-danger">Disable Selected</button></div>
+    
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Availability Matrix</h2>
+        
+      </div>
+      
+      <div class="matrix-controls">
+        <label><span>Outlet</span><select><option>Central Kitchen</option><option>Orchard Outlet</option><option>Tampines Outlet</option></select></label>
+        <label><span>Category</span><select><option>All categories</option><option>Eggs</option><option>Ready To Eat</option></select></label>
+      </div>
+      
+    <div class="table-shell">
+      <input class="search-input" type="search" placeholder="Search product availability..." data-table-filter="availability">
+      <table id="availability">
+        <thead>
+          <tr><th>Enabled</th><th>Code</th><th>Product</th><th>Category</th><th>Product Status</th></tr>
+        </thead>
+        <tbody>
+          
+            <tr data-search="&lt;label class=&quot;switch&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt;&lt;span&gt;&lt;/span&gt;&lt;/label&gt; EG001 Pasteurized Liquid Egg Eggs &lt;span class=&quot;status ok&quot;&gt;Active&lt;/span&gt;">
+              <td><label class="switch"><input type="checkbox" checked><span></span></label></td><td>EG001</td><td>Pasteurized Liquid Egg</td><td>Eggs</td><td><span class="status ok">Active</span></td>
+            </tr>
+          
+            <tr data-search="&lt;label class=&quot;switch&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt;&lt;span&gt;&lt;/span&gt;&lt;/label&gt; RTE002 Cooked Food Ready To Eat &lt;span class=&quot;status ok&quot;&gt;Active&lt;/span&gt;">
+              <td><label class="switch"><input type="checkbox" checked><span></span></label></td><td>RTE002</td><td>Cooked Food</td><td>Ready To Eat</td><td><span class="status ok">Active</span></td>
+            </tr>
+          
+            <tr data-search="&lt;label class=&quot;switch&quot;&gt;&lt;input type=&quot;checkbox&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;/label&gt; SE004 Sauces in Use Sauces &lt;span class=&quot;status danger&quot;&gt;Inactive&lt;/span&gt;">
+              <td><label class="switch"><input type="checkbox"><span></span></label></td><td>SE004</td><td>Sauces in Use</td><td>Sauces</td><td><span class="status danger">Inactive</span></td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  
+    
+    </section>
+  
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

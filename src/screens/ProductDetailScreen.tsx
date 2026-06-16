@@ -1,9 +1,11 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppIcon } from '../components/AppIcon';
 import { LabelPreview, type ProductLabelMode } from '../components/LabelPreview';
+import { PrinterReadinessBadge } from '../components/PrinterReadinessBadge';
+import { PrintProgressPopup, type PrintProgressStatus } from '../components/PrintProgressPopup';
 import { QuantitySelector } from '../components/QuantitySelector';
 import { StickyBackHeader } from '../components/StickyBackHeader';
 import { getProductImageSource } from '../data/productImages';
@@ -36,14 +38,47 @@ export function ProductDetailScreen({
 }: Props) {
   const insets = useSafeAreaInsets();
   const labelPreviewRef = useRef<View | null>(null);
+  const popupCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [openedAt] = useState(() => new Date());
   const [isPreparingPrint, setIsPreparingPrint] = useState(false);
   const [printError, setPrintError] = useState('');
+  const [printPopupStatus, setPrintPopupStatus] = useState<PrintProgressStatus>(null);
   const imageSource = getProductImageSource(product.imageUri);
   const shelfLifeText = `${product.daysToExpire} day(s) ${product.hoursToExpire} hour(s)`;
 
+  useEffect(() => {
+    return () => {
+      if (popupCloseTimerRef.current) {
+        clearTimeout(popupCloseTimerRef.current);
+      }
+    };
+  }, []);
+
+  const clearPopupCloseTimer = () => {
+    if (popupCloseTimerRef.current) {
+      clearTimeout(popupCloseTimerRef.current);
+      popupCloseTimerRef.current = null;
+    }
+  };
+
+  const showPrintResult = (
+    status: Exclude<PrintProgressStatus, 'printing' | null>,
+    durationMs: number,
+    onClosed?: () => void,
+  ) => {
+    clearPopupCloseTimer();
+    setPrintPopupStatus(status);
+    popupCloseTimerRef.current = setTimeout(() => {
+      popupCloseTimerRef.current = null;
+      setPrintPopupStatus(null);
+      onClosed?.();
+    }, durationMs);
+  };
+
   const savePrintJob = async () => {
     setPrintError('');
+    clearPopupCloseTimer();
+    setPrintPopupStatus('printing');
     setIsPreparingPrint(true);
     const now = new Date();
 
@@ -74,6 +109,7 @@ export function ProductDetailScreen({
         printerAddress: printResult.printerAddress,
         status: printResult.status,
       });
+      showPrintResult('success', 900);
     } finally {
       setIsPreparingPrint(false);
     }
@@ -99,12 +135,13 @@ export function ProductDetailScreen({
     const errorMessage = error instanceof Error
       ? error.message
       : 'Could not send the label to the Bluetooth printer. Check pairing and try again.';
-    setPrintError(errorMessage);
+    showPrintResult('warning', 1300, () => setPrintError(errorMessage));
   };
 
   return (
     <View style={styles.container}>
-      <StickyBackHeader label="< Products" onPress={onBack} />
+      <PrintProgressPopup status={printPopupStatus} />
+      <StickyBackHeader label="< Products" onPress={onBack} rightContent={<PrinterReadinessBadge />} />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={[styles.content, { paddingBottom: 112 }]}

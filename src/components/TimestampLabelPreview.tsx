@@ -7,17 +7,33 @@ import { colors } from '../theme/colors';
 
 type Props = {
   timestamp: Date;
+  labelLine: string;
   labelRef?: Ref<View>;
 };
 
-export function TimestampLabelPreview({ timestamp, labelRef }: Props) {
+export function TimestampLabelPreview({ timestamp, labelLine, labelRef }: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Timestamp Preview</Text>
       <View style={styles.previewFrame}>
         <View ref={labelRef} collapsable={false} style={styles.label}>
-          <View style={styles.topContent}>
-            <Text style={styles.timestampText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.48}>
+          <View style={styles.labelContent}>
+            <Text
+              style={styles.labelLineText}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.6}
+              allowFontScaling={false}
+            >
+              {labelLine}
+            </Text>
+            <Text
+              style={styles.timestampText}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.48}
+              allowFontScaling={false}
+            >
               {formatLabelDateOnly(timestamp)} {formatLabelTime(timestamp)}
             </Text>
           </View>
@@ -49,22 +65,30 @@ const styles = StyleSheet.create({
   label: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     backgroundColor: colors.surface,
     paddingHorizontal: 12,
-    paddingVertical: 4,
+    paddingVertical: 8,
   },
-  topContent: {
+  labelContent: {
     width: '100%',
-    height: '50%',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 2,
+    gap: 1,
+  },
+  labelLineText: {
+    width: '100%',
+    color: '#000000',
+    fontSize: 18,
+    fontWeight: '700',
+    lineHeight: 22,
+    textAlign: 'center',
   },
   timestampText: {
+    width: '100%',
     color: '#000000',
     fontSize: 24,
-    fontWeight: '500',
+    fontWeight: '700',
     lineHeight: 28,
     textAlign: 'center',
   },

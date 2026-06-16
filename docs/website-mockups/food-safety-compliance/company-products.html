@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Master Label/Product List - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="company-dashboard.html"><span>Dashboard</span></a><a class="" href="company-outlets.html"><span>Outlets</span></a><a class="" href="company-users.html"><span>Users</span></a><a class="active" href="company-products.html"><span>Products</span></a><a class="" href="company-categories.html"><span>Categories</span></a><a class="" href="company-availability.html"><span>Availability</span></a><a class="" href="company-images.html"><span>Images</span></a><a class="" href="company-import-export.html"><span>Import/Export</span></a><a class="" href="company-audit-log.html"><span>Audit Log</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" selected>Company Admin</option>
+          <option value="site-dashboard.html" >Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Company Admin</div>
+        <h1>Master Label/Product List</h1>
+        <p>Company-owned printable product and shelf-life rules</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar"><a class="button primary" href="company-product-detail.html">Create Product</a><a class="button" href="company-import-export.html">Bulk Import</a><button class="button" data-action="toast">Export Products</button></div>
+    
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Products</h2>
+        
+      </div>
+      
+    <div class="table-shell">
+      <input class="search-input" type="search" placeholder="Search product code, English, Chinese, storage..." data-table-filter="products">
+      <table id="products">
+        <thead>
+          <tr><th>Code</th><th>English Name</th><th>Chinese Name</th><th>Shelf Life</th><th>Storage</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          
+            <tr data-search="&lt;a href=&quot;company-product-detail.html&quot;&gt;EG001&lt;/a&gt; Pasteurized Liquid Egg Chinese name stored 1 day Chilled &lt;span class=&quot;status ok&quot;&gt;Active&lt;/span&gt;">
+              <td><a href="company-product-detail.html">EG001</a></td><td>Pasteurized Liquid Egg</td><td>Chinese name stored</td><td>1 day</td><td>Chilled</td><td><span class="status ok">Active</span></td>
+            </tr>
+          
+            <tr data-search="&lt;a href=&quot;company-product-detail.html&quot;&gt;RTE002&lt;/a&gt; Cooked Food Chinese name stored 4 hours Hot &lt;span class=&quot;status ok&quot;&gt;Active&lt;/span&gt;">
+              <td><a href="company-product-detail.html">RTE002</a></td><td>Cooked Food</td><td>Chinese name stored</td><td>4 hours</td><td>Hot</td><td><span class="status ok">Active</span></td>
+            </tr>
+          
+            <tr data-search="&lt;a href=&quot;company-product-detail.html&quot;&gt;DY005&lt;/a&gt; Butter<td><a href="company-product-detail.html">DY005</a></td><td>Butter / Margarine</td><td>Chinese name stored</td><td>7 days</td><td>Chilled</td><td><span class="status warn">Missing image</span></td>
+            </tr>
+          
+            <tr data-search="&lt;a href=&quot;company-product-detail.html&quot;&gt;SE004&lt;/a&gt; Sauces in Use Chinese name stored 1 day Ambient &lt;span class=&quot;status danger&quot;&gt;Inactive&lt;/span&gt;">
+              <td><a href="company-product-detail.html">SE004</a></td><td>Sauces in Use</td><td>Chinese name stored</td><td>1 day</td><td>Ambient</td><td><span class="status danger">Inactive</span></td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  
+    </section>
+  
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

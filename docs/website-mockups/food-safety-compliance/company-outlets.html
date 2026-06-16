@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Outlets - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="company-dashboard.html"><span>Dashboard</span></a><a class="active" href="company-outlets.html"><span>Outlets</span></a><a class="" href="company-users.html"><span>Users</span></a><a class="" href="company-products.html"><span>Products</span></a><a class="" href="company-categories.html"><span>Categories</span></a><a class="" href="company-availability.html"><span>Availability</span></a><a class="" href="company-images.html"><span>Images</span></a><a class="" href="company-import-export.html"><span>Import/Export</span></a><a class="" href="company-audit-log.html"><span>Audit Log</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" selected>Company Admin</option>
+          <option value="site-dashboard.html" >Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Company Admin</div>
+        <h1>Outlets</h1>
+        <p>Manage shops, kitchens, and production points</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar"><button class="button primary" data-modal-target="outletModal">Create Outlet</button><button class="button" data-action="toast">Export Outlets</button></div>
+    
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Outlet Directory</h2>
+        
+      </div>
+      
+    <div class="table-shell">
+      <input class="search-input" type="search" placeholder="Search outlets..." data-table-filter="outlets">
+      <table id="outlets">
+        <thead>
+          <tr><th>Outlet</th><th>Code</th><th>Short Code</th><th>Status</th><th>Last Sync</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          
+            <tr data-search="&lt;a href=&quot;company-outlet-detail.html&quot;&gt;Central Kitchen&lt;/a&gt; OUT-CK CK &lt;span class=&quot;status ok&quot;&gt;Active&lt;/span&gt; 2 min ago &lt;a href=&quot;company-outlet-detail.html&quot;&gt;Open&lt;/a&gt;">
+              <td><a href="company-outlet-detail.html">Central Kitchen</a></td><td>OUT-CK</td><td>CK</td><td><span class="status ok">Active</span></td><td>2 min ago</td><td><a href="company-outlet-detail.html">Open</a></td>
+            </tr>
+          
+            <tr data-search="&lt;a href=&quot;company-outlet-detail.html&quot;&gt;Orchard Outlet&lt;/a&gt; OUT-ORC ORC &lt;span class=&quot;status ok&quot;&gt;Active&lt;/span&gt; 5 min ago &lt;a href=&quot;company-outlet-detail.html&quot;&gt;Open&lt;/a&gt;">
+              <td><a href="company-outlet-detail.html">Orchard Outlet</a></td><td>OUT-ORC</td><td>ORC</td><td><span class="status ok">Active</span></td><td>5 min ago</td><td><a href="company-outlet-detail.html">Open</a></td>
+            </tr>
+          
+            <tr data-search="&lt;a href=&quot;company-outlet-detail.html&quot;&gt;Tampines Outlet&lt;/a&gt; OUT-TMP TMP &lt;span class=&quot;status warn&quot;&gt;Sync Pending&lt;/span&gt; Yesterday &lt;a href=&quot;company-outlet-detail.html&quot;&gt;Open&lt;/a&gt;">
+              <td><a href="company-outlet-detail.html">Tampines Outlet</a></td><td>OUT-TMP</td><td>TMP</td><td><span class="status warn">Sync Pending</span></td><td>Yesterday</td><td><a href="company-outlet-detail.html">Open</a></td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  
+    </section>
+  
+    
+    <div class="modal-backdrop" id="outletModal" aria-hidden="true">
+      <div class="modal">
+        <div class="modal-head">
+          <h2>Create Outlet</h2>
+          <button class="icon-button" data-close-modal>&times;</button>
+        </div>
+        <div class="form-grid">
+    <label>
+      <span>Outlet Name</span>
+      <input value="New Outlet">
+    </label>
+  
+    <label>
+      <span>Outlet Code</span>
+      <input value="OUT-NEW">
+    </label>
+  
+    <label>
+      <span>Short Code</span>
+      <input value="NEW">
+    </label>
+  
+    <label>
+      <span>Status</span>
+      <select><option>Active</option><option>Active</option><option>Inactive</option><option>Disabled</option></select>
+    </label>
+  </div>
+        <div class="modal-actions">
+          <button class="button ghost" data-action="close-modal">Cancel</button>
+          <button class="button primary" data-action="save-modal">Save</button>
+        </div>
+      </div>
+    </div>
+  
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Print Analytics - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="company-dashboard.html"><span>Dashboard</span></a><a class="" href="company-outlets.html"><span>Outlets</span></a><a class="" href="company-users.html"><span>Users</span></a><a class="" href="company-products.html"><span>Products</span></a><a class="" href="company-categories.html"><span>Categories</span></a><a class="" href="company-availability.html"><span>Availability</span></a><a class="" href="company-images.html"><span>Images</span></a><a class="" href="company-import-export.html"><span>Import/Export</span></a><a class="" href="company-audit-log.html"><span>Audit Log</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" selected>Company Admin</option>
+          <option value="site-dashboard.html">Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Company Admin</div>
+        <h1>Print Analytics</h1>
+        <p>Monthly sticker totals by outlet, label type, and printer snapshot</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar">
+      <button class="button primary" data-action="toast">Export Monthly Report</button>
+      <button class="button" data-action="toast">Schedule Email Report</button>
+      <button class="button" data-action="toast">Clear Filters</button>
+    </div>
+    <section class="metrics">
+      <article class="metric"><div class="metric-label">June Labels</div><div class="metric-value">8,420</div><div class="metric-meta">all outlets</div></article>
+      <article class="metric"><div class="metric-label">Product Stickers</div><div class="metric-value">6,880</div><div class="metric-meta">81.7%</div></article>
+      <article class="metric"><div class="metric-label">Timestamp Stickers</div><div class="metric-value">1,540</div><div class="metric-meta warn">18.3%</div></article>
+      <article class="metric"><div class="metric-label">Failed Jobs</div><div class="metric-value">23</div><div class="metric-meta warn">0.27%</div></article>
+    </section>
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Monthly Sticker Totals By Outlet</h2>
+        <div class="matrix-controls compact">
+          <label><span>Month</span><select><option>June 2026</option><option>May 2026</option><option>April 2026</option></select></label>
+          <label><span>Label Type</span><select><option>All label types</option><option>Product Label 60x40</option><option>Compact Product Label 40x20</option><option>Timestamp Label 40x30</option></select></label>
+        </div>
+      </div>
+      <div class="table-shell">
+        <input class="search-input" type="search" placeholder="Search outlet or label type..." data-table-filter="monthlyStickerTotals">
+        <table id="monthlyStickerTotals">
+          <thead>
+            <tr><th>Outlet</th><th>Product 60x40</th><th>Compact 40x20</th><th>Timestamp 40x30</th><th>Total Stickers</th><th>Top Printer</th></tr>
+          </thead>
+          <tbody>
+            <tr data-search="Central Kitchen Product 60x40 Compact 40x20 Timestamp 40x30 M324F-CK">
+              <td>Central Kitchen</td><td>2,184</td><td>940</td><td>388</td><td><strong>3,512</strong></td><td>M324F-CK</td>
+            </tr>
+            <tr data-search="Orchard Outlet Product 60x40 Compact 40x20 Timestamp 40x30 Gainscha-ORC">
+              <td>Orchard Outlet</td><td>1,336</td><td>512</td><td>420</td><td><strong>2,268</strong></td><td>Gainscha-ORC</td>
+            </tr>
+            <tr data-search="Tampines Outlet Product 60x40 Compact 40x20 Timestamp 40x30 M324F-TMP">
+              <td>Tampines Outlet</td><td>1,104</td><td>361</td><td>292</td><td><strong>1,757</strong></td><td>M324F-TMP</td>
+            </tr>
+            <tr data-search="Jurong Outlet Product 60x40 Compact 40x20 Timestamp 40x30 M324F-JUR">
+              <td>Jurong Outlet</td><td>712</td><td>276</td><td>145</td><td><strong>1,133</strong></td><td>M324F-JUR</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section class="grid two">
+      <section class="panel">
+        <div class="panel-head"><h2>Label Type Trend</h2></div>
+        <div class="stack-bars">
+          <div><span style="height:82%"></span><small>Product</small></div>
+          <div><span style="height:47%"></span><small>Compact</small></div>
+          <div><span style="height:31%"></span><small>Timestamp</small></div>
+          <div><span style="height:12%"></span><small>Failed</small></div>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>PrintJob Fields For Reporting</h2></div>
+        <ul class="work-list">
+          <li><span>labelType: product, compact_product, timestamp</span><span class="status ok">Required</span></li>
+          <li><span>labelSize: 60x40, 40x20, 40x30</span><span class="status ok">Required</span></li>
+          <li><span>printerName and printerMacAddress snapshot</span><span class="status ok">Required</span></li>
+          <li><span>outletId, printedAt month, quantity</span><span class="status ok">Required</span></li>
+        </ul>
+      </section>
+    </section>
+</main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

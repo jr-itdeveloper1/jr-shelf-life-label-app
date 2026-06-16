@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { getProductImageSource } from '../data/productImages';
@@ -10,8 +11,8 @@ type Props = {
   mode?: 'compact' | 'regular';
 };
 
-export function ProductTile({ product, onPress, mode = 'compact' }: Props) {
-  const imageSource = getProductImageSource(product.imageUri);
+export const ProductTile = memo(function ProductTile({ product, onPress, mode = 'compact' }: Props) {
+  const imageSource = useMemo(() => getProductImageSource(product.imageUri), [product.imageUri]);
 
   if (mode === 'regular') {
     return (
@@ -68,10 +69,13 @@ export function ProductTile({ product, onPress, mode = 'compact' }: Props) {
           {product.nameZh}
         </Text>
       </View>
+      <Text style={styles.code} numberOfLines={1}>
+        {product.productCode}
+      </Text>
       <View style={styles.tapHint} />
     </Pressable>
   );
-}
+});
 
 const styles = StyleSheet.create({
   compactCard: {
@@ -88,6 +92,7 @@ const styles = StyleSheet.create({
   },
   compactBody: {
     gap: 4,
+    paddingRight: 58,
   },
   name: {
     color: colors.text,
@@ -111,10 +116,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primarySoft,
   },
   code: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    maxWidth: 56,
+    overflow: 'hidden',
+    borderRadius: 999,
+    backgroundColor: colors.surfaceMuted,
     color: colors.textMuted,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
     fontSize: 9,
     fontWeight: '900',
-    flexShrink: 0,
+    textAlign: 'center',
   },
   regularCard: {
     flex: 1,

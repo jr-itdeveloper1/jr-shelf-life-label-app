@@ -1,7 +1,8 @@
 import { Camera, CameraView } from 'expo-camera';
 import type { BarcodeType } from 'expo-camera';
-import { useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { Alert, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import type { ListRenderItemInfo } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppIcon } from '../components/AppIcon';
@@ -17,12 +18,16 @@ type Props = {
   categoryName: string;
   categoryColor: string;
   viewMode: ProductViewMode;
+  canChangeOutlet: boolean;
+  canChangeCategory: boolean;
   onChangeViewMode: (viewMode: ProductViewMode) => void;
   onSelectProduct: (product: Product) => void;
-  onChangeCategory: () => void;
   onChangeOutlet: () => void;
+  onChangeCategory: () => void;
   onOpenAdmin: () => void;
   onOpenHistory: () => void;
+  onOpenTimestamp: () => void;
+  onSignOut: () => void;
 };
 
 export function ProductGridScreen({
@@ -31,27 +36,51 @@ export function ProductGridScreen({
   categoryName,
   categoryColor,
   viewMode,
+  canChangeOutlet,
+  canChangeCategory,
   onChangeViewMode,
   onSelectProduct,
-  onChangeCategory,
   onChangeOutlet,
+  onChangeCategory,
   onOpenAdmin,
   onOpenHistory,
+  onOpenTimestamp,
+  onSignOut,
 }: Props) {
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const productColumns = 2;
 
-  const filteredProducts = products.filter((product) => matchesSearch(product, searchQuery));
-  const productCountText =
-    searchQuery.trim().length > 0 ? `${filteredProducts.length} of ${products.length} products` : `${products.length} products`;
-  const productGridItems: Array<Product | null> =
-    filteredProducts.length % productColumns === 0 ? filteredProducts : [...filteredProducts, null];
-  const toolbarTint = getReadableButtonColor(categoryColor);
-  const toolbarSoftBackground = toRgba(categoryColor, 0.12);
-  const toolbarBorder = toRgba(categoryColor, 0.32);
-  const toolbarRipple = toRgba(categoryColor, 0.2);
-  const handleScan = async () => {
+  const trimmedSearchQuery = searchQuery.trim();
+  const filteredProducts = useMemo(
+    () => products.filter((product) => matchesSearch(product, searchQuery)),
+    [products, searchQuery],
+  );
+  const productCountText = useMemo(
+    () =>
+      trimmedSearchQuery.length > 0
+        ? `${filteredProducts.length} of ${products.length} products`
+        : `${products.length} products`,
+    [filteredProducts.length, products.length, trimmedSearchQuery.length],
+  );
+  const productGridItems: Array<Product | null> = useMemo(
+    () => (filteredProducts.length % productColumns === 0 ? filteredProducts : [...filteredProducts, null]),
+    [filteredProducts],
+  );
+  const toolbarTint = useMemo(() => getReadableButtonColor(categoryColor), [categoryColor]);
+  const toolbarSoftBackground = useMemo(() => toRgba(categoryColor, 0.12), [categoryColor]);
+  const toolbarBorder = useMemo(() => toRgba(categoryColor, 0.32), [categoryColor]);
+  const toolbarRipple = useMemo(() => toRgba(categoryColor, 0.2), [categoryColor]);
+  const keyExtractor = useCallback((product: Product | null, index: number) => product?.id ?? `empty-${index}`, []);
+  const renderProductItem = useCallback(
+    ({ item }: ListRenderItemInfo<Product | null>) => (
+      <ProductGridItem product={item} viewMode={viewMode} onSelectProduct={onSelectProduct} />
+    ),
+    [onSelectProduct, viewMode],
+  );
+  const handleCompactModePress = useCallback(() => onChangeViewMode('compact'), [onChangeViewMode]);
+  const handleRegularModePress = useCallback(() => onChangeViewMode('regular'), [onChangeViewMode]);
+  const handleScan = useCallback(async () => {
     const permission = await Camera.requestCameraPermissionsAsync();
 
     if (!permission.granted) {
@@ -83,21 +112,23 @@ export function ProductGridScreen({
       subscription?.remove();
       Alert.alert('Scan Error', error instanceof Error ? error.message : 'Unable to open scanner.');
     }
-  };
+  }, [onSelectProduct, products]);
 
   return (
     <View style={[styles.container, { paddingTop: Math.max(insets.top + 12, 34) }]}>
       <View style={styles.topBar}>
-        <Pressable style={styles.outletBlock} onLongPress={onOpenAdmin} delayLongPress={1200}>
+        <View style={styles.outletBlock}>
           <Text style={styles.outletLabel}>Outlet</Text>
           <Text style={styles.outletLine} numberOfLines={1}>
             {outlet.name}
           </Text>
-        </Pressable>
-        <Pressable style={styles.changeOutletButton} onPress={onChangeOutlet}>
-          <AppIcon name="change" size={14} color={colors.primaryDark} />
-          <Text style={styles.changeText}>Outlet</Text>
-        </Pressable>
+        </View>
+        {canChangeOutlet ? (
+          <Pressable style={styles.outletChangeButton} onPress={onChangeOutlet}>
+            <AppIcon name="change" size={16} color={colors.primary} />
+            <Text style={styles.outletChangeText}>Change</Text>
+          </Pressable>
+        ) : null}
       </View>
 
       <View style={styles.categoryBar}>
@@ -108,19 +139,31 @@ export function ProductGridScreen({
           </Text>
           <Text style={styles.categoryMeta}>{productCountText}</Text>
         </View>
-        <Pressable
-          style={[
-            styles.categoryButton,
-            {
-              backgroundColor: toolbarSoftBackground,
-              borderColor: toolbarBorder,
-            },
-          ]}
-          onPress={onChangeCategory}
-          android_ripple={{ color: toolbarRipple, borderless: false }}
-        >
-          <Text style={[styles.categoryButtonText, { color: toolbarTint }]}>Change</Text>
-        </Pressable>
+        <View style={styles.categoryActions}>
+          {canChangeCategory ? (
+            <Pressable
+              style={[
+                styles.categoryButton,
+                {
+                  backgroundColor: toolbarSoftBackground,
+                  borderColor: toolbarBorder,
+                },
+              ]}
+              onPress={onChangeCategory}
+              android_ripple={{ color: toolbarRipple, borderless: false }}
+            >
+              <Text style={[styles.categoryButtonText, { color: toolbarTint }]}>Change</Text>
+            </Pressable>
+          ) : null}
+          <Pressable
+            style={styles.timestampButton}
+            onPress={onOpenTimestamp}
+            android_ripple={{ color: 'rgba(255, 255, 255, 0.18)', borderless: false }}
+          >
+            <AppIcon name="history" size={14} color={colors.surface} />
+            <Text style={styles.timestampText}>Timestamp</Text>
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.controlBar}>
@@ -130,7 +173,7 @@ export function ProductGridScreen({
               styles.modeOption,
               viewMode === 'compact' ? styles.modeOptionActive : styles.modeOptionInactive,
             ]}
-            onPress={() => onChangeViewMode('compact')}
+            onPress={handleCompactModePress}
             android_ripple={{ color: 'rgba(15, 118, 110, 0.16)', borderless: false }}
           >
             <Text style={viewMode === 'compact' ? styles.modeOptionTextActive : styles.modeOptionTextInactive}>
@@ -142,7 +185,7 @@ export function ProductGridScreen({
               styles.modeOption,
               viewMode === 'regular' ? styles.modeOptionActive : styles.modeOptionInactive,
             ]}
-            onPress={() => onChangeViewMode('regular')}
+            onPress={handleRegularModePress}
             android_ripple={{ color: 'rgba(15, 118, 110, 0.16)', borderless: false }}
           >
             <Text style={viewMode === 'regular' ? styles.modeOptionTextActive : styles.modeOptionTextInactive}>
@@ -183,19 +226,18 @@ export function ProductGridScreen({
         <FlatList
           key={viewMode}
           data={productGridItems}
-          keyExtractor={(product, index) => product?.id ?? `empty-${index}`}
+          keyExtractor={keyExtractor}
           numColumns={productColumns}
           columnWrapperStyle={styles.productRow}
           contentContainerStyle={styles.productGrid}
+          initialNumToRender={12}
+          maxToRenderPerBatch={12}
           keyboardShouldPersistTaps="handled"
+          removeClippedSubviews
           showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <View style={styles.productCell}>
-              {item ? (
-                <ProductTile product={item} mode={viewMode} onPress={() => onSelectProduct(item)} />
-              ) : null}
-            </View>
-          )}
+          updateCellsBatchingPeriod={40}
+          windowSize={7}
+          renderItem={renderProductItem}
         />
       )}
 
@@ -207,6 +249,14 @@ export function ProductGridScreen({
         <Pressable style={styles.navItem} onPress={onOpenHistory}>
           <AppIcon name="history" size={19} color={colors.textMuted} />
           <Text style={styles.navItemText}>History</Text>
+        </Pressable>
+        <Pressable style={styles.navItem} onPress={onOpenAdmin}>
+          <AppIcon name="admin" size={19} color={colors.textMuted} />
+          <Text style={styles.navItemText}>Manage</Text>
+        </Pressable>
+        <Pressable style={styles.navItem} onPress={onSignOut}>
+          <AppIcon name="signOut" size={19} color={colors.textMuted} />
+          <Text style={styles.navItemText}>Sign Out</Text>
         </Pressable>
       </View>
     </View>
@@ -230,6 +280,22 @@ const styles = StyleSheet.create({
   outletBlock: {
     flex: 1,
   },
+  outletChangeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  outletChangeText: {
+    color: colors.primary,
+    fontSize: 12,
+    fontWeight: '900',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -249,18 +315,6 @@ const styles = StyleSheet.create({
   outlet: {
     color: colors.textMuted,
     fontSize: 15,
-    fontWeight: '900',
-  },
-  changeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    paddingHorizontal: 4,
-    paddingVertical: 6,
-  },
-  changeText: {
-    color: colors.primaryDark,
-    fontSize: 12,
     fontWeight: '900',
   },
   categoryBar: {
@@ -302,17 +356,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
   },
-  changeOutletButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-  },
   controlBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -320,8 +363,12 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 10,
   },
+  categoryActions: {
+    alignItems: 'stretch',
+    gap: 7,
+  },
   categoryButton: {
-    minWidth: 78,
+    minWidth: 102,
     alignItems: 'center',
     borderRadius: 8,
     borderWidth: 1,
@@ -330,6 +377,22 @@ const styles = StyleSheet.create({
   },
   categoryButtonText: {
     color: colors.primaryDark,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  timestampButton: {
+    minWidth: 102,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    borderRadius: 8,
+    backgroundColor: colors.primaryDark,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  timestampText: {
+    color: colors.surface,
     fontSize: 12,
     fontWeight: '900',
   },
@@ -461,7 +524,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   navItem: {
-    width: '50%',
+    width: '25%',
     alignItems: 'center',
     gap: 4,
     borderRadius: 8,
@@ -478,6 +541,30 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontWeight: '900',
   },
+});
+
+type ProductGridItemProps = {
+  product: Product | null;
+  viewMode: ProductViewMode;
+  onSelectProduct: (product: Product) => void;
+};
+
+const ProductGridItem = memo(function ProductGridItem({
+  product,
+  viewMode,
+  onSelectProduct,
+}: ProductGridItemProps) {
+  const handlePress = useCallback(() => {
+    if (product) {
+      onSelectProduct(product);
+    }
+  }, [onSelectProduct, product]);
+
+  return (
+    <View style={styles.productCell}>
+      {product ? <ProductTile product={product} mode={viewMode} onPress={handlePress} /> : null}
+    </View>
+  );
 });
 
 const barcodeTypes: BarcodeType[] = ['qr', 'code128', 'code39', 'code93', 'ean13', 'ean8', 'upc_a', 'upc_e'];

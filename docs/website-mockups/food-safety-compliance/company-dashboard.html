@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Company Dashboard - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="active" href="company-dashboard.html"><span>Dashboard</span></a><a class="" href="company-outlets.html"><span>Outlets</span></a><a class="" href="company-users.html"><span>Users</span></a><a class="" href="company-products.html"><span>Products</span></a><a class="" href="company-categories.html"><span>Categories</span></a><a class="" href="company-availability.html"><span>Availability</span></a><a class="" href="company-images.html"><span>Images</span></a><a class="" href="company-import-export.html"><span>Import/Export</span></a><a class="" href="company-audit-log.html"><span>Audit Log</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" selected>Company Admin</option>
+          <option value="site-dashboard.html" >Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Company Admin</div>
+        <h1>Company Dashboard</h1>
+        <p>JR Foods operating view</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <section class="metrics">
+      
+    <article class="metric">
+      <div class="metric-label">Outlets</div>
+      <div class="metric-value">12</div>
+      <div class="metric-meta ok">active</div>
+    </article>
+  
+      
+    <article class="metric">
+      <div class="metric-label">Products</div>
+      <div class="metric-value">86</div>
+      <div class="metric-meta ok">printable</div>
+    </article>
+  
+      
+    <article class="metric">
+      <div class="metric-label">Printed Today</div>
+      <div class="metric-value">428</div>
+      <div class="metric-meta ok">labels</div>
+    </article>
+  
+      
+    <article class="metric">
+      <div class="metric-label">Pending Sync</div>
+      <div class="metric-value">7</div>
+      <div class="metric-meta warn">jobs</div>
+    </article>
+  
+    </section>
+    <section class="grid two">
+      
+    <section class="panel ">
+      <div class="panel-head">
+        <h2>Food Safety Work Queue</h2>
+        
+      </div>
+      
+        <ul class="work-list">
+          <li><span>Products missing images</span><span class="status warn">9 items</span></li>
+          <li><span>Failed print upload retries</span><span class="status danger">3 jobs</span></li>
+          <li><span>Printer registry changes this month</span><span class="status warn">5 changes</span></li>
+          <li><span>Category prefix conflicts</span><span class="status ok">0</span></li>
+        </ul>
+      
+    </section>
+  
+      
+    <section class="panel ">
+      <div class="panel-head">
+        <h2>Today By Outlet</h2>
+        
+      </div>
+      
+        <div class="bars">
+          <span style="height:76%"></span><span style="height:52%"></span><span style="height:41%"></span><span style="height:66%"></span><span style="height:37%"></span>
+        </div>
+        <p class="muted">Central Kitchen is the highest print volume today.</p>
+      
+    </section>
+  
+    </section>
+    
+    <section class="grid two">
+      <section class="panel">
+        <div class="panel-head"><h2>Monthly Sticker Snapshot</h2><a href="company-print-analytics.html">Open report</a></div>
+        <ul class="work-list">
+          <li><span>Product 60x40</span><span class="status ok">5,336</span></li>
+          <li><span>Compact 40x20</span><span class="status ok">2,089</span></li>
+          <li><span>Timestamp 40x30</span><span class="status warn">1,245</span></li>
+        </ul>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>Printer Tracking</h2><a href="company-devices-printers.html">Open registry</a></div>
+        <div class="callout safe">Each mobile app records selected printer name and MAC address, then snapshots both fields on PrintJob upload.</div>
+      </section>
+    </section>
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Recent Outlet Status</h2>
+        
+      </div>
+      
+    <div class="table-shell">
+      <input class="search-input" type="search" placeholder="Search outlet status..." data-table-filter="outletStatus">
+      <table id="outletStatus">
+        <thead>
+          <tr><th>Outlet</th><th>Products</th><th>Printed Today</th><th>Sync</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          
+            <tr data-search="&lt;a href=&quot;company-outlet-detail.html&quot;&gt;Central Kitchen&lt;/a&gt; 86 active 156 &lt;span class=&quot;status ok&quot;&gt;Synced&lt;/span&gt; &lt;a href=&quot;company-availability.html&quot;&gt;Products&lt;/a&gt;">
+              <td><a href="company-outlet-detail.html">Central Kitchen</a></td><td>86 active</td><td>156</td><td><span class="status ok">Synced</span></td><td><a href="company-availability.html">Products</a></td>
+            </tr>
+          
+            <tr data-search="&lt;a href=&quot;company-outlet-detail.html&quot;&gt;Orchard Outlet&lt;/a&gt; 62 active 88 &lt;span class=&quot;status ok&quot;&gt;Synced&lt;/span&gt; &lt;a href=&quot;company-availability.html&quot;&gt;Products&lt;/a&gt;">
+              <td><a href="company-outlet-detail.html">Orchard Outlet</a></td><td>62 active</td><td>88</td><td><span class="status ok">Synced</span></td><td><a href="company-availability.html">Products</a></td>
+            </tr>
+          
+            <tr data-search="&lt;a href=&quot;company-outlet-detail.html&quot;&gt;Tampines Outlet&lt;/a&gt; 59 active 44 &lt;span class=&quot;status warn&quot;&gt;Pending&lt;/span&gt; &lt;a href=&quot;company-availability.html&quot;&gt;Products&lt;/a&gt;">
+              <td><a href="company-outlet-detail.html">Tampines Outlet</a></td><td>59 active</td><td>44</td><td><span class="status warn">Pending</span></td><td><a href="company-availability.html">Products</a></td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  
+    </section>
+  
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

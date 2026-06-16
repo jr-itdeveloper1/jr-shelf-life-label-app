@@ -12,9 +12,9 @@ export const labelBitmapSpec = {
 
 export const timestampLabelBitmapSpec = {
   widthMm: 40,
-  heightMm: 30,
+  heightMm: 20,
   widthPx: 320,
-  heightPx: 240,
+  heightPx: 160,
   format: 'png',
 } as const;
 

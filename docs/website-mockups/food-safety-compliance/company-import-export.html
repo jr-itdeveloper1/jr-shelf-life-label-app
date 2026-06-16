@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Import / Export - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="company-dashboard.html"><span>Dashboard</span></a><a class="" href="company-outlets.html"><span>Outlets</span></a><a class="" href="company-users.html"><span>Users</span></a><a class="" href="company-products.html"><span>Products</span></a><a class="" href="company-categories.html"><span>Categories</span></a><a class="" href="company-availability.html"><span>Availability</span></a><a class="" href="company-images.html"><span>Images</span></a><a class="active" href="company-import-export.html"><span>Import/Export</span></a><a class="" href="company-audit-log.html"><span>Audit Log</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" selected>Company Admin</option>
+          <option value="site-dashboard.html" >Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Company Admin</div>
+        <h1>Import / Export</h1>
+        <p>Excel setup, validation preview, and data export</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar"><button class="button" data-action="toast">Download Template</button><button class="button primary" data-action="toast">Run Validation</button><button class="button" data-action="toast">Export Current Data</button></div>
+    <section class="grid two">
+      
+    <section class="panel ">
+      <div class="panel-head">
+        <h2>Import File</h2>
+        
+      </div>
+      
+        <div class="image-drop">Drop Excel file here<br><small>Products, categories, outlets, outlet products</small></div>
+        <div class="callout warn">Import must pass preview validation before writing to cloud data.</div>
+      
+    </section>
+  
+      
+    <section class="panel ">
+      <div class="panel-head">
+        <h2>Validation Summary</h2>
+        
+      </div>
+      
+        <ul class="work-list">
+          <li><span>Rows ready to import</span><span class="status ok">42</span></li>
+          <li><span>Duplicate product codes</span><span class="status danger">2</span></li>
+          <li><span>Missing Chinese names</span><span class="status warn">5 warnings</span></li>
+        </ul>
+      
+    </section>
+  
+    </section>
+    
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Preview Rows</h2>
+        
+      </div>
+      
+    <div class="table-shell">
+      <input class="search-input" type="search" placeholder="Search import preview..." data-table-filter="importPreview">
+      <table id="importPreview">
+        <thead>
+          <tr><th>Row</th><th>Type</th><th>Code</th><th>Message</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          
+            <tr data-search="12 Product EG001 Ready to update existing product &lt;span class=&quot;status ok&quot;&gt;Ready&lt;/span&gt;">
+              <td>12</td><td>Product</td><td>EG001</td><td>Ready to update existing product</td><td><span class="status ok">Ready</span></td>
+            </tr>
+          
+            <tr data-search="18 Product EG001 Duplicate product code in file &lt;span class=&quot;status danger&quot;&gt;Blocked&lt;/span&gt;">
+              <td>18</td><td>Product</td><td>EG001</td><td>Duplicate product code in file</td><td><span class="status danger">Blocked</span></td>
+            </tr>
+          
+            <tr data-search="24 Product DY005 Missing image; product remains printable &lt;span class=&quot;status warn&quot;&gt;Warning&lt;/span&gt;">
+              <td>24</td><td>Product</td><td>DY005</td><td>Missing image; product remains printable</td><td><span class="status warn">Warning</span></td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  
+    </section>
+  
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Outlet Detail: Central Kitchen - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="company-dashboard.html"><span>Dashboard</span></a><a class="" href="company-outlets.html"><span>Outlets</span></a><a class="" href="company-users.html"><span>Users</span></a><a class="" href="company-products.html"><span>Products</span></a><a class="" href="company-categories.html"><span>Categories</span></a><a class="" href="company-availability.html"><span>Availability</span></a><a class="" href="company-images.html"><span>Images</span></a><a class="" href="company-import-export.html"><span>Import/Export</span></a><a class="" href="company-audit-log.html"><span>Audit Log</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" selected>Company Admin</option>
+          <option value="site-dashboard.html" >Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Company Admin</div>
+        <h1>Outlet Detail: Central Kitchen</h1>
+        <p>Outlet profile, users, availability, and recent prints</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar"><button class="button primary" data-action="toast">Save Outlet</button><a class="button" href="company-availability.html">Product Availability</a><button class="button warn" data-action="confirm-danger">Disable Outlet</button></div>
+    <section class="grid two">
+      
+    <section class="panel ">
+      <div class="panel-head">
+        <h2>Outlet Profile</h2>
+        
+      </div>
+      <div class="form-grid">
+    <label>
+      <span>Outlet Name</span>
+      <input value="Central Kitchen">
+    </label>
+  
+    <label>
+      <span>Outlet Code</span>
+      <input value="OUT-CK">
+    </label>
+  
+    <label>
+      <span>Short Code</span>
+      <input value="CK">
+    </label>
+  
+    <label>
+      <span>Status</span>
+      <select><option>Active</option><option>Active</option><option>Inactive</option><option>Disabled</option></select>
+    </label>
+  </div>
+    </section>
+  
+      
+    <section class="panel ">
+      <div class="panel-head">
+        <h2>Assigned Users</h2>
+        
+      </div>
+      
+        <ul class="work-list">
+          <li><span>Grace Tan</span><span class="status ok">Company Admin</span></li>
+          <li><span>CK Shift Lead</span><span class="status ok">Outlet User</span></li>
+          <li><span>Kitchen Temp</span><span class="status warn">Invite Pending</span></li>
+        </ul>
+      
+    </section>
+  
+    </section>
+    
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Recent Print Jobs</h2>
+        
+      </div>
+      
+    <div class="table-shell">
+      <input class="search-input" type="search" placeholder="Search print jobs..." data-table-filter="recentPrints">
+      <table id="recentPrints">
+        <thead>
+          <tr><th>Time</th><th>Label Type</th><th>Product</th><th>Qty</th><th>Printer</th><th>MAC Address</th><th>Upload</th></tr>
+        </thead>
+        <tbody>
+          <tr data-search="10:12 Product Label 60x40 EG001 Pasteurized Liquid Egg 3 M324F-CK 58:93:D8:11:2A:91 Uploaded">
+            <td>10:12</td><td>Product 60x40</td><td>EG001 Pasteurized Liquid Egg</td><td>3</td><td>M324F-CK</td><td><code>58:93:D8:11:2A:91</code></td><td><span class="status ok">Uploaded</span></td>
+          </tr>
+          <tr data-search="09:58 Timestamp Label 40x30 RTE002 Cooked Food 10 M324F-CK 58:93:D8:11:2A:91 Pending">
+            <td>09:58</td><td>Timestamp 40x30</td><td>RTE002 Cooked Food</td><td>10</td><td>M324F-CK</td><td><code>58:93:D8:11:2A:91</code></td><td><span class="status warn">Pending</span></td>
+          </tr>
+          <tr data-search="09:41 Compact Product Label 40x20 DY005 Butter / Margarine 2 M324F-CK 58:93:D8:11:2A:91 Uploaded">
+            <td>09:41</td><td>Compact 40x20</td><td>DY005 Butter / Margarine</td><td>2</td><td>M324F-CK</td><td><code>58:93:D8:11:2A:91</code></td><td><span class="status ok">Uploaded</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    </section>
+  
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

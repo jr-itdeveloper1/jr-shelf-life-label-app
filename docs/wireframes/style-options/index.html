@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JR Label Cloud Website Style Options</title>
+  <style>
+    :root { --bg:#f5f7fa; --ink:#101828; --muted:#667085; --line:#d0d5dd; --accent:#b42318; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    a { color:var(--accent); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    header { background:#101828; color:white; padding:34px; }
+    header h1 { margin:0 0 10px; font-size:30px; }
+    header p { margin:0; color:#d0d5dd; font-weight:700; }
+    main { max-width:1440px; margin:0 auto; padding:28px; }
+    .toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px; }
+    .button { display:inline-block; border:1px solid var(--line); background:white; color:#344054; padding:9px 12px; border-radius:6px; font-weight:800; font-size:13px; }
+    .button.primary { background:var(--accent); border-color:var(--accent); color:white; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(360px, 1fr)); gap:18px; }
+    .card { background:white; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .card img { display:block; width:100%; aspect-ratio:16/10; object-fit:contain; background:#f9fafb; border-bottom:1px solid #eaecf0; }
+    .card-body { padding:16px; }
+    .card h2 { margin:0 0 6px; font-size:18px; }
+    .zh { color:#344054; font-weight:800; margin-bottom:10px; }
+    .summary { color:#475467; font-size:14px; line-height:1.5; }
+    .detail { background:white; border:1px solid var(--line); border-radius:8px; padding:18px; margin-bottom:18px; }
+    .detail img { width:100%; display:block; border:1px solid #eaecf0; border-radius:6px; background:white; }
+    .split { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .panel { background:white; border:1px solid var(--line); border-radius:8px; padding:18px; }
+    .panel h2 { margin:0 0 10px; font-size:16px; }
+    .panel p { margin:0; color:#475467; line-height:1.55; }
+    @media (max-width:800px) { main { padding:18px; } .grid, .split { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Website Style Options / 网站风格方案</h1>
+    <p>Five visual directions for the Next.js + TypeScript admin website. 每个方向都用 Company Dashboard 做同场景对比。</p>
+  </header>
+  <main>
+    <div class="toolbar">
+      <a class="button primary" href="../index.html">Back to Wireframes Index</a>
+      <a class="button" href="../../website-style-options.md">Open Markdown Summary</a>
+    </div>
+    <section class="grid">
+      
+        <article class="card">
+          <a href="operational-clean.html">
+            <img src="assets/operational-clean.svg" alt="Operational Clean mockup">
+          </a>
+          <div class="card-body">
+            <h2><a href="operational-clean.html">Operational Clean</a></h2>
+            <div class="zh">运营型清爽后台</div>
+            <p class="summary">紧凑、清楚、效率优先。深色侧栏、白色工作区，只在关键操作使用 JR red。</p>
+          </div>
+        </article>
+      
+
+        <article class="card">
+          <a href="food-safety-compliance.html">
+            <img src="assets/food-safety-compliance.svg" alt="Food Safety Compliance mockup">
+          </a>
+          <div class="card-body">
+            <h2><a href="food-safety-compliance.html">Food Safety Compliance</a></h2>
+            <div class="zh">食品安全合规风格</div>
+            <p class="summary">使用食品安全语义色：绿色可用、琥珀需注意、红色阻断，并突出审计信息。</p>
+            <p class="summary"><a href="../../website-mockups/food-safety-compliance/index.html">Open clickable website mockup</a></p>
+          </div>
+        </article>
+      
+
+        <article class="card">
+          <a href="enterprise-saas.html">
+            <img src="assets/enterprise-saas.svg" alt="Enterprise SaaS mockup">
+          </a>
+          <div class="card-body">
+            <h2><a href="enterprise-saas.html">Enterprise SaaS</a></h2>
+            <div class="zh">企业级 SaaS 风格</div>
+            <p class="summary">浅色导航、更多分析模块、蓝色重点色，看起来更像成熟 SaaS 产品。</p>
+          </div>
+        </article>
+      
+
+        <article class="card">
+          <a href="kitchen-command-center.html">
+            <img src="assets/kitchen-command-center.svg" alt="Kitchen Command Center mockup">
+          </a>
+          <div class="card-body">
+            <h2><a href="kitchen-command-center.html">Kitchen Command Center</a></h2>
+            <div class="zh">厨房指挥中心风格</div>
+            <p class="summary">按钮更大、对比更强，同步和打印状态更醒目，信息密度比后台低。</p>
+          </div>
+        </article>
+      
+
+        <article class="card">
+          <a href="minimal-internal-tool.html">
+            <img src="assets/minimal-internal-tool.svg" alt="Minimal Internal Tool mockup">
+          </a>
+          <div class="card-body">
+            <h2><a href="minimal-internal-tool.html">Minimal Internal Tool</a></h2>
+            <div class="zh">极简内部工具风格</div>
+            <p class="summary">朴素紧凑，以表格和表单为主，装饰最少，开发最快。</p>
+          </div>
+        </article>
+      
+    </section>
+  </main>
+</body>
+</html>

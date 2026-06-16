@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create/Edit Company - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="site-dashboard.html"><span>Dashboard</span></a><a class="" href="site-companies.html"><span>Companies</span></a><a class="" href="site-company-admin-users.html"><span>Company Admins</span></a><a class="" href="site-audit-log.html"><span>Global Audit</span></a><a class="" href="site-system-health.html"><span>Health &amp; Backups</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" >Company Admin</option>
+          <option value="site-dashboard.html" selected>Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Site Admin</div>
+        <h1>Create/Edit Company</h1>
+        <p>Company identity and first administrator</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar"><button class="button primary" data-action="toast">Save Company</button><a class="button" href="site-companies.html">Cancel</a></div>
+    
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Company Setup</h2>
+        
+      </div>
+      <div class="form-grid">
+    <label>
+      <span>Company Name</span>
+      <input value="JR Foods">
+    </label>
+  
+    <label>
+      <span>Company Code</span>
+      <input value="JRFOODS">
+    </label>
+  
+    <label>
+      <span>Status</span>
+      <select><option>Active</option><option>Active</option><option>Inactive</option><option>Disabled</option></select>
+    </label>
+  
+    <label>
+      <span>Primary Admin Email</span>
+      <input value="admin@jrfoods.example">
+    </label>
+  
+    <label>
+      <span>Notes</span>
+      <textarea rows="4">Initial cloud rollout tenant.</textarea>
+    </label>
+  </div>
+    </section>
+  
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

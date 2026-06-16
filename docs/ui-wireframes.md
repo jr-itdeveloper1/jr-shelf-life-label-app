@@ -59,7 +59,7 @@ Purpose: choose the active outlet before printing.
 Notes:
 
 - Selecting an outlet navigates directly to Product Grid.
-- Outlet short code is visible because it affects outlet custom product codes.
+- Outlet code is visible for identification; product codes are generated from category prefixes.
 - Admin entry is secondary and should not distract staff.
 
 ### 2. Product Grid

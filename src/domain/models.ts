@@ -60,6 +60,9 @@ export type PrintJob = {
   printerName?: string;
   printerAddress?: string;
   status: 'mock-saved' | 'printed' | 'failed';
+  syncStatus?: 'pending' | 'syncing' | 'synced' | 'failed';
+  syncedAt?: string;
+  syncError?: string;
 };
 
 export type AppDataImport = {

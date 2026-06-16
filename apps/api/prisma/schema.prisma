@@ -1,0 +1,240 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CompanyStatus {
+  ACTIVE
+  SETUP
+  DISABLED
+}
+
+enum UserRole {
+  SITE_ADMIN
+  COMPANY_ADMIN
+  OUTLET_USER
+}
+
+enum UserStatus {
+  ACTIVE
+  INVITED
+  DISABLED
+}
+
+enum OutletStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum DeviceStatus {
+  ACTIVE
+  OFFLINE
+  NEEDS_SETUP
+  INACTIVE
+}
+
+enum LabelType {
+  PRODUCT
+  COMPACT_PRODUCT
+  TIMESTAMP
+}
+
+enum UploadStatus {
+  UPLOADED
+  PENDING
+  FAILED
+}
+
+model Company {
+  id        String        @id @default(uuid())
+  name      String
+  code      String        @unique
+  status    CompanyStatus @default(ACTIVE)
+  maxPrinterConnections Int? @default(10)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  users      User[]
+  outlets    Outlet[]
+  categories ProductCategory[]
+  products   Product[]
+  devices    Device[]
+  printJobs  PrintJob[]
+  auditLogs  AuditLog[]
+}
+
+model User {
+  id        String     @id @default(uuid())
+  companyId String?
+  name      String
+  email     String     @unique
+  passwordHash String?
+  role      UserRole
+  status    UserStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  company       Company?           @relation(fields: [companyId], references: [id])
+  outletAccess  UserOutletAccess[]
+  auditLogs     AuditLog[]
+}
+
+model UserOutletAccess {
+  id       String @id @default(uuid())
+  userId   String
+  outletId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  outlet Outlet @relation(fields: [outletId], references: [id])
+
+  @@unique([userId, outletId])
+}
+
+model Outlet {
+  id        String       @id @default(uuid())
+  companyId String
+  name      String
+  code      String
+  shortCode String
+  status    OutletStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  company       Company            @relation(fields: [companyId], references: [id])
+  userAccess    UserOutletAccess[]
+  outletProducts OutletProduct[]
+  devices       Device[]
+  printJobs     PrintJob[]
+
+  @@unique([companyId, code])
+  @@unique([companyId, shortCode])
+}
+
+model ProductCategory {
+  id         String        @id @default(uuid())
+  companyId  String
+  name       String
+  codePrefix String
+  scope      String        @default("company")
+  status     ProductStatus @default(ACTIVE)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  company  Company   @relation(fields: [companyId], references: [id])
+  products Product[]
+
+  @@unique([companyId, codePrefix])
+}
+
+model Product {
+  id              String        @id @default(uuid())
+  companyId       String
+  categoryId      String
+  outletId        String?
+  productCode     String
+  source          String        @default("company")
+  nameEn          String
+  nameZh          String
+  daysToExpire    Int
+  hoursToExpire   Int
+  storageMethodEn String
+  storageMethodZh String
+  imageStatus     String        @default("missing")
+  imageUri        String?
+  active          Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  company        Company          @relation(fields: [companyId], references: [id])
+  category       ProductCategory  @relation(fields: [categoryId], references: [id])
+  outletProducts OutletProduct[]
+  printJobs      PrintJob[]
+
+  @@unique([companyId, productCode])
+}
+
+model OutletProduct {
+  id        String   @id @default(uuid())
+  outletId  String
+  productId String
+  active    Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+
+  outlet  Outlet  @relation(fields: [outletId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([outletId, productId])
+}
+
+model Device {
+  id                     String       @id @default(uuid())
+  companyId              String
+  outletId               String?
+  deviceName             String
+  platform               String       @default("android")
+  appVersion             String
+  deviceIdentifier       String       @unique
+  printerName            String?
+  printerMacAddress      String?
+  printerBluetoothId     String?
+  lastPrinterConnectedAt DateTime?
+  lastSyncedAt           DateTime?
+  status                 DeviceStatus @default(ACTIVE)
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id])
+  outlet  Outlet? @relation(fields: [outletId], references: [id])
+  printJobs PrintJob[]
+}
+
+model PrintJob {
+  id                    String       @id @default(uuid())
+  clientJobId           String       @unique
+  companyId             String
+  outletId              String
+  productId             String?
+  deviceId              String?
+  productCodeSnapshot   String
+  productNameSnapshot   String
+  labelType             LabelType
+  labelSize             String
+  quantity              Int
+  printerName           String?
+  printerMacAddress     String?
+  printerBluetoothId    String?
+  printedAt             DateTime
+  uploadStatus          UploadStatus @default(UPLOADED)
+  createdAt             DateTime     @default(now())
+
+  company Company @relation(fields: [companyId], references: [id])
+  outlet  Outlet  @relation(fields: [outletId], references: [id])
+  product Product? @relation(fields: [productId], references: [id])
+  device  Device? @relation(fields: [deviceId], references: [id])
+
+  @@index([companyId, outletId, printedAt])
+  @@index([companyId, labelType, labelSize])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  companyId String?
+  actorId   String?
+  action    String
+  recordType String
+  recordId  String?
+  risk      String   @default("low")
+  createdAt DateTime @default(now())
+
+  company Company? @relation(fields: [companyId], references: [id])
+  actor   User?    @relation(fields: [actorId], references: [id])
+}

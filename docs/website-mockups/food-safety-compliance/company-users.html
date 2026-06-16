@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Users - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="company-dashboard.html"><span>Dashboard</span></a><a class="" href="company-outlets.html"><span>Outlets</span></a><a class="active" href="company-users.html"><span>Users</span></a><a class="" href="company-products.html"><span>Products</span></a><a class="" href="company-categories.html"><span>Categories</span></a><a class="" href="company-availability.html"><span>Availability</span></a><a class="" href="company-images.html"><span>Images</span></a><a class="" href="company-import-export.html"><span>Import/Export</span></a><a class="" href="company-audit-log.html"><span>Audit Log</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" selected>Company Admin</option>
+          <option value="site-dashboard.html" >Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Company Admin</div>
+        <h1>Users</h1>
+        <p>Company users and outlet access</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar"><button class="button primary" data-modal-target="userModal">Invite User</button><button class="button" data-action="toast">Export Users</button></div>
+    
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>User Directory</h2>
+        
+      </div>
+      
+    <div class="table-shell">
+      <input class="search-input" type="search" placeholder="Search users..." data-table-filter="users">
+      <table id="users">
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>Role</th><th>Outlet Access</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          
+            <tr data-search="&lt;a href=&quot;company-user-detail.html&quot;&gt;Grace Tan&lt;/a&gt; grace@jrfoods.example Company Admin All outlets &lt;span class=&quot;status ok&quot;&gt;Active&lt;/span&gt; &lt;a href=&quot;company-user-detail.html&quot;&gt;Open&lt;/a&gt;">
+              <td><a href="company-user-detail.html">Grace Tan</a></td><td>grace@jrfoods.example</td><td>Company Admin</td><td>All outlets</td><td><span class="status ok">Active</span></td><td><a href="company-user-detail.html">Open</a></td>
+            </tr>
+          
+            <tr data-search="&lt;a href=&quot;company-user-detail.html&quot;&gt;CK Shift Lead&lt;/a&gt; cklead@jrfoods.example Outlet User Central Kitchen &lt;span class=&quot;status ok&quot;&gt;Active&lt;/span&gt; &lt;a href=&quot;company-user-detail.html&quot;&gt;Open&lt;/a&gt;">
+              <td><a href="company-user-detail.html">CK Shift Lead</a></td><td>cklead@jrfoods.example</td><td>Outlet User</td><td>Central Kitchen</td><td><span class="status ok">Active</span></td><td><a href="company-user-detail.html">Open</a></td>
+            </tr>
+          
+            <tr data-search="&lt;a href=&quot;company-user-detail.html&quot;&gt;Tampines Staff&lt;/a&gt; tmp@jrfoods.example Outlet User Tampines &lt;span class=&quot;status warn&quot;&gt;Invite Pending&lt;/span&gt; &lt;a href=&quot;company-user-detail.html&quot;&gt;Open&lt;/a&gt;">
+              <td><a href="company-user-detail.html">Tampines Staff</a></td><td>tmp@jrfoods.example</td><td>Outlet User</td><td>Tampines</td><td><span class="status warn">Invite Pending</span></td><td><a href="company-user-detail.html">Open</a></td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  
+    </section>
+  
+    
+    <div class="modal-backdrop" id="userModal" aria-hidden="true">
+      <div class="modal">
+        <div class="modal-head">
+          <h2>Invite User</h2>
+          <button class="icon-button" data-close-modal>&times;</button>
+        </div>
+        <div class="form-grid">
+    <label>
+      <span>Name</span>
+      <input value="New Staff">
+    </label>
+  
+    <label>
+      <span>Email</span>
+      <input value="new.staff@jrfoods.example">
+    </label>
+  
+    <label>
+      <span>Role</span>
+      <select><option>Outlet User</option><option>Active</option><option>Inactive</option><option>Disabled</option></select>
+    </label>
+  
+    <label>
+      <span>Outlet Access</span>
+      <input value="Central Kitchen">
+    </label>
+  </div>
+        <div class="modal-actions">
+          <button class="button ghost" data-action="close-modal">Cancel</button>
+          <button class="button primary" data-action="save-modal">Save</button>
+        </div>
+      </div>
+    </div>
+  
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

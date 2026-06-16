@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Site Admin Dashboard - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="active" href="site-dashboard.html"><span>Dashboard</span></a><a class="" href="site-companies.html"><span>Companies</span></a><a class="" href="site-company-admin-users.html"><span>Company Admins</span></a><a class="" href="site-audit-log.html"><span>Global Audit</span></a><a class="" href="site-system-health.html"><span>Health &amp; Backups</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" >Company Admin</option>
+          <option value="site-dashboard.html" selected>Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Site Admin</div>
+        <h1>Site Admin Dashboard</h1>
+        <p>Platform-wide view of companies, sync health, and backups</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <section class="metrics">
+      
+    <article class="metric">
+      <div class="metric-label">Companies</div>
+      <div class="metric-value">18</div>
+      <div class="metric-meta ok">16 active / 2 disabled</div>
+    </article>
+  
+      
+    <article class="metric">
+      <div class="metric-label">Sync Success</div>
+      <div class="metric-value">97%</div>
+      <div class="metric-meta ok">last 24h</div>
+    </article>
+  
+      
+    <article class="metric">
+      <div class="metric-label">Backup</div>
+      <div class="metric-value">02:00</div>
+      <div class="metric-meta ok">latest completed</div>
+    </article>
+  
+      
+    <article class="metric">
+      <div class="metric-label">Incidents</div>
+      <div class="metric-value">3</div>
+      <div class="metric-meta warn">need review</div>
+    </article>
+  
+    </section>
+    <section class="grid two">
+      
+    <section class="panel ">
+      <div class="panel-head">
+        <h2>Platform Work Queue</h2>
+        
+      </div>
+      
+        <ul class="work-list">
+          <li><span>Review failed device sync uploads</span><span class="status warn">3 open</span></li>
+          <li><span>Complete restore drill checklist</span><span class="status warn">Due</span></li>
+          <li><span>Approve new company setup</span><span class="status ok">1 pending</span></li>
+        </ul>
+      
+    </section>
+  
+      
+    <section class="panel ">
+      <div class="panel-head">
+        <h2>Service Health</h2>
+        
+      </div>
+      
+        <div class="health-grid">
+          <div><span class="status ok">API Healthy</span><small>p95 124ms</small></div>
+          <div><span class="status ok">PostgreSQL Healthy</span><small>12.8 GB</small></div>
+          <div><span class="status warn">Backup Warning</span><small>retention check</small></div>
+          <div><span class="status ok">Storage Healthy</span><small>42% used</small></div>
+        </div>
+      
+    </section>
+  
+    </section>
+    
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Recent Companies</h2>
+        
+      </div>
+      
+    <div class="table-shell">
+      <input class="search-input" type="search" placeholder="Search companies..." data-table-filter="siteCompanies">
+      <table id="siteCompanies">
+        <thead>
+          <tr><th>Company</th><th>Status</th><th>Admins</th><th>Outlets</th><th>Last Sync</th></tr>
+        </thead>
+        <tbody>
+          
+            <tr data-search="&lt;a href=&quot;site-company-detail.html&quot;&gt;JR Foods&lt;/a&gt; &lt;span class=&quot;status ok&quot;&gt;Active&lt;/span&gt; 3 12 2 min ago">
+              <td><a href="site-company-detail.html">JR Foods</a></td><td><span class="status ok">Active</span></td><td>3</td><td>12</td><td>2 min ago</td>
+            </tr>
+          
+            <tr data-search="&lt;a href=&quot;site-company-detail.html&quot;&gt;Demo Bakery&lt;/a&gt; &lt;span class=&quot;status warn&quot;&gt;Setup&lt;/span&gt; 1 0 Never">
+              <td><a href="site-company-detail.html">Demo Bakery</a></td><td><span class="status warn">Setup</span></td><td>1</td><td>0</td><td>Never</td>
+            </tr>
+          
+            <tr data-search="&lt;a href=&quot;site-company-detail.html&quot;&gt;Old Tenant&lt;/a&gt; &lt;span class=&quot;status danger&quot;&gt;Disabled&lt;/span&gt; 0 4 30 days ago">
+              <td><a href="site-company-detail.html">Old Tenant</a></td><td><span class="status danger">Disabled</span></td><td>0</td><td>4</td><td>30 days ago</td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  
+    </section>
+  
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

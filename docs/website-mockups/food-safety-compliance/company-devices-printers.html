@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Devices & Printers - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="company-dashboard.html"><span>Dashboard</span></a><a class="" href="company-outlets.html"><span>Outlets</span></a><a class="" href="company-users.html"><span>Users</span></a><a class="" href="company-products.html"><span>Products</span></a><a class="" href="company-categories.html"><span>Categories</span></a><a class="" href="company-availability.html"><span>Availability</span></a><a class="" href="company-images.html"><span>Images</span></a><a class="" href="company-import-export.html"><span>Import/Export</span></a><a class="" href="company-audit-log.html"><span>Audit Log</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" selected>Company Admin</option>
+          <option value="site-dashboard.html">Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Company Admin</div>
+        <h1>Devices & Printers</h1>
+        <p>Track app devices, selected printer names, MAC addresses, and latest connection status</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar">
+      <button class="button primary" data-action="toast">Export Printer Registry</button>
+      <button class="button" data-action="toast">Show Offline Devices</button>
+      <button class="button" data-action="toast">Send Printer Setup Guide</button>
+    </div>
+    <section class="metrics">
+      <article class="metric"><div class="metric-label">Registered App Devices</div><div class="metric-value">18</div><div class="metric-meta">12 active today</div></article>
+      <article class="metric"><div class="metric-label">Known Printers</div><div class="metric-value">14</div><div class="metric-meta">MAC captured</div></article>
+      <article class="metric"><div class="metric-label">Printer Changes</div><div class="metric-value">5</div><div class="metric-meta warn">last 30 days</div></article>
+      <article class="metric"><div class="metric-label">Unlinked Devices</div><div class="metric-value">2</div><div class="metric-meta warn">need outlet review</div></article>
+    </section>
+    <section class="panel wide">
+      <div class="panel-head"><h2>App Device Printer Registry</h2></div>
+      <div class="table-shell">
+        <input class="search-input" type="search" placeholder="Search outlet, device, printer, MAC..." data-table-filter="printerRegistry">
+        <table id="printerRegistry">
+          <thead>
+            <tr><th>Outlet</th><th>App Device</th><th>Printer Name</th><th>MAC Address</th><th>Last Connected</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr data-search="Central Kitchen CK-01 M324F-CK 58:93:D8:11:2A:91 Today 10:12 Active">
+              <td>Central Kitchen</td><td>CK-01 Android</td><td>M324F-CK</td><td><code>58:93:D8:11:2A:91</code></td><td>Today 10:12</td><td><span class="status ok">Active</span></td>
+            </tr>
+            <tr data-search="Orchard Outlet ORC-02 Gainscha-ORC 58:93:D8:11:2B:04 Today 09:44 Active">
+              <td>Orchard Outlet</td><td>ORC-02 Android</td><td>Gainscha-ORC</td><td><code>58:93:D8:11:2B:04</code></td><td>Today 09:44</td><td><span class="status ok">Active</span></td>
+            </tr>
+            <tr data-search="Tampines Outlet TMP-01 M324F-TMP 58:93:D8:11:2C:77 Yesterday 17:20 Offline">
+              <td>Tampines Outlet</td><td>TMP-01 Android</td><td>M324F-TMP</td><td><code>58:93:D8:11:2C:77</code></td><td>Yesterday 17:20</td><td><span class="status warn">Offline</span></td>
+            </tr>
+            <tr data-search="Jurong Outlet JUR-01 Unknown printer Pending MAC Never Needs setup">
+              <td>Jurong Outlet</td><td>JUR-01 Android</td><td>Not selected</td><td><code>Pending</code></td><td>Never</td><td><span class="status danger">Needs setup</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section class="grid two">
+      <section class="panel">
+        <div class="panel-head"><h2>What Gets Recorded</h2></div>
+        <ul class="work-list">
+          <li><span>Preferred printer name per app device</span><span class="status ok">Required</span></li>
+          <li><span>Printer MAC address when available</span><span class="status ok">Required</span></li>
+          <li><span>Last connected timestamp</span><span class="status ok">Synced</span></li>
+          <li><span>Printer snapshot saved on every print job</span><span class="status ok">Auditable</span></li>
+        </ul>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>Operational Notes</h2></div>
+        <div class="callout safe">Printer name and MAC are stored so support can trace which app device printed each label.</div>
+        <div class="callout warn">If Android cannot read a MAC address on a device, store the Bluetooth identifier and printer display name.</div>
+      </section>
+    </section>
+</main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

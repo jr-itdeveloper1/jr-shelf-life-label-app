@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>System Health &amp; Backups - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="site-dashboard.html"><span>Dashboard</span></a><a class="" href="site-companies.html"><span>Companies</span></a><a class="" href="site-company-admin-users.html"><span>Company Admins</span></a><a class="" href="site-audit-log.html"><span>Global Audit</span></a><a class="active" href="site-system-health.html"><span>Health &amp; Backups</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" >Company Admin</option>
+          <option value="site-dashboard.html" selected>Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Site Admin</div>
+        <h1>System Health &amp; Backups</h1>
+        <p>Service status, database persistence, and backup readiness</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar"><button class="button primary" data-action="toast">Run Manual Backup</button><button class="button" data-action="toast">Download Latest Backup</button><button class="button" data-modal-target="restoreChecklist">Open Restore Checklist</button></div>
+    <section class="metrics">
+      
+    <article class="metric">
+      <div class="metric-label">API</div>
+      <div class="metric-value">Healthy</div>
+      <div class="metric-meta ok">p95 124ms</div>
+    </article>
+  
+      
+    <article class="metric">
+      <div class="metric-label">PostgreSQL</div>
+      <div class="metric-value">Healthy</div>
+      <div class="metric-meta ok">volume mounted</div>
+    </article>
+  
+      
+    <article class="metric">
+      <div class="metric-label">Latest Backup</div>
+      <div class="metric-value">02:00</div>
+      <div class="metric-meta ok">completed</div>
+    </article>
+  
+      
+    <article class="metric">
+      <div class="metric-label">Disk</div>
+      <div class="metric-value">42%</div>
+      <div class="metric-meta ok">used</div>
+    </article>
+  
+    </section>
+    
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Persistence Safety</h2>
+        
+      </div>
+      
+      <div class="callout safe"><strong>Safe:</strong> Rebuild or refresh web/API containers. PostgreSQL data remains in <code>postgres_data</code>.</div>
+      <div class="callout danger"><strong>Danger:</strong> <code>docker compose down -v</code> removes volumes and deletes database data.</div>
+    
+    </section>
+  
+    
+    <div class="modal-backdrop" id="restoreChecklist" aria-hidden="true">
+      <div class="modal">
+        <div class="modal-head">
+          <h2>Restore Checklist</h2>
+          <button class="icon-button" data-close-modal>&times;</button>
+        </div>
+        
+      <ol class="check-list">
+        <li>Start clean PostgreSQL test volume.</li>
+        <li>Restore latest pg_dump.</li>
+        <li>Start API against restored DB.</li>
+        <li>Verify companies, outlets, products, and print jobs.</li>
+      </ol>
+    
+        <div class="modal-actions">
+          <button class="button ghost" data-action="close-modal">Cancel</button>
+          <button class="button primary" data-action="save-modal">Save</button>
+        </div>
+      </div>
+    </div>
+  
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Product Detail - JR Label Cloud</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">JR Label Cloud</div>
+    <div class="brand-sub">Food Safety Compliance</div>
+    <nav><a class="" href="company-dashboard.html"><span>Dashboard</span></a><a class="" href="company-outlets.html"><span>Outlets</span></a><a class="" href="company-users.html"><span>Users</span></a><a class="" href="company-products.html"><span>Products</span></a><a class="" href="company-categories.html"><span>Categories</span></a><a class="" href="company-availability.html"><span>Availability</span></a><a class="" href="company-images.html"><span>Images</span></a><a class="" href="company-import-export.html"><span>Import/Export</span></a><a class="" href="company-audit-log.html"><span>Audit Log</span></a></nav>
+    <div class="sidebar-footer">
+      <label>
+        <span>Role View</span>
+        <select data-role-switch>
+          <option value="company-dashboard.html" selected>Company Admin</option>
+          <option value="site-dashboard.html" >Site Admin</option>
+        </select>
+      </label>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Company Admin</div>
+        <h1>Product Detail</h1>
+        <p>Product label rule, image, and availability status</p>
+      </div>
+      <div class="top-actions">
+        <label class="language-select"><span>Language</span><select><option>English</option></select></label>
+        <span class="status ok">All synced</span>
+        <span class="status ok">Audit enabled</span>
+      </div>
+    </header>
+    <main class="content">
+    <div class="toolbar"><button class="button primary" data-action="toast">Save Product</button><button class="button" data-modal-target="labelPreview">Preview Label</button><button class="button warn" data-action="confirm-danger">Deactivate</button></div>
+    <section class="grid two">
+      
+    <section class="panel ">
+      <div class="panel-head">
+        <h2>Product Fields</h2>
+        
+      </div>
+      <div class="form-grid">
+    <label>
+      <span>Product Code</span>
+      <input value="EG001">
+    </label>
+  
+    <label>
+      <span>English Name</span>
+      <input value="Pasteurized Liquid Egg">
+    </label>
+  
+    <label>
+      <span>Chinese Name</span>
+      <input value="Chinese name stored">
+    </label>
+  
+    <label>
+      <span>Category</span>
+      <select><option>Eggs</option><option>Active</option><option>Inactive</option><option>Disabled</option></select>
+    </label>
+  
+    <label>
+      <span>Days To Expire</span>
+      <input value="1">
+    </label>
+  
+    <label>
+      <span>Hours To Expire</span>
+      <input value="0">
+    </label>
+  
+    <label>
+      <span>Storage Method EN</span>
+      <input value="Chilled">
+    </label>
+  
+    <label>
+      <span>Storage Method ZH</span>
+      <input value="Chilled">
+    </label>
+  </div>
+    </section>
+  
+      
+    <section class="panel ">
+      <div class="panel-head">
+        <h2>Safety Validation</h2>
+        
+      </div>
+      
+        <div class="callout safe"><strong>Printable:</strong> Product.active and outlet availability are both enabled.</div>
+        <div class="image-drop">Drop image here<br><small>Images are shown in app only and not printed.</small></div>
+        <button class="button" data-action="toast">Upload Image</button>
+      
+    </section>
+  
+    </section>
+    
+    <div class="modal-backdrop" id="labelPreview" aria-hidden="true">
+      <div class="modal">
+        <div class="modal-head">
+          <h2>Label Preview</h2>
+          <button class="icon-button" data-close-modal>&times;</button>
+        </div>
+        
+      <div class="label-preview">
+        <strong>Pasteurized Liquid Egg</strong>
+        <span>Chinese name stored | Chilled</span>
+        <span>OPEN: 05/06/26 10:30</span>
+        <span>USE BY: 06/06/26 10:30</span>
+      </div>
+    
+        <div class="modal-actions">
+          <button class="button ghost" data-action="close-modal">Cancel</button>
+          <button class="button primary" data-action="save-modal">Save</button>
+        </div>
+      </div>
+    </div>
+  
+  </main>
+  </div>
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

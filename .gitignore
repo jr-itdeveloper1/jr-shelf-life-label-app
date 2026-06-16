@@ -1,5 +1,8 @@
 # dependencies
 node_modules/
+apps/*/node_modules/
+apps/api/dist/
+apps/web-admin/.next/
 
 # Expo
 .expo/
@@ -10,11 +13,20 @@ dist/
 web-build/
 expo-env.d.ts
 
+# generated Android artifacts
+*.apk
+*.aab
+android/app/build/
+
 # Native generated folders
 /ios
 
 # local SDK/vendor material
 vendor/gprinter-sdk/
+
+# local transfer/backup artifacts
+backups/
+reports/
 
 # debug logs
 npm-debug.*
@@ -28,6 +40,11 @@ tmp/
 
 # local env files
 .env*.local
+apps/api/.env
+
+# signing keys
+*.keystore
+*.jks
 
 # TypeScript
 *.tsbuildinfo
