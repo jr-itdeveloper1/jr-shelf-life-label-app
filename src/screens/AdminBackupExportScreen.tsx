@@ -191,9 +191,9 @@ export function AdminBackupExportScreen({
         ) : null}
 
         <View style={styles.notePanel}>
-          <Text style={styles.noteTitle}>Phase 1 Note</Text>
+          <Text style={styles.noteTitle}>Local Data</Text>
           <Text style={styles.noteText}>
-            Import updates the current local app data only. When persistence is moved to SQLite, import and export will write through the database.
+            Import updates this device's local app data and will be kept for offline use.
           </Text>
         </View>
       </ScrollView>

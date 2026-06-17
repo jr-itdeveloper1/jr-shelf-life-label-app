@@ -38,20 +38,20 @@ import {
   uploadPrintJobs,
   type CloudSession,
 } from '../services/cloudApi';
+import {
+  loadLocalAppData,
+  replaceLocalAppData,
+  replaceLocalMasterData,
+  replaceLocalPrintJobs,
+  type LocalAppData,
+} from '../services/localAppDataStore';
 
 const adminDataStorageKey = `jr-shelf-life-admin-data-${seedDataVersion}`;
 const legacyCategoryStorageKey = `jr-shelf-life-categories-${seedDataVersion}`;
 const productLabelModeStorageKey = 'jr-shelf-life-product-label-mode-v1';
 const printHistoryAutoSyncIntervalMs = 30 * 60 * 1000;
 const localAdminDataSaveDelayMs = 600;
-
-type LocalAdminData = {
-  categories: ProductCategory[];
-  outlets: Outlet[];
-  products: Product[];
-  outletProducts: OutletProduct[];
-  printJobs: PrintJob[];
-};
+const localPrintJobsSaveDelayMs = 250;
 
 type Screen =
   | 'outlets'
@@ -342,6 +342,21 @@ export function RootApp() {
           setProductLabelMode(storedLabelMode);
         }
 
+        const localAppData = await loadLocalAppData();
+
+        if (cancelled) {
+          return;
+        }
+
+        if (localAppData) {
+          setCategories(localAppData.categories.length > 0 ? localAppData.categories : seedCategories);
+          setOutlets(localAppData.outlets.length > 0 ? localAppData.outlets : seedOutlets);
+          setProducts(localAppData.products.length > 0 ? localAppData.products : seedProducts);
+          setOutletProducts(localAppData.outletProducts.length > 0 ? localAppData.outletProducts : seedOutletProducts);
+          setPrintJobs(normalizeStoredPrintJobs(localAppData.printJobs));
+          return;
+        }
+
         const storedAdminData = await SecureStore.getItemAsync(adminDataStorageKey);
 
         if (cancelled) {
@@ -349,13 +364,21 @@ export function RootApp() {
         }
 
         if (storedAdminData) {
-          const parsedData = JSON.parse(storedAdminData) as Partial<LocalAdminData>;
+          const parsedData = JSON.parse(storedAdminData) as Partial<LocalAppData>;
+          const migratedData: LocalAppData = {
+            categories: Array.isArray(parsedData.categories) ? parsedData.categories : seedCategories,
+            outlets: Array.isArray(parsedData.outlets) ? parsedData.outlets : seedOutlets,
+            products: Array.isArray(parsedData.products) ? parsedData.products : seedProducts,
+            outletProducts: Array.isArray(parsedData.outletProducts) ? parsedData.outletProducts : seedOutletProducts,
+            printJobs: Array.isArray(parsedData.printJobs) ? normalizeStoredPrintJobs(parsedData.printJobs) : [],
+          };
 
-          setCategories(Array.isArray(parsedData.categories) ? parsedData.categories : seedCategories);
-          setOutlets(Array.isArray(parsedData.outlets) ? parsedData.outlets : seedOutlets);
-          setProducts(Array.isArray(parsedData.products) ? parsedData.products : seedProducts);
-          setOutletProducts(Array.isArray(parsedData.outletProducts) ? parsedData.outletProducts : seedOutletProducts);
-          setPrintJobs(Array.isArray(parsedData.printJobs) ? normalizeStoredPrintJobs(parsedData.printJobs) : []);
+          setCategories(migratedData.categories);
+          setOutlets(migratedData.outlets);
+          setProducts(migratedData.products);
+          setOutletProducts(migratedData.outletProducts);
+          setPrintJobs(migratedData.printJobs);
+          replaceLocalAppData(migratedData).catch(() => undefined);
           return;
         }
 
@@ -480,19 +503,28 @@ export function RootApp() {
     }
 
     const saveTimeoutId = setTimeout(() => {
-      const adminData: LocalAdminData = {
+      void replaceLocalMasterData({
         categories,
         outlets,
         products,
         outletProducts,
-        printJobs,
-      };
-
-      void SecureStore.setItemAsync(adminDataStorageKey, JSON.stringify(adminData)).catch(() => undefined);
+      }).catch(() => undefined);
     }, localAdminDataSaveDelayMs);
 
     return () => clearTimeout(saveTimeoutId);
-  }, [categories, hasLoadedAdminData, outletProducts, outlets, printJobs, products]);
+  }, [categories, hasLoadedAdminData, outletProducts, outlets, products]);
+
+  useEffect(() => {
+    if (!hasLoadedAdminData) {
+      return;
+    }
+
+    const saveTimeoutId = setTimeout(() => {
+      void replaceLocalPrintJobs(printJobs).catch(() => undefined);
+    }, localPrintJobsSaveDelayMs);
+
+    return () => clearTimeout(saveTimeoutId);
+  }, [hasLoadedAdminData, printJobs]);
 
   useEffect(() => {
     if (!hasLoadedAdminData || !hasLoadedCloudSession || !cloudSession || isSyncing) {
