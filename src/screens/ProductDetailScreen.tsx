@@ -11,6 +11,7 @@ import { StickyBackHeader } from '../components/StickyBackHeader';
 import { getProductImageSource } from '../data/productImages';
 import type { Outlet, PrintJob, Product } from '../domain/models';
 import { calculateExpiry } from '../domain/shelfLife';
+import { usePrinterReadiness } from '../hooks/usePrinterReadiness';
 import { captureLabelBitmap, compactProductLabelBitmapSpec, labelBitmapSpec } from '../services/labelBitmap';
 import { printLabelBitmap } from '../services/printerService';
 import { colors } from '../theme/colors';
@@ -23,6 +24,7 @@ type Props = {
   onChangeQuantity: (quantity: number) => void;
   onChangeLabelMode: (labelMode: ProductLabelMode) => void;
   onPrint: (printJob: PrintJob) => void;
+  onSelectPrinter: () => void;
   onBack: () => void;
 };
 
@@ -34,6 +36,7 @@ export function ProductDetailScreen({
   onChangeQuantity,
   onChangeLabelMode,
   onPrint,
+  onSelectPrinter,
   onBack,
 }: Props) {
   const insets = useSafeAreaInsets();
@@ -43,8 +46,19 @@ export function ProductDetailScreen({
   const [isPreparingPrint, setIsPreparingPrint] = useState(false);
   const [printError, setPrintError] = useState('');
   const [printPopupStatus, setPrintPopupStatus] = useState<PrintProgressStatus>(null);
+  const { readiness: printerReadiness, refreshReadiness } = usePrinterReadiness();
   const imageSource = getProductImageSource(product.imageUri);
   const shelfLifeText = `${product.daysToExpire} day(s) ${product.hoursToExpire} hour(s)`;
+  const shouldSelectPrinter = printerReadiness.status === 'missing';
+  const isCheckingPrinter = printerReadiness.status === 'checking';
+  const isPrintButtonDisabled = isPreparingPrint || isCheckingPrinter;
+  const printButtonText = isPreparingPrint
+    ? 'Preparing...'
+    : isCheckingPrinter
+      ? 'Checking Printer...'
+      : shouldSelectPrinter
+        ? 'Select Printer'
+        : 'Print';
 
   useEffect(() => {
     return () => {
@@ -116,7 +130,12 @@ export function ProductDetailScreen({
   };
 
   const handlePrint = () => {
-    if (isPreparingPrint) {
+    if (shouldSelectPrinter) {
+      onSelectPrinter();
+      return;
+    }
+
+    if (isPrintButtonDisabled) {
       return;
     }
 
@@ -141,7 +160,11 @@ export function ProductDetailScreen({
   return (
     <View style={styles.container}>
       <PrintProgressPopup status={printPopupStatus} />
-      <StickyBackHeader label="< Products" onPress={onBack} rightContent={<PrinterReadinessBadge />} />
+      <StickyBackHeader
+        label="< Products"
+        onPress={onBack}
+        rightContent={<PrinterReadinessBadge readiness={printerReadiness} onRefresh={refreshReadiness} />}
+      />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={[styles.content, { paddingBottom: 112 }]}
@@ -180,12 +203,12 @@ export function ProductDetailScreen({
           </View>
         ) : null}
         <Pressable
-          disabled={isPreparingPrint}
-          style={[styles.printButton, isPreparingPrint && styles.printButtonDisabled]}
+          disabled={isPrintButtonDisabled}
+          style={[styles.printButton, isPrintButtonDisabled && styles.printButtonDisabled]}
           onPress={handlePrint}
         >
-          <AppIcon name="print" size={20} color={colors.surface} />
-          <Text style={styles.printText}>{isPreparingPrint ? 'Preparing...' : 'Print'}</Text>
+          <AppIcon name={shouldSelectPrinter ? 'printer' : 'print'} size={20} color={colors.surface} />
+          <Text style={styles.printText}>{printButtonText}</Text>
         </Pressable>
       </View>
     </View>
@@ -326,3 +349,4 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
 });
+

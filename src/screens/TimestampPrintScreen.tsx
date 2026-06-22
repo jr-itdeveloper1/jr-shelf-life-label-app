@@ -10,6 +10,7 @@ import { StickyBackHeader } from '../components/StickyBackHeader';
 import { TimestampLabelPreview } from '../components/TimestampLabelPreview';
 import type { Outlet, PrintJob } from '../domain/models';
 import { formatLabelDate, formatLabelDateOnly, formatLabelTime } from '../domain/shelfLife';
+import { usePrinterReadiness } from '../hooks/usePrinterReadiness';
 import { captureLabelBitmap, timestampLabelBitmapSpec } from '../services/labelBitmap';
 import { printLabelBitmap } from '../services/printerService';
 import { colors } from '../theme/colors';
@@ -17,6 +18,7 @@ import { colors } from '../theme/colors';
 type Props = {
   outlet: Outlet;
   onPrint: (printJob: PrintJob) => void;
+  onSelectPrinter: () => void;
   onBack: () => void;
   backLabel: string;
 };
@@ -25,7 +27,7 @@ const defaultTimestampLinePreset = 'USE BY';
 const timestampLinePresets = [defaultTimestampLinePreset, 'EXPIRES', 'PREPARED'];
 type TimestampLineMode = 'preset' | 'custom';
 
-export function TimestampPrintScreen({ outlet, onPrint, onBack, backLabel }: Props) {
+export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack, backLabel }: Props) {
   const insets = useSafeAreaInsets();
   const labelPreviewRef = useRef<View | null>(null);
   const popupCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -37,12 +39,24 @@ export function TimestampPrintScreen({ outlet, onPrint, onBack, backLabel }: Pro
   const [isPreparingPrint, setIsPreparingPrint] = useState(false);
   const [printError, setPrintError] = useState('');
   const [printPopupStatus, setPrintPopupStatus] = useState<PrintProgressStatus>(null);
+  const { readiness: printerReadiness, refreshReadiness } = usePrinterReadiness();
   const trimmedCustomTimestampText = customTimestampText.trim();
   const timestampLabelLine = timestampLineMode === 'preset'
     ? `${timestampLinePreset}: `
     : trimmedCustomTimestampText;
+  const shouldSelectPrinter = printerReadiness.status === 'missing';
+  const isCheckingPrinter = printerReadiness.status === 'checking';
+  const isCustomTimestampTextMissing = timestampLineMode === 'custom' && trimmedCustomTimestampText.length === 0;
   const isPrintDisabled = isPreparingPrint
-    || (timestampLineMode === 'custom' && trimmedCustomTimestampText.length === 0);
+    || isCheckingPrinter
+    || (!shouldSelectPrinter && isCustomTimestampTextMissing);
+  const printButtonText = isPreparingPrint
+    ? 'Preparing...'
+    : isCheckingPrinter
+      ? 'Checking Printer...'
+      : shouldSelectPrinter
+        ? 'Select Printer'
+        : 'Print Timestamp';
 
   useEffect(() => {
     return () => {
@@ -168,6 +182,11 @@ export function TimestampPrintScreen({ outlet, onPrint, onBack, backLabel }: Pro
   };
 
   const handlePrint = () => {
+    if (shouldSelectPrinter) {
+      onSelectPrinter();
+      return;
+    }
+
     if (isPrintDisabled) {
       return;
     }
@@ -183,7 +202,11 @@ export function TimestampPrintScreen({ outlet, onPrint, onBack, backLabel }: Pro
   return (
     <View style={styles.container}>
       <PrintProgressPopup status={printPopupStatus} />
-      <StickyBackHeader label={backLabel} onPress={onBack} rightContent={<PrinterReadinessBadge />} />
+      <StickyBackHeader
+        label={backLabel}
+        onPress={onBack}
+        rightContent={<PrinterReadinessBadge readiness={printerReadiness} onRefresh={refreshReadiness} />}
+      />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <View style={styles.summary}>
           <Text style={styles.label}>Current Outlet</Text>
@@ -294,8 +317,8 @@ export function TimestampPrintScreen({ outlet, onPrint, onBack, backLabel }: Pro
           style={[styles.printButton, isPrintDisabled && styles.printButtonDisabled]}
           onPress={handlePrint}
         >
-          <AppIcon name="print" size={20} color={colors.surface} />
-          <Text style={styles.printText}>{isPreparingPrint ? 'Preparing...' : 'Print Timestamp'}</Text>
+          <AppIcon name={shouldSelectPrinter ? 'printer' : 'print'} size={20} color={colors.surface} />
+          <Text style={styles.printText}>{printButtonText}</Text>
         </Pressable>
       </View>
     </View>
@@ -576,3 +599,4 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
 });
+

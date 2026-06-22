@@ -73,10 +73,12 @@ type Screen =
   | 'admin-product-detail';
 
 type TimestampReturnScreen = 'product-categories' | 'products';
+type PrinterReturnScreen = 'admin-home' | 'product-detail' | 'timestamp-print';
 
 export function RootApp() {
   const [screen, setScreen] = useState<Screen>('outlets');
   const [timestampReturnScreen, setTimestampReturnScreen] = useState<TimestampReturnScreen>('product-categories');
+  const [printerReturnScreen, setPrinterReturnScreen] = useState<PrinterReturnScreen>('admin-home');
   const [categories, setCategories] = useState<ProductCategory[]>(seedCategories);
   const [outlets, setOutlets] = useState<Outlet[]>(seedOutlets);
   const [products, setProducts] = useState<Product[]>(seedProducts);
@@ -834,6 +836,10 @@ export function RootApp() {
         outlet={selectedOutlet}
         onPrint={addPrintJob}
         backLabel={timestampReturnScreen === 'products' ? '< Products' : '< Categories'}
+        onSelectPrinter={() => {
+          setPrinterReturnScreen('timestamp-print');
+          setScreen('admin-printers');
+        }}
         onBack={() => setScreen(timestampReturnScreen)}
       />
     );
@@ -849,6 +855,10 @@ export function RootApp() {
         onChangeQuantity={setQuantity}
         onChangeLabelMode={setProductLabelMode}
         onPrint={addPrintJob}
+        onSelectPrinter={() => {
+          setPrinterReturnScreen('product-detail');
+          setScreen('admin-printers');
+        }}
         onBack={() => setScreen('products')}
       />
     );
@@ -879,14 +889,24 @@ export function RootApp() {
         onOpenCategories={() => setScreen('admin-categories')}
         onOpenOutletProducts={() => setScreen('admin-outlet-products')}
         onOpenOutlets={() => setScreen('admin-outlets')}
-        onOpenPrinters={() => setScreen('admin-printers')}
+        onOpenPrinters={() => {
+          setPrinterReturnScreen('admin-home');
+          setScreen('admin-printers');
+        }}
         onOpenProducts={() => setScreen('admin-products')}
       />
     );
   }
 
   if (screen === 'admin-printers') {
-    return <AdminPrinterScreen session={cloudSession} outlet={selectedOutlet} onBack={() => setScreen('admin-home')} />;
+    return (
+      <AdminPrinterScreen
+        session={cloudSession}
+        outlet={selectedOutlet}
+        backLabel={printerReturnScreen === 'admin-home' ? '< Admin' : '< Back'}
+        onBack={() => setScreen(printerReturnScreen)}
+      />
+    );
   }
 
   if (screen === 'admin-backup-export') {
@@ -1089,3 +1109,4 @@ function normalizeStoredPrintJobs(printJobs: PrintJob[]) {
     syncStatus: printJob.syncStatus === 'syncing' ? 'pending' : printJob.syncStatus,
   }));
 }
+

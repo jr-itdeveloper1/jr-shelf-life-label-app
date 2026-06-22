@@ -1,78 +1,25 @@
-import { useEffect, useState } from 'react';
-import { AppState, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { checkPreferredBluetoothPrinterReadiness } from '../services/printerService';
+import {
+  type PrinterReadinessState,
+  usePrinterReadiness,
+} from '../hooks/usePrinterReadiness';
 import { colors } from '../theme/colors';
 
-type PrinterReadinessStatus = 'checking' | 'ready' | 'missing' | 'offline' | 'error';
-
-type PrinterReadinessState = {
-  status: PrinterReadinessStatus;
-  label: string;
+type Props = {
+  readiness?: PrinterReadinessState;
+  onRefresh?: () => void | Promise<void>;
 };
 
-const initialState: PrinterReadinessState = {
-  status: 'checking',
-  label: 'Checking',
-};
-
-export function PrinterReadinessBadge() {
-  const [readiness, setReadiness] = useState<PrinterReadinessState>(initialState);
-
-  const refreshReadiness = async () => {
-    setReadiness((currentReadiness) => ({
-      ...currentReadiness,
-      status: 'checking',
-      label: currentReadiness.status === 'missing' ? 'No printer' : 'Checking',
-    }));
-
-    try {
-      const result = await checkPreferredBluetoothPrinterReadiness();
-
-      if (result.status === 'missing') {
-        setReadiness({
-          status: 'missing',
-          label: 'No printer',
-        });
-        return;
-      }
-
-      if (result.status === 'offline') {
-        setReadiness({
-          status: 'offline',
-          label: 'Printer offline',
-        });
-        return;
-      }
-
-      setReadiness({
-        status: 'ready',
-        label: 'Printer ready',
-      });
-    } catch (error) {
-      setReadiness({
-        status: 'error',
-        label: 'Check printer',
-      });
-    }
-  };
-
-  useEffect(() => {
-    void refreshReadiness();
-
-    const subscription = AppState.addEventListener('change', (state) => {
-      if (state === 'active') {
-        void refreshReadiness();
-      }
-    });
-
-    return () => subscription.remove();
-  }, []);
+export function PrinterReadinessBadge({ readiness: providedReadiness, onRefresh }: Props) {
+  const internalReadiness = usePrinterReadiness(!providedReadiness);
+  const readiness = providedReadiness ?? internalReadiness.readiness;
+  const refreshReadiness = onRefresh ?? internalReadiness.refreshReadiness;
 
   return (
     <Pressable
       style={[styles.badge, styles[`badge_${readiness.status}`]]}
-      onPress={() => void refreshReadiness()}
+      onPress={refreshReadiness}
       hitSlop={8}
     >
       <View style={[styles.dot, styles[`dot_${readiness.status}`]]} />
@@ -157,3 +104,4 @@ const styles = StyleSheet.create({
     color: colors.danger,
   },
 });
+

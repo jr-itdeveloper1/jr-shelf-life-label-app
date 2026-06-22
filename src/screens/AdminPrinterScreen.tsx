@@ -18,10 +18,11 @@ import { colors } from '../theme/colors';
 type Props = {
   session: CloudSession;
   outlet: Outlet;
+  backLabel?: string;
   onBack: () => void;
 };
 
-export function AdminPrinterScreen({ session, outlet, onBack }: Props) {
+export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onBack }: Props) {
   const [printers, setPrinters] = useState<BluetoothPrinterDevice[]>([]);
   const [selectedPrinterAddress, setSelectedPrinterAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -156,7 +157,7 @@ export function AdminPrinterScreen({ session, outlet, onBack }: Props) {
 
   return (
     <View style={styles.container}>
-      <StickyBackHeader label="< Admin" onPress={onBack} />
+      <StickyBackHeader label={backLabel} onPress={onBack} />
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.headerRow}>
           <View style={styles.titleBlock}>
@@ -515,3 +516,4 @@ const styles = StyleSheet.create({
     color: colors.surface,
   },
 });
+
