@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function LoginScreen({ isLoading = false, errorMessage, onLogin }: Props) {
-  const [email, setEmail] = useState('grace@jrfoods.example');
+  const [email, setEmail] = useState('hueying@jrgroup.com.sg');
   const [password, setPassword] = useState('ChangeMe123!');
   const [localError, setLocalError] = useState('');
 

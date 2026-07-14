@@ -15,19 +15,28 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   return proxy(request, params, 'GET');
 }
 
-async function proxy(request: NextRequest, paramsPromise: Promise<{ path: string[] }>, method: 'GET' | 'PATCH' | 'POST') {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  return proxy(request, params, 'DELETE');
+}
+
+async function proxy(request: NextRequest, paramsPromise: Promise<{ path: string[] }>, method: 'GET' | 'PATCH' | 'POST' | 'DELETE') {
   const params = await paramsPromise;
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('jr_access_token')?.value;
+  const bearerToken = request.headers.get('authorization');
   const headers = new Headers();
   const contentType = request.headers.get('content-type');
   if (contentType) headers.set('Content-Type', contentType);
-  if (accessToken) headers.set('Authorization', `Bearer ${accessToken}`);
+  if (accessToken) {
+    headers.set('Authorization', `Bearer ${accessToken}`);
+  } else if (bearerToken) {
+    headers.set('Authorization', bearerToken);
+  }
 
   const response = await fetch(`${API_BASE_URL}/${params.path.join('/')}${request.nextUrl.search}`, {
     method,
     headers,
-    body: method === 'GET' ? undefined : await request.arrayBuffer(),
+    body: method === 'GET' || method === 'DELETE' ? undefined : await request.arrayBuffer(),
   });
 
   const body = await response.arrayBuffer();

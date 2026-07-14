@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 import type { Outlet, OutletProduct, PrintJob, Product, ProductCategory } from '../domain/models';
 import type { BluetoothPrinterDevice } from './printerService';
 
-const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL ?? 'http://labelprinter.jrgroup.com.sg:4000';
+const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL ?? 'https://labelprinter.jrgroup.com.sg/api/backend';
 const sessionStorageKey = 'jr-label-cloud-session-v1';
 const deviceIdentifierStorageKey = 'jr-label-cloud-device-id-v1';
 

@@ -91,7 +91,7 @@ If Android refuses to replace an existing app because the signing certificate di
 - This APK uses the app id `com.jrfoods.shelflifelabels`.
 - GitHub release APKs are signed with the internal upload keystore stored in GitHub secrets.
 - Local fallback builds use the existing debug keystore unless upload signing properties are provided.
-- The app uses the production API fallback in `src/services/cloudApi.ts`: `http://labelprinter.jrgroup.com.sg:4000`.
+- The app uses the production API fallback in `src/services/cloudApi.ts`: `https://labelprinter.jrgroup.com.sg/api/backend`.
 - You do not need to run `npm start` after installing this APK.
 - For a clean rebuild, run:
 

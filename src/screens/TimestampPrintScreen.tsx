@@ -7,11 +7,11 @@ import { AppIcon } from '../components/AppIcon';
 import { PrinterReadinessBadge } from '../components/PrinterReadinessBadge';
 import { PrintProgressPopup, type PrintProgressStatus } from '../components/PrintProgressPopup';
 import { StickyBackHeader } from '../components/StickyBackHeader';
-import { TimestampLabelPreview } from '../components/TimestampLabelPreview';
+import { TimestampLabelPreview, type TimestampLabelMode } from '../components/TimestampLabelPreview';
 import type { Outlet, PrintJob } from '../domain/models';
-import { formatLabelDate, formatLabelDateOnly, formatLabelTime } from '../domain/shelfLife';
+import { formatLabelDateNumeric, formatLabelTimeNumeric } from '../domain/shelfLife';
 import { usePrinterReadiness } from '../hooks/usePrinterReadiness';
-import { captureLabelBitmap, timestampLabelBitmapSpec } from '../services/labelBitmap';
+import { captureLabelBitmap, compactTimestampLabelBitmapSpec, timestampLabelBitmapSpec } from '../services/labelBitmap';
 import { printLabelBitmap } from '../services/printerService';
 import { colors } from '../theme/colors';
 
@@ -32,6 +32,8 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
   const labelPreviewRef = useRef<View | null>(null);
   const popupCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [timestamp, setTimestamp] = useState(() => roundToMinute(new Date()));
+  const [timestampLabelMode, setTimestampLabelMode] = useState<TimestampLabelMode>('full');
+  const [includeTimestampTime, setIncludeTimestampTime] = useState(true);
   const [timestampLineMode, setTimestampLineMode] = useState<TimestampLineMode>('preset');
   const [timestampLinePreset, setTimestampLinePreset] = useState(defaultTimestampLinePreset);
   const [customTimestampText, setCustomTimestampText] = useState('');
@@ -44,12 +46,16 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
   const timestampLabelLine = timestampLineMode === 'preset'
     ? `${timestampLinePreset}: `
     : trimmedCustomTimestampText;
+  const timestampValueText = formatTimestampValue(timestamp, includeTimestampTime);
   const shouldSelectPrinter = printerReadiness.status === 'missing';
   const isCheckingPrinter = printerReadiness.status === 'checking';
   const isCustomTimestampTextMissing = timestampLineMode === 'custom' && trimmedCustomTimestampText.length === 0;
   const isPrintDisabled = isPreparingPrint
     || isCheckingPrinter
     || (!shouldSelectPrinter && isCustomTimestampTextMissing);
+  const timestampBitmapSpec = timestampLabelMode === 'compact'
+    ? compactTimestampLabelBitmapSpec
+    : timestampLabelBitmapSpec;
   const printButtonText = isPreparingPrint
     ? 'Preparing...'
     : isCheckingPrinter
@@ -107,11 +113,13 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
   };
 
   const openTimePicker = () => {
+    if (!includeTimestampTime) return;
+
     DateTimePickerAndroid.open({
       value: timestamp,
       mode: 'time',
       display: 'default',
-      is24Hour: false,
+      is24Hour: true,
       onChange: (_event, selectedDate) => {
         if (!selectedDate) return;
         setTimestamp((currentTimestamp) => {
@@ -149,11 +157,12 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
     setIsPreparingPrint(true);
     const printedAt = timestamp;
     const printedLabelLine = timestampLabelLine;
+    const printedTimestampValue = timestampValueText;
     setTimestamp(printedAt);
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 80));
-      const bitmap = await captureLabelBitmap(labelPreviewRef, timestampLabelBitmapSpec);
+      const bitmap = await captureLabelBitmap(labelPreviewRef, timestampBitmapSpec);
       const printResult = await printLabelBitmap({ bitmap, quantity: 1 });
 
       onPrint({
@@ -163,7 +172,7 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
         outletName: outlet.name,
         productId: 'timestamp',
         productCode: 'TIME',
-        productNameEn: `${printedLabelLine} ${formatLabelDate(printedAt)}`,
+        productNameEn: `${printedLabelLine} ${printedTimestampValue}`,
         productNameZh: '',
         quantity: 1,
         printedAt: printedAt.toISOString(),
@@ -211,9 +220,16 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
         <View style={styles.summary}>
           <Text style={styles.label}>Current Outlet</Text>
           <Text style={styles.outletName}>{outlet.name}</Text>
-          <Text style={styles.note}>This compact label prints the selected line and timestamp shown in the preview.</Text>
+          <Text style={styles.note}>This label prints the selected line and timestamp shown in the preview.</Text>
         </View>
-        <TimestampLabelPreview labelRef={labelPreviewRef} timestamp={timestamp} labelLine={timestampLabelLine} />
+        <TimestampLabelPreview
+          labelRef={labelPreviewRef}
+          timestamp={timestamp}
+          labelLine={timestampLabelLine}
+          includeTime={includeTimestampTime}
+          mode={timestampLabelMode}
+          onChangeMode={setTimestampLabelMode}
+        />
         <View style={styles.editorCard}>
           <View style={styles.editorHeader}>
             <View>
@@ -236,6 +252,20 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
               onPress={() => selectTimestampLineMode('custom')}
             >
               <Text style={[styles.lineModeText, timestampLineMode === 'custom' && styles.lineModeTextActive]}>Custom</Text>
+            </Pressable>
+          </View>
+          <View style={styles.includeTimeRow}>
+            <Text style={styles.includeTimeLabel}>Include Time?</Text>
+            <Pressable
+              accessibilityRole="switch"
+              accessibilityState={{ checked: includeTimestampTime }}
+              style={[styles.timeSwitch, includeTimestampTime && styles.timeSwitchActive]}
+              onPress={() => {
+                setIncludeTimestampTime((current) => !current);
+                setPrintError('');
+              }}
+            >
+              <View style={[styles.timeSwitchThumb, includeTimestampTime && styles.timeSwitchThumbActive]} />
             </Pressable>
           </View>
           {timestampLineMode === 'preset' ? (
@@ -288,7 +318,9 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
                     setPrintError('');
                   }}
                   autoCapitalize="characters"
-                  maxLength={24}
+                  multiline
+                  numberOfLines={2}
+                  maxLength={48}
                 />
               </View>
             </View>
@@ -296,11 +328,17 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
           <View style={styles.pickerRow}>
             <Pressable style={styles.pickerButton} onPress={openDatePicker}>
               <Text style={styles.pickerLabel}>Date</Text>
-              <Text style={styles.pickerValue}>{formatLabelDateOnly(timestamp)}</Text>
+              <Text style={styles.pickerValue}>{formatLabelDateNumeric(timestamp)}</Text>
             </Pressable>
-            <Pressable style={styles.pickerButton} onPress={openTimePicker}>
-              <Text style={styles.pickerLabel}>Time</Text>
-              <Text style={styles.pickerValue}>{formatLabelTime(timestamp)}</Text>
+            <Pressable
+              disabled={!includeTimestampTime}
+              style={[styles.pickerButton, !includeTimestampTime && styles.pickerButtonDisabled]}
+              onPress={openTimePicker}
+            >
+              <Text style={[styles.pickerLabel, !includeTimestampTime && styles.pickerTextDisabled]}>Time</Text>
+              <Text style={[styles.pickerValue, !includeTimestampTime && styles.pickerTextDisabled]}>
+                {includeTimestampTime ? formatLabelTimeNumeric(timestamp) : 'Excluded'}
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -333,6 +371,12 @@ function roundToMinute(value: Date) {
 
 function formatTimestampPresetLabel(preset: string) {
   return `${preset}:`;
+}
+
+function formatTimestampValue(value: Date, includeTime: boolean) {
+  return includeTime
+    ? formatLabelDateNumeric(value) + ' ' + formatLabelTimeNumeric(value)
+    : formatLabelDateNumeric(value);
 }
 
 const styles = StyleSheet.create({
@@ -436,6 +480,39 @@ const styles = StyleSheet.create({
   lineModeTextActive: {
     color: colors.surface,
   },
+  includeTimeRow: {
+    marginTop: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  includeTimeLabel: {
+    color: colors.textMuted,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  timeSwitch: {
+    width: 52,
+    height: 30,
+    justifyContent: 'center',
+    borderRadius: 999,
+    backgroundColor: colors.disabled,
+    paddingHorizontal: 3,
+  },
+  timeSwitchActive: {
+    backgroundColor: colors.primary,
+  },
+  timeSwitchThumb: {
+    width: 24,
+    height: 24,
+    borderRadius: 999,
+    backgroundColor: colors.surface,
+  },
+  timeSwitchThumbActive: {
+    alignSelf: 'flex-end',
+  },
   lineEditorSingle: {
     marginTop: 14,
   },
@@ -512,7 +589,7 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   customTextField: {
-    minHeight: 66,
+    minHeight: 84,
     justifyContent: 'center',
     borderRadius: 8,
     borderWidth: 1,
@@ -522,11 +599,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   customTextInput: {
+    minHeight: 40,
     marginTop: 2,
     color: colors.text,
     fontSize: 15,
     fontWeight: '900',
+    lineHeight: 20,
     padding: 0,
+    textAlignVertical: 'top',
   },
   pickerRow: {
     marginTop: 14,
@@ -543,6 +623,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 12,
   },
+  pickerButtonDisabled: {
+    backgroundColor: colors.surfaceMuted,
+    borderColor: colors.disabled,
+  },
   pickerLabel: {
     color: colors.textMuted,
     fontSize: 11,
@@ -554,6 +638,9 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 17,
     fontWeight: '900',
+  },
+  pickerTextDisabled: {
+    color: colors.textMuted,
   },
   footer: {
     borderTopWidth: 1,

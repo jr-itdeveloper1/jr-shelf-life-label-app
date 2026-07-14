@@ -11,6 +11,14 @@ export const labelBitmapSpec = {
 } as const;
 
 export const timestampLabelBitmapSpec = {
+  widthMm: 60,
+  heightMm: 40,
+  widthPx: 480,
+  heightPx: 320,
+  format: 'png',
+} as const;
+
+export const compactTimestampLabelBitmapSpec = {
   widthMm: 40,
   heightMm: 20,
   widthPx: 320,
@@ -29,6 +37,7 @@ export const compactProductLabelBitmapSpec = {
 export type LabelBitmapSpec =
   | typeof labelBitmapSpec
   | typeof timestampLabelBitmapSpec
+  | typeof compactTimestampLabelBitmapSpec
   | typeof compactProductLabelBitmapSpec;
 
 export type LabelBitmapFile = {
