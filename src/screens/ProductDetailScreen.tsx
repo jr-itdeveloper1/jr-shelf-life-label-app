@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppIcon } from '../components/AppIcon';
 import { LabelPreview, type ProductLabelMode } from '../components/LabelPreview';
+import { LanguageToggle } from '../components/LanguageToggle';
 import { PrinterReadinessBadge } from '../components/PrinterReadinessBadge';
 import { PrintProgressPopup, type PrintProgressStatus } from '../components/PrintProgressPopup';
 import { QuantitySelector } from '../components/QuantitySelector';
@@ -12,6 +13,7 @@ import { getProductImageSource } from '../data/productImages';
 import type { Outlet, PrintJob, Product } from '../domain/models';
 import { calculateExpiry } from '../domain/shelfLife';
 import { usePrinterReadiness } from '../hooks/usePrinterReadiness';
+import { useLanguage } from '../i18n/LanguageContext';
 import { captureLabelBitmap, compactProductLabelBitmapSpec, labelBitmapSpec } from '../services/labelBitmap';
 import { printLabelBitmap } from '../services/printerService';
 import { colors } from '../theme/colors';
@@ -40,6 +42,7 @@ export function ProductDetailScreen({
   onBack,
 }: Props) {
   const insets = useSafeAreaInsets();
+  const { language, t } = useLanguage();
   const labelPreviewRef = useRef<View | null>(null);
   const popupCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [openedAt] = useState(() => new Date());
@@ -48,17 +51,19 @@ export function ProductDetailScreen({
   const [printPopupStatus, setPrintPopupStatus] = useState<PrintProgressStatus>(null);
   const { readiness: printerReadiness, refreshReadiness } = usePrinterReadiness();
   const imageSource = getProductImageSource(product.imageUri);
-  const shelfLifeText = `${product.daysToExpire} day(s) ${product.hoursToExpire} hour(s)`;
+  const shelfLifeText = t('shelfLifeDuration', { days: product.daysToExpire, hours: product.hoursToExpire });
+  const primaryName = language === 'zh-CN' ? product.nameZh : product.nameEn;
+  const secondaryName = language === 'zh-CN' ? product.nameEn : product.nameZh;
   const shouldSelectPrinter = printerReadiness.status === 'missing';
   const isCheckingPrinter = printerReadiness.status === 'checking';
   const isPrintButtonDisabled = isPreparingPrint || isCheckingPrinter;
   const printButtonText = isPreparingPrint
-    ? 'Preparing...'
+    ? t('preparing')
     : isCheckingPrinter
-      ? 'Checking Printer...'
+      ? t('checkingPrinter')
       : shouldSelectPrinter
-        ? 'Select Printer'
-        : 'Print';
+        ? t('selectPrinter')
+        : t('print');
 
   useEffect(() => {
     return () => {
@@ -140,9 +145,9 @@ export function ProductDetailScreen({
     }
 
     if (quantity > 5) {
-      Alert.alert('Confirm Quantity', `Print ${quantity} labels for ${product.nameEn}?`, [
-        { text: 'Cancel', style: 'cancel' },
-        { text: `Print ${quantity}`, onPress: () => void savePrintJob().catch(handlePrintError) },
+      Alert.alert(t('confirmQuantity'), t('confirmPrintQuantity', { quantity, product: primaryName }), [
+        { text: t('cancel'), style: 'cancel' },
+        { text: t('printQuantity', { quantity }), onPress: () => void savePrintJob().catch(handlePrintError) },
       ]);
       return;
     }
@@ -153,7 +158,7 @@ export function ProductDetailScreen({
   const handlePrintError = (error: unknown) => {
     const errorMessage = error instanceof Error
       ? error.message
-      : 'Could not send the label to the Bluetooth printer. Check pairing and try again.';
+      : t('bluetoothPrintError');
     showPrintResult('warning', 1300, () => setPrintError(errorMessage));
   };
 
@@ -161,9 +166,9 @@ export function ProductDetailScreen({
     <View style={styles.container}>
       <PrintProgressPopup status={printPopupStatus} />
       <StickyBackHeader
-        label="< Products"
+        label={t('productDetailsBack')}
         onPress={onBack}
-        rightContent={<PrinterReadinessBadge readiness={printerReadiness} onRefresh={refreshReadiness} />}
+        rightContent={<View style={styles.headerActions}><PrinterReadinessBadge readiness={printerReadiness} onRefresh={refreshReadiness} /><LanguageToggle /></View>}
       />
       <ScrollView
         style={styles.scroll}
@@ -176,13 +181,13 @@ export function ProductDetailScreen({
             </View>
           ) : null}
           <View style={styles.summaryText}>
-            <Text style={[styles.name, !imageSource && styles.nameNoImage]}>{product.nameEn}</Text>
-            <Text style={[styles.nameZh, !imageSource && styles.nameZhNoImage]}>{product.nameZh}</Text>
+            <Text style={[styles.name, !imageSource && styles.nameNoImage]}>{primaryName}</Text>
+            <Text style={[styles.nameZh, !imageSource && styles.nameZhNoImage]}>{secondaryName}</Text>
             <View style={styles.productFacts}>
               <Text style={styles.storageBadge}>
                 {product.storageMethod.en} {product.storageMethod.zh}
               </Text>
-              <Text style={styles.shelfLife}>Shelf life: {shelfLifeText}</Text>
+              <Text style={styles.shelfLife}>{t('shelfLife', { value: shelfLifeText })}</Text>
             </View>
           </View>
         </View>
@@ -198,7 +203,7 @@ export function ProductDetailScreen({
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 12) }]}>
         {printError ? (
           <View style={styles.errorBanner}>
-            <Text style={styles.errorTitle}>Print Error</Text>
+            <Text style={styles.errorTitle}>{t('printError')}</Text>
             <Text style={styles.errorText}>{printError}</Text>
           </View>
         ) : null}
@@ -228,6 +233,7 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 12,
   },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   back: {
     color: colors.primary,
     fontSize: 16,

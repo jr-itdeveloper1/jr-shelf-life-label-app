@@ -2,9 +2,11 @@ import { useMemo, useState } from 'react';
 import { FlatList, Image, Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 import { AppIcon } from '../components/AppIcon';
+import { LanguageToggle } from '../components/LanguageToggle';
 import { getProductImageSource } from '../data/productImages';
 import { getCategoryColor } from '../domain/categoryColors';
 import type { Outlet, OutletProduct, Product, ProductCategory } from '../domain/models';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors } from '../theme/colors';
 
 type Props = {
@@ -27,6 +29,7 @@ export function AdminOutletProductDetailScreen({
   const [selectedCategoryId, setSelectedCategoryId] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [filtersExpanded, setFiltersExpanded] = useState(false);
+  const { language, t } = useLanguage();
 
   const eligibleProducts = products.filter(
     (product) => product.source === 'company' || product.outletId === outlet.id,
@@ -43,7 +46,7 @@ export function AdminOutletProductDetailScreen({
   const visibleCount = eligibleProducts.filter(isVisible).length;
 
   const getCategoryName = (product: Product) =>
-    categories.find((category) => category.id === product.categoryId)?.name ?? 'Uncategorized';
+    categories.find((category) => category.id === product.categoryId)?.name ?? t('uncategorized');
 
   const categoryCounts = useMemo(
     () =>
@@ -66,11 +69,11 @@ export function AdminOutletProductDetailScreen({
     [categories, categoryCounts],
   );
   const customProductCount = eligibleProducts.filter((product) => product.source === 'outlet').length;
-  const allChip = { id: 'all', label: 'All', count: eligibleProducts.length, color: getCategoryColor('all') };
+  const allChip = { id: 'all', label: t('all'), count: eligibleProducts.length, color: getCategoryColor('all') };
   const chips = [
     allChip,
     ...categoryChips,
-    ...(customProductCount > 0 ? [{ id: 'custom', label: 'Custom', count: customProductCount, color: getCategoryColor('custom') }] : []),
+    ...(customProductCount > 0 ? [{ id: 'custom', label: t('custom'), count: customProductCount, color: getCategoryColor('custom') }] : []),
   ];
   const selectedChip = chips.find((chip) => chip.id === selectedCategoryId) ?? allChip;
   const quickCategoryChips = [...categoryChips].sort((left, right) => right.count - left.count).slice(0, 2);
@@ -101,14 +104,12 @@ export function AdminOutletProductDetailScreen({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.back} onPress={onBack}>
-        {'< Outlet Product Lists'}
-      </Text>
+      <View style={styles.topRow}><Text style={styles.back} onPress={onBack}>{`‹ ${t('outletProductLists')}`}</Text><LanguageToggle /></View>
       <View style={styles.header}>
         <View style={styles.headerText}>
           <Text style={styles.eyebrow}>{outlet.shortCode}</Text>
           <Text style={styles.title}>{outlet.name}</Text>
-          <Text style={styles.subtitle}>{visibleCount} products visible on this outlet</Text>
+          <Text style={styles.subtitle}>{t('visibleProducts', { count: visibleCount })}</Text>
         </View>
         <Text style={styles.countBadge}>{`${visibleCount}/${eligibleProducts.length}`}</Text>
       </View>
@@ -116,7 +117,7 @@ export function AdminOutletProductDetailScreen({
         style={styles.searchBox}
         value={searchQuery}
         onChangeText={setSearchQuery}
-        placeholder="Search product or code"
+        placeholder={t('searchProductOrCode')}
       />
       <View style={styles.filterArea}>
         <View style={styles.filterRow}>
@@ -147,7 +148,7 @@ export function AdminOutletProductDetailScreen({
           </View>
           {filtersExpanded || hiddenChipCount > 0 ? (
             <Pressable
-              accessibilityLabel={filtersExpanded ? 'Close filters' : 'Open filters'}
+              accessibilityLabel={filtersExpanded ? t('closeFilters') : t('openFilters')}
               style={[styles.filterButton, filtersExpanded && styles.filterButtonActive]}
               onPress={() => setFiltersExpanded((currentValue) => !currentValue)}
             >
@@ -163,8 +164,8 @@ export function AdminOutletProductDetailScreen({
         {filtersExpanded ? (
           <View style={styles.filterPanel}>
             <View style={styles.filterPanelHeader}>
-              <Text style={styles.filterPanelTitle}>Category</Text>
-              <Text style={styles.filterPanelMeta}>{filteredProducts.length} shown</Text>
+              <Text style={styles.filterPanelTitle}>{t('category')}</Text>
+              <Text style={styles.filterPanelMeta}>{t('categoryShown', { count: filteredProducts.length })}</Text>
             </View>
             <View style={styles.filterOptions}>
               {chips.map((chip) => {
@@ -206,8 +207,8 @@ export function AdminOutletProductDetailScreen({
         contentContainerStyle={styles.list}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text style={styles.emptyTitle}>No products found</Text>
-            <Text style={styles.emptyText}>Try another category or search term.</Text>
+            <Text style={styles.emptyTitle}>{t('noProductsFound')}</Text>
+            <Text style={styles.emptyText}>{t('tryCategorySearch')}</Text>
           </View>
         }
         renderItem={({ item }) => {
@@ -223,18 +224,18 @@ export function AdminOutletProductDetailScreen({
                   <Image source={imageSource} style={styles.thumbImage} />
                 ) : (
                   <Text style={styles.thumbText} numberOfLines={2}>
-                    {item.nameEn}
+                    {language === 'zh-CN' ? item.nameZh : item.nameEn}
                   </Text>
                 )}
               </View>
               <View style={styles.productText}>
-                <Text style={styles.productName}>{item.nameEn}</Text>
-                <Text style={styles.productNameZh}>{item.nameZh}</Text>
+                <Text style={styles.productName}>{language === 'zh-CN' ? item.nameZh : item.nameEn}</Text>
+                <Text style={styles.productNameZh}>{language === 'zh-CN' ? item.nameEn : item.nameZh}</Text>
                 <Text style={styles.productMeta}>
                   {item.productCode} | {getCategoryName(item)}
                 </Text>
                 <Text style={styles.productMeta}>
-                  {item.source === 'outlet' ? 'Outlet custom' : 'Company product'}
+                  {item.source === 'outlet' ? t('outletCustom') : t('companyProduct')}
                 </Text>
               </View>
               <View style={styles.switchBlock}>
@@ -245,7 +246,7 @@ export function AdminOutletProductDetailScreen({
                   thumbColor={visible ? colors.primary : colors.disabled}
                 />
                 <Text style={[styles.statusText, !visible && styles.statusTextHidden]}>
-                  {visible ? 'Show' : 'Hide'}
+                  {visible ? t('show') : t('hide')}
                 </Text>
               </View>
             </Pressable>
@@ -268,6 +269,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
   },
+  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -7,6 +7,7 @@ import { StickyBackHeader } from '../components/StickyBackHeader';
 import { getProductImageSource } from '../data/productImages';
 import { getCategoryColor } from '../domain/categoryColors';
 import type { Outlet, Product, ProductCategory } from '../domain/models';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors } from '../theme/colors';
 
 type Props = {
@@ -26,6 +27,7 @@ export function AdminProductDetailScreen({
   onSave,
   onBack,
 }: Props) {
+  const { t } = useLanguage();
   const firstCategory = categories[0];
   const [categoryId, setCategoryId] = useState(product?.categoryId ?? firstCategory?.id ?? '');
   const [nameEn, setNameEn] = useState(product?.nameEn ?? '');
@@ -75,7 +77,7 @@ export function AdminProductDetailScreen({
         setImageUri(result.assets[0].uri);
       }
     } catch (error) {
-      Alert.alert('Image Picker Error', error instanceof Error ? error.message : 'Unable to open image picker.');
+      Alert.alert(t('imagePickerError'), error instanceof Error ? error.message : t('unableOpenImagePicker'));
     }
   };
 
@@ -88,32 +90,32 @@ export function AdminProductDetailScreen({
     const parsedHours = Number(hoursToExpire);
 
     if (!selectedCategory) {
-      Alert.alert('Missing Category', 'Please select a category.');
+      Alert.alert(t('missingCategory'), t('selectCategoryMessage'));
       return;
     }
 
     if (!trimmedNameEn || !trimmedNameZh) {
-      Alert.alert('Missing Name', 'Please enter both English and Chinese product names.');
+      Alert.alert(t('missingName'), t('enterBothProductNames'));
       return;
     }
 
     if (!trimmedStorageMethodEn || !trimmedStorageMethodZh) {
-      Alert.alert('Missing Storage Method', 'Please enter both English and Chinese storage methods.');
+      Alert.alert(t('missingStorageMethod'), t('enterBothStorageMethods'));
       return;
     }
 
     if (!Number.isInteger(parsedDays) || !Number.isInteger(parsedHours) || parsedDays < 0 || parsedHours < 0) {
-      Alert.alert('Invalid Shelf Life', 'Days and hours must be non-negative whole numbers.');
+      Alert.alert(t('invalidShelfLife'), t('shelfLifeWholeNumbers'));
       return;
     }
 
     if (parsedDays === 0 && parsedHours === 0) {
-      Alert.alert('Invalid Shelf Life', 'Days or hours must be greater than 0.');
+      Alert.alert(t('invalidShelfLife'), t('shelfLifeGreaterZero'));
       return;
     }
 
     if (selectedCategory.scope === 'outlet' && !selectedOutlet) {
-      Alert.alert('Missing Outlet', 'Outlet custom products need a category prefix that matches an outlet short code.');
+      Alert.alert(t('missingOutlet'), t('missingOutletMessage'));
       return;
     }
 
@@ -138,36 +140,36 @@ export function AdminProductDetailScreen({
 
   return (
     <View style={styles.container}>
-      <StickyBackHeader label="< Products" onPress={onBack} />
+      <StickyBackHeader label={t('products')} onPress={onBack} />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.title}>{product ? 'Product Detail' : 'New Product'}</Text>
+          <Text style={styles.title}>{product ? t('productDetail') : t('newProduct')}</Text>
           <Pressable style={styles.saveButton} onPress={handleSave}>
             <AppIcon name="save" size={16} color={colors.surface} />
-            <Text style={styles.saveText}>Save</Text>
+            <Text style={styles.saveText}>{t('save')}</Text>
           </Pressable>
         </View>
 
         <View style={styles.imagePanel}>
-          <Text style={styles.label}>Product Image</Text>
+          <Text style={styles.label}>{t('productImage')}</Text>
           <View style={styles.imageBox}>
             {imageSource ? (
               <Image source={imageSource} style={styles.imagePreview} />
             ) : (
               <>
-                <Text style={styles.imageText}>Optional image</Text>
-                <Text style={styles.imageSubText}>Text fallback is used when empty</Text>
+                <Text style={styles.imageText}>{t('optionalImage')}</Text>
+                <Text style={styles.imageSubText}>{t('imageFallback')}</Text>
               </>
             )}
           </View>
           <Pressable style={styles.imageAction} onPress={chooseImage}>
             <AppIcon name="image" size={18} color={colors.primary} />
-            <Text style={styles.imageActionText}>Choose Image</Text>
+            <Text style={styles.imageActionText}>{t('chooseImage')}</Text>
           </Pressable>
         </View>
 
         <View style={styles.field}>
-          <Text style={styles.label}>Category</Text>
+          <Text style={styles.label}>{t('category')}</Text>
           <View style={styles.chips}>
             {categories.map((category) => {
               const isActiveCategory = category.id === categoryId;
@@ -187,33 +189,33 @@ export function AdminProductDetailScreen({
           </View>
         </View>
 
-        <ReadOnlyField label="Product Code" value={`${generatedProductCode || '-'}  Auto-generated`} />
+        <ReadOnlyField label={t('productCode')} value={`${generatedProductCode || '-'}  ${t('autoGenerated')}`} />
         {selectedCategory?.scope === 'outlet' ? (
-          <ReadOnlyField label="Outlet" value={selectedOutlet?.name ?? 'No matching outlet'} />
+          <ReadOnlyField label={t('outlet')} value={selectedOutlet?.name ?? t('noMatchingOutlet')} />
         ) : null}
-        <EditableField label="English Name" value={nameEn} onChangeText={setNameEn} placeholder="Product name" />
-        <EditableField label="Chinese Name" value={nameZh} onChangeText={setNameZh} placeholder="中文名称" />
+        <EditableField label={t('englishName')} value={nameEn} onChangeText={setNameEn} placeholder={t('productName')} />
+        <EditableField label={t('chineseName')} value={nameZh} onChangeText={setNameZh} placeholder="中文名称" />
         <EditableField
-          label="Storage Method English"
+          label={t('storageMethodEnglish')}
           value={storageMethodEn}
           onChangeText={setStorageMethodEn}
           placeholder="Chilled"
         />
         <EditableField
-          label="Storage Method Chinese"
+          label={t('storageMethodChinese')}
           value={storageMethodZh}
           onChangeText={setStorageMethodZh}
           placeholder="冷藏"
         />
         <View style={styles.twoColumn}>
           <EditableField
-            label="Days"
+            label={t('days')}
             value={daysToExpire}
             onChangeText={(value) => setDaysToExpire(value.replace(/\D/g, ''))}
             keyboardType="number-pad"
           />
           <EditableField
-            label="Hours"
+            label={t('hours')}
             value={hoursToExpire}
             onChangeText={(value) => setHoursToExpire(value.replace(/\D/g, ''))}
             keyboardType="number-pad"
@@ -221,8 +223,8 @@ export function AdminProductDetailScreen({
         </View>
         <View style={styles.statusRow}>
           <View>
-            <Text style={styles.label}>Status</Text>
-            <Text style={styles.statusText}>{active ? 'Active' : 'Inactive'}</Text>
+            <Text style={styles.label}>{t('status')}</Text>
+            <Text style={styles.statusText}>{active ? t('active') : t('inactive')}</Text>
           </View>
           <Switch
             value={active}

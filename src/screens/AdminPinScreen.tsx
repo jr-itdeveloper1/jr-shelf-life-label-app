@@ -1,6 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../theme/colors';
+import { LanguageToggle } from '../components/LanguageToggle';
+import { useLanguage } from '../i18n/LanguageContext';
 
 type Props = {
   pin: string;
@@ -13,6 +15,7 @@ const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
 const DEMO_PIN = '1234';
 
 export function AdminPinScreen({ pin, onChangePin, onSuccess, onCancel }: Props) {
+  const { t } = useLanguage();
   const appendDigit = (digit: string) => {
     const nextPin = `${pin}${digit}`.slice(0, 4);
     onChangePin(nextPin);
@@ -23,16 +26,14 @@ export function AdminPinScreen({ pin, onChangePin, onSuccess, onCancel }: Props)
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={onCancel}>
-        <Text style={styles.back}>{'< Products'}</Text>
-      </Pressable>
+      <View style={styles.topRow}><Pressable onPress={onCancel}><Text style={styles.back}>{`‹ ${t('products')}`}</Text></Pressable><LanguageToggle /></View>
       <View style={styles.header}>
-        <Text style={styles.title}>Admin Access</Text>
-        <Text style={styles.subtitle}>Enter local admin PIN</Text>
+        <Text style={styles.title}>{t('adminAccess')}</Text>
+        <Text style={styles.subtitle}>{t('enterAdminPin')}</Text>
       </View>
       <View style={styles.pinBox}>
         <Text style={styles.pinText}>{pin.padEnd(4, '_').replace(/\d/g, '*')}</Text>
-        <Text style={styles.hint}>Demo PIN: 1234</Text>
+        <Text style={styles.hint}>{t('demoPin')}</Text>
       </View>
       <View style={styles.keypad}>
         {keys.map((key) => (
@@ -41,7 +42,7 @@ export function AdminPinScreen({ pin, onChangePin, onSuccess, onCancel }: Props)
           </Pressable>
         ))}
         <Pressable style={styles.keyWide} onPress={() => onChangePin('')}>
-          <Text style={styles.keyText}>Clear</Text>
+          <Text style={styles.keyText}>{t('clear')}</Text>
         </Pressable>
       </View>
     </View>
@@ -60,6 +61,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
   },
+  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   header: {
     marginTop: 28,
     marginBottom: 24,

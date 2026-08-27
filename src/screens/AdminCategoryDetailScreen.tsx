@@ -5,6 +5,7 @@ import { AppIcon } from '../components/AppIcon';
 import { StickyBackHeader } from '../components/StickyBackHeader';
 import { categoryColorOptions, getCategoryColor } from '../domain/categoryColors';
 import type { Product, ProductCategory } from '../domain/models';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors } from '../theme/colors';
 
 type Props = {
@@ -22,6 +23,7 @@ export function AdminCategoryDetailScreen({
   onSave,
   onBack,
 }: Props) {
+  const { t } = useLanguage();
   const [name, setName] = useState(category?.name ?? '');
   const [codePrefix, setCodePrefix] = useState(category?.codePrefix ?? '');
   const [scope, setScope] = useState<ProductCategory['scope']>(category?.scope ?? 'company');
@@ -35,12 +37,12 @@ export function AdminCategoryDetailScreen({
     const trimmedName = name.trim();
 
     if (!trimmedName) {
-      Alert.alert('Missing Name', 'Please enter a category name.');
+      Alert.alert(t('missingName'), t('enterCategoryName'));
       return;
     }
 
     if (!normalizedPrefix) {
-      Alert.alert('Missing Prefix', 'Please enter a prefix, up to 5 letters or numbers.');
+      Alert.alert(t('missingPrefix'), t('enterPrefix'));
       return;
     }
 
@@ -50,7 +52,7 @@ export function AdminCategoryDetailScreen({
     );
 
     if (duplicatedPrefix) {
-      Alert.alert('Duplicate Prefix', 'Please use a prefix that is not already used by another category.');
+      Alert.alert(t('duplicatePrefix'), t('duplicatePrefixMessage'));
       return;
     }
 
@@ -65,25 +67,25 @@ export function AdminCategoryDetailScreen({
 
   return (
     <View style={styles.container}>
-      <StickyBackHeader label="< Categories" onPress={onBack} />
+      <StickyBackHeader label={t('categories')} onPress={onBack} />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.title}>{category ? 'Category Detail' : 'New Category'}</Text>
+          <Text style={styles.title}>{category ? t('categoryDetail') : t('newCategory')}</Text>
           <Pressable style={styles.saveButton} onPress={handleSave}>
             <AppIcon name="save" size={16} color={colors.surface} />
-            <Text style={styles.saveText}>Save</Text>
+            <Text style={styles.saveText}>{t('save')}</Text>
           </Pressable>
         </View>
-        <EditableField label="Name" value={name} onChangeText={setName} placeholder="Category name" />
+        <EditableField label={t('name')} value={name} onChangeText={setName} placeholder={t('categoryName')} />
         <EditableField
-          label="Code Prefix"
+          label={t('codePrefix')}
           value={codePrefix}
           onChangeText={(value) => setCodePrefix(value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5))}
-          placeholder="e.g. DAI"
+          placeholder={t('codePrefixExample')}
           autoCapitalize="characters"
         />
         <View style={styles.field}>
-          <Text style={styles.label}>Colour</Text>
+          <Text style={styles.label}>{t('colour')}</Text>
           <View style={styles.colorGrid}>
             {categoryColorOptions.map((option) => {
               const isSelected = option.color === categoryColor;
@@ -116,31 +118,29 @@ export function AdminCategoryDetailScreen({
           </View>
         </View>
         <View style={styles.field}>
-          <Text style={styles.label}>Scope</Text>
+          <Text style={styles.label}>{t('scope')}</Text>
           <View style={styles.segmented}>
             <Text
               style={[styles.segment, scope === 'company' && styles.segmentActive]}
               onPress={() => setScope('company')}
             >
-              Company
+              {t('company')}
             </Text>
             <Text
               style={[styles.segment, scope === 'outlet' && styles.segmentActive]}
               onPress={() => setScope('outlet')}
             >
-              Outlet Custom
+              {t('outletCustomScope')}
             </Text>
           </View>
         </View>
-        <ReadOnlyField label="Status" value="Active" />
-        <ReadOnlyField label="Products in category" value={`${productCount}`} />
+        <ReadOnlyField label={t('status')} value={t('active')} />
+        <ReadOnlyField label={t('productsInCategory')} value={`${productCount}`} />
         <View style={styles.prefixPanel}>
-          <Text style={styles.panelTitle}>Prefix Change</Text>
-          <Text style={styles.panelText}>Current behavior:</Text>
-          <Text style={styles.optionActive}>Future products only</Text>
-          <Text style={styles.warning}>
-            Existing product codes are not renumbered yet. We can add the renumber preview flow when product persistence is moved to SQLite.
-          </Text>
+          <Text style={styles.panelTitle}>{t('prefixChange')}</Text>
+          <Text style={styles.panelText}>{t('currentBehavior')}</Text>
+          <Text style={styles.optionActive}>{t('futureProductsOnly')}</Text>
+          <Text style={styles.warning}>{t('existingCodesWarning')}</Text>
         </View>
       </ScrollView>
     </View>

@@ -4,6 +4,7 @@ import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppIcon } from '../components/AppIcon';
+import { LanguageToggle } from '../components/LanguageToggle';
 import { PrinterReadinessBadge } from '../components/PrinterReadinessBadge';
 import { PrintProgressPopup, type PrintProgressStatus } from '../components/PrintProgressPopup';
 import { StickyBackHeader } from '../components/StickyBackHeader';
@@ -11,6 +12,7 @@ import { TimestampLabelPreview, type TimestampLabelMode } from '../components/Ti
 import type { Outlet, PrintJob } from '../domain/models';
 import { formatLabelDateNumeric, formatLabelTimeNumeric } from '../domain/shelfLife';
 import { usePrinterReadiness } from '../hooks/usePrinterReadiness';
+import { useLanguage } from '../i18n/LanguageContext';
 import { captureLabelBitmap, compactTimestampLabelBitmapSpec, timestampLabelBitmapSpec } from '../services/labelBitmap';
 import { printLabelBitmap } from '../services/printerService';
 import { colors } from '../theme/colors';
@@ -29,6 +31,7 @@ type TimestampLineMode = 'preset' | 'custom';
 
 export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack, backLabel }: Props) {
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
   const labelPreviewRef = useRef<View | null>(null);
   const popupCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [timestamp, setTimestamp] = useState(() => roundToMinute(new Date()));
@@ -57,12 +60,12 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
     ? compactTimestampLabelBitmapSpec
     : timestampLabelBitmapSpec;
   const printButtonText = isPreparingPrint
-    ? 'Preparing...'
+    ? t('preparing')
     : isCheckingPrinter
-      ? 'Checking Printer...'
+      ? t('checkingPrinter')
       : shouldSelectPrinter
-        ? 'Select Printer'
-        : 'Print Timestamp';
+        ? t('selectPrinter')
+        : t('printTimestamp');
 
   useEffect(() => {
     return () => {
@@ -203,7 +206,7 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
     void savePrintJob().catch((error: unknown) => {
       const errorMessage = error instanceof Error
         ? error.message
-        : 'Could not send the timestamp to the Bluetooth printer. Check pairing and try again.';
+        : t('bluetoothTimestampError');
       showPrintResult('warning', 1300, () => setPrintError(errorMessage));
     });
   };
@@ -212,15 +215,15 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
     <View style={styles.container}>
       <PrintProgressPopup status={printPopupStatus} />
       <StickyBackHeader
-        label={backLabel}
+        label={backLabel.includes('Products') ? t('products') : t('categories')}
         onPress={onBack}
-        rightContent={<PrinterReadinessBadge readiness={printerReadiness} onRefresh={refreshReadiness} />}
+        rightContent={<View style={styles.headerActions}><PrinterReadinessBadge readiness={printerReadiness} onRefresh={refreshReadiness} /><LanguageToggle /></View>}
       />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <View style={styles.summary}>
-          <Text style={styles.label}>Current Outlet</Text>
+          <Text style={styles.label}>{t('currentOutlet')}</Text>
           <Text style={styles.outletName}>{outlet.name}</Text>
-          <Text style={styles.note}>This label prints the selected line and timestamp shown in the preview.</Text>
+          <Text style={styles.note}>{t('timestampNote')}</Text>
         </View>
         <TimestampLabelPreview
           labelRef={labelPreviewRef}
@@ -233,11 +236,11 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
         <View style={styles.editorCard}>
           <View style={styles.editorHeader}>
             <View>
-              <Text style={styles.editorTitle}>Edit Timestamp</Text>
-              <Text style={styles.editorSubtitle}>Changes update the preview above.</Text>
+              <Text style={styles.editorTitle}>{t('editTimestamp')}</Text>
+              <Text style={styles.editorSubtitle}>{t('previewUpdates')}</Text>
             </View>
             <Pressable style={styles.nowButton} onPress={resetToCurrentTime}>
-              <Text style={styles.nowButtonText}>Now</Text>
+              <Text style={styles.nowButtonText}>{t('now')}</Text>
             </Pressable>
           </View>
           <View style={styles.lineModeSwitch}>
@@ -245,17 +248,17 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
               style={[styles.lineModeButton, timestampLineMode === 'preset' && styles.lineModeButtonActive]}
               onPress={() => selectTimestampLineMode('preset')}
             >
-              <Text style={[styles.lineModeText, timestampLineMode === 'preset' && styles.lineModeTextActive]}>Preset</Text>
+              <Text style={[styles.lineModeText, timestampLineMode === 'preset' && styles.lineModeTextActive]}>{t('preset')}</Text>
             </Pressable>
             <Pressable
               style={[styles.lineModeButton, timestampLineMode === 'custom' && styles.lineModeButtonActive]}
               onPress={() => selectTimestampLineMode('custom')}
             >
-              <Text style={[styles.lineModeText, timestampLineMode === 'custom' && styles.lineModeTextActive]}>Custom</Text>
+              <Text style={[styles.lineModeText, timestampLineMode === 'custom' && styles.lineModeTextActive]}>{t('custom')}</Text>
             </Pressable>
           </View>
           <View style={styles.includeTimeRow}>
-            <Text style={styles.includeTimeLabel}>Include Time?</Text>
+            <Text style={styles.includeTimeLabel}>{t('includeTime')}</Text>
             <Pressable
               accessibilityRole="switch"
               accessibilityState={{ checked: includeTimestampTime }}
@@ -275,7 +278,7 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
                   style={[styles.presetButton, isPresetMenuOpen && styles.presetButtonActive]}
                   onPress={() => setIsPresetMenuOpen((isOpen) => !isOpen)}
                 >
-                  <Text style={styles.presetLabel}>Label</Text>
+                  <Text style={styles.presetLabel}>{t('label')}</Text>
                   <View style={styles.presetValueRow}>
                     <Text style={styles.presetValue} numberOfLines={1}>{formatTimestampPresetLabel(timestampLinePreset)}</Text>
                     <Text style={styles.presetChevron}>v</Text>
@@ -309,7 +312,7 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
           ) : (
             <View style={styles.lineEditorSingle}>
               <View style={styles.customTextField}>
-                <Text style={styles.pickerLabel}>Custom Text</Text>
+                <Text style={styles.pickerLabel}>{t('customText')}</Text>
                 <TextInput
                   style={styles.customTextInput}
                   value={customTimestampText}
@@ -317,17 +320,18 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
                     setCustomTimestampText(value);
                     setPrintError('');
                   }}
-                  autoCapitalize="characters"
+                  autoCapitalize="none"
                   multiline
                   numberOfLines={2}
                   maxLength={48}
+                  placeholder={t('customTextPlaceholder')}
                 />
               </View>
             </View>
           )}
           <View style={styles.pickerRow}>
             <Pressable style={styles.pickerButton} onPress={openDatePicker}>
-              <Text style={styles.pickerLabel}>Date</Text>
+              <Text style={styles.pickerLabel}>{t('date')}</Text>
               <Text style={styles.pickerValue}>{formatLabelDateNumeric(timestamp)}</Text>
             </Pressable>
             <Pressable
@@ -335,9 +339,9 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
               style={[styles.pickerButton, !includeTimestampTime && styles.pickerButtonDisabled]}
               onPress={openTimePicker}
             >
-              <Text style={[styles.pickerLabel, !includeTimestampTime && styles.pickerTextDisabled]}>Time</Text>
+              <Text style={[styles.pickerLabel, !includeTimestampTime && styles.pickerTextDisabled]}>{t('time')}</Text>
               <Text style={[styles.pickerValue, !includeTimestampTime && styles.pickerTextDisabled]}>
-                {includeTimestampTime ? formatLabelTimeNumeric(timestamp) : 'Excluded'}
+                {includeTimestampTime ? formatLabelTimeNumeric(timestamp) : t('excluded')}
               </Text>
             </Pressable>
           </View>
@@ -346,7 +350,7 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 28) }]}>
         {printError ? (
           <View style={styles.errorBanner}>
-            <Text style={styles.errorTitle}>Print Error</Text>
+            <Text style={styles.errorTitle}>{t('printError')}</Text>
             <Text style={styles.errorText}>{printError}</Text>
           </View>
         ) : null}
@@ -393,6 +397,7 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 40,
   },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   summary: {
     borderRadius: 8,
     borderWidth: 1,

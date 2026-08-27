@@ -13,6 +13,7 @@ import {
 } from '../services/printerService';
 import { removeSyncedPrinter, syncSelectedPrinter, type CloudSession } from '../services/cloudApi';
 import type { Outlet } from '../domain/models';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors } from '../theme/colors';
 
 type Props = {
@@ -23,6 +24,7 @@ type Props = {
 };
 
 export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onBack }: Props) {
+  const { t } = useLanguage();
   const [printers, setPrinters] = useState<BluetoothPrinterDevice[]>([]);
   const [selectedPrinterAddress, setSelectedPrinterAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -45,7 +47,7 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
       setSelectedPrinterAddress(preferredPrinter?.address ?? '');
       setIsRemoveMode(false);
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Could not load supported Bluetooth printers.');
+      setErrorMessage(error instanceof Error ? error.message : t('loadPrintersError'));
     } finally {
       setIsLoading(false);
     }
@@ -72,11 +74,11 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
       try {
         await syncSelectedPrinter(session, printer, outlet.id);
       } catch (syncError) {
-        const message = syncError instanceof Error ? syncError.message : 'Could not sync selected printer online.';
-        setWarningMessage(`Printer selected locally. Online sync failed: ${message}`);
+        const message = syncError instanceof Error ? syncError.message : t('syncSelectedPrinterError');
+        setWarningMessage(t('printerSelectedSyncFailed', { error: message }));
       }
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Could not select printer locally.');
+      setErrorMessage(error instanceof Error ? error.message : t('selectPrinterError'));
     } finally {
       setIsSyncingPrinter(false);
     }
@@ -93,26 +95,26 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
       try {
         await removeSyncedPrinter(session);
       } catch (syncError) {
-        const message = syncError instanceof Error ? syncError.message : 'Could not unselect printer online.';
-        setWarningMessage(`Printer unselected locally. Online sync failed: ${message}`);
+        const message = syncError instanceof Error ? syncError.message : t('unselectPrinterOnlineError');
+        setWarningMessage(t('printerUnselectedSyncFailed', { error: message }));
       }
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Could not unselect printer locally.');
+      setErrorMessage(error instanceof Error ? error.message : t('unselectPrinterError'));
     } finally {
       setIsSyncingPrinter(false);
     }
   };
 
   const confirmRemovePrinter = (printer: BluetoothPrinterDevice) => {
-    const printerName = printer.name || 'Bluetooth Printer';
+    const printerName = printer.name || t('bluetoothPrinter');
 
     Alert.alert(
-      'Remove Printer',
-      `Remove ${printerName} from this app's printer list?`,
+      t('removePrinter'),
+      t('removePrinterConfirm', { printer: printerName }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('cancel'), style: 'cancel' },
         {
-          text: 'Remove',
+          text: t('remove'),
           style: 'destructive',
           onPress: () => {
             void removePrinterFromList(printer);
@@ -137,8 +139,8 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
         try {
           await removeSyncedPrinter(session);
         } catch (syncError) {
-          const message = syncError instanceof Error ? syncError.message : 'Could not remove selected printer online.';
-          setWarningMessage(`Printer removed locally. Online sync failed: ${message}`);
+          const message = syncError instanceof Error ? syncError.message : t('removePrinterOnlineError');
+          setWarningMessage(t('printerRemovedSyncFailed', { error: message }));
         }
       }
 
@@ -147,7 +149,7 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
         currentPrinters.filter((currentPrinter) => currentPrinter.address !== printer.address),
       );
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Could not remove printer from the list.');
+      setErrorMessage(error instanceof Error ? error.message : t('removePrinterError'));
     } finally {
       setIsSyncingPrinter(false);
     }
@@ -157,13 +159,13 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
 
   return (
     <View style={styles.container}>
-      <StickyBackHeader label={backLabel} onPress={onBack} />
+      <StickyBackHeader label={backLabel.includes('Admin') ? t('admin') : t('back')} onPress={onBack} />
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.headerRow}>
           <View style={styles.titleBlock}>
-            <Text style={styles.eyebrow}>Bluetooth</Text>
-            <Text style={styles.title}>Printers</Text>
-            <Text style={styles.subtitle}>The app only shows supported paired label printers.</Text>
+            <Text style={styles.eyebrow}>{t('bluetooth')}</Text>
+            <Text style={styles.title}>{t('printers')}</Text>
+            <Text style={styles.subtitle}>{t('printerSubtitle')}</Text>
           </View>
           <View style={styles.headerActions}>
             <Pressable
@@ -171,7 +173,7 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
               onPress={() => void loadPrinters()}
               disabled={isLoading}
             >
-              <Text style={styles.refreshText}>{isLoading ? 'Loading' : 'Refresh'}</Text>
+              <Text style={styles.refreshText}>{isLoading ? t('loading') : t('refresh')}</Text>
             </Pressable>
             <Pressable
               style={[
@@ -183,7 +185,7 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
               disabled={isLoading || isSyncingPrinter}
             >
               <Text style={[styles.removeModeText, isRemoveMode && styles.removeModeTextActive]}>
-                {isRemoveMode ? 'Cancel' : 'Remove'}
+                {isRemoveMode ? t('cancel') : t('remove')}
               </Text>
             </Pressable>
           </View>
@@ -191,42 +193,42 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
 
         {errorMessage ? (
           <View style={styles.errorBox}>
-            <Text style={styles.errorTitle}>Printer Check Failed</Text>
+            <Text style={styles.errorTitle}>{t('printerCheckFailed')}</Text>
             <Text style={styles.errorText}>{errorMessage}</Text>
           </View>
         ) : null}
         {warningMessage ? (
           <View style={styles.warningBox}>
-            <Text style={styles.warningTitle}>Printer Saved Locally</Text>
+            <Text style={styles.warningTitle}>{t('printerSavedLocally')}</Text>
             <Text style={styles.warningText}>{warningMessage}</Text>
           </View>
         ) : null}
 
         <View style={styles.helpBox}>
-          <Text style={styles.helpTitle}>{selectedPrinter ? 'Selected Printer' : 'Before printing'}</Text>
+          <Text style={styles.helpTitle}>{selectedPrinter ? t('selectedPrinter') : t('beforePrinting')}</Text>
           <Text style={styles.helpText}>
             {selectedPrinter
-              ? `${selectedPrinter.name || 'Bluetooth Printer'} is stored locally for offline printing. Online sync is attempted when the API is reachable.`
-              : 'Pair the printer in Android Bluetooth settings first. Selecting a printer stores it locally for offline printing.'}
+              ? t('selectedPrinterHelp', { printer: selectedPrinter.name || t('bluetoothPrinter') })
+              : t('beforePrintingHelp')}
           </Text>
           {selectedPrinter ? (
             <Pressable style={[styles.removeButton, isSyncingPrinter && styles.refreshButtonDisabled]} disabled={isSyncingPrinter} onPress={() => void unselectPrinter()}>
-              <Text style={styles.removeText}>{isSyncingPrinter ? 'Syncing' : 'Unselect Printer'}</Text>
+              <Text style={styles.removeText}>{isSyncingPrinter ? t('syncing') : t('unselectPrinter')}</Text>
             </Pressable>
           ) : null}
         </View>
 
         {isRemoveMode ? (
           <View style={styles.removeHintBox}>
-            <Text style={styles.removeHintText}>Tap a printer below to remove it from this app's list.</Text>
+            <Text style={styles.removeHintText}>{t('removePrinterHint')}</Text>
           </View>
         ) : null}
 
         <View style={styles.list}>
           {printers.length === 0 && !isLoading ? (
             <View style={styles.emptyBox}>
-              <Text style={styles.emptyTitle}>No label printers found</Text>
-              <Text style={styles.emptyText}>Open Android Bluetooth settings, pair the label printer, then return here and tap Refresh.</Text>
+              <Text style={styles.emptyTitle}>{t('noLabelPrinters')}</Text>
+              <Text style={styles.emptyText}>{t('noLabelPrintersMessage')}</Text>
             </View>
           ) : null}
 
@@ -248,7 +250,7 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
                 <AppIcon name="printer" size={22} color={colors.primaryDark} />
               </View>
               <View style={styles.printerText}>
-                <Text style={styles.printerName}>{printer.name || 'Bluetooth Printer'}</Text>
+                <Text style={styles.printerName}>{printer.name || t('bluetoothPrinter')}</Text>
                 <Text style={styles.printerAddress}>{printer.address}</Text>
               </View>
               <Text style={[
@@ -256,7 +258,7 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
                 isSelected && !isRemoveMode && styles.selectedBadge,
                 isRemoveMode && styles.removeBadge,
               ]}>
-                {isRemoveMode ? 'Remove' : isSelected ? 'Selected' : isSyncingPrinter ? 'Syncing' : 'Use'}
+                {isRemoveMode ? t('remove') : isSelected ? t('selected') : isSyncingPrinter ? t('syncing') : t('use')}
               </Text>
             </Pressable>
             );

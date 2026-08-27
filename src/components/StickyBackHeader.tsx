@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors } from '../theme/colors';
+import { LanguageToggle } from './LanguageToggle';
 
 type Props = {
   label: string;
@@ -21,7 +22,7 @@ export function StickyBackHeader({ label, onPress, rightContent }: Props) {
           <Text style={styles.backArrow}>{'‹'}</Text>
           <Text style={styles.back}>{cleanLabel}</Text>
         </Pressable>
-        {rightContent ? <View style={styles.rightContent}>{rightContent}</View> : null}
+        <View style={styles.rightContent}>{rightContent ?? <LanguageToggle />}</View>
       </View>
     </View>
   );

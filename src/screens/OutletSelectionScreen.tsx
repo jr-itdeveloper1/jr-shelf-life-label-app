@@ -2,7 +2,9 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppIcon } from '../components/AppIcon';
+import { LanguageToggle } from '../components/LanguageToggle';
 import type { Outlet } from '../domain/models';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors } from '../theme/colors';
 
 type Props = {
@@ -12,13 +14,14 @@ type Props = {
 
 export function OutletSelectionScreen({ outlets, onSelectOutlet }: Props) {
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
 
   return (
     <View style={[styles.container, { paddingTop: Math.max(insets.top + 18, 42), paddingBottom: Math.max(insets.bottom, 16) }]}>
       <View style={styles.header}>
-        <Text style={styles.appName}>JR Shelf Life Labels</Text>
-        <Text style={styles.title}>Select Outlet</Text>
-        <Text style={styles.subtitle}>Choose a location to show its available label products.</Text>
+        <View style={styles.headerRow}><Text style={styles.appName}>JR Shelf Life Labels</Text><LanguageToggle /></View>
+        <Text style={styles.title}>{t('selectOutlet')}</Text>
+        <Text style={styles.subtitle}>{t('selectOutletSubtitle')}</Text>
       </View>
       <FlatList
         data={outlets}
@@ -36,7 +39,7 @@ export function OutletSelectionScreen({ outlets, onSelectOutlet }: Props) {
             </View>
             <View style={styles.outletText}>
               <Text style={styles.outletName} numberOfLines={1}>{item.name}</Text>
-              <Text style={styles.outletMeta}>Tap to start printing labels</Text>
+              <Text style={styles.outletMeta}>{t('tapToStartPrinting')}</Text>
             </View>
             <Text style={styles.shortCode}>{item.shortCode}</Text>
           </Pressable>
@@ -55,6 +58,7 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 18,
   },
+  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   appName: {
     color: colors.textMuted,
     fontSize: 13,

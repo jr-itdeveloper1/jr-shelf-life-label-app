@@ -10,6 +10,7 @@ import {
   products as seedProducts,
 } from '../data/sampleData';
 import type { ProductLabelMode } from '../components/LabelPreview';
+import { useLanguage } from '../i18n/LanguageContext';
 import { getCategoryColor } from '../domain/categoryColors';
 import type { AppDataImport, Outlet, OutletProduct, PrintJob, Product, ProductCategory } from '../domain/models';
 import { AdminCategoryDetailScreen } from '../screens/AdminCategoryDetailScreen';
@@ -76,6 +77,7 @@ type TimestampReturnScreen = 'product-categories' | 'products';
 type PrinterReturnScreen = 'admin-home' | 'product-detail' | 'timestamp-print';
 
 export function RootApp() {
+  const { t } = useLanguage();
   const [screen, setScreen] = useState<Screen>('outlets');
   const [timestampReturnScreen, setTimestampReturnScreen] = useState<TimestampReturnScreen>('product-categories');
   const [printerReturnScreen, setPrinterReturnScreen] = useState<PrinterReturnScreen>('admin-home');
@@ -130,10 +132,10 @@ export function RootApp() {
       const cloudData = await fetchCloudBootstrap(session);
       applyCloudData(cloudData);
       const productImageCount = cloudData.products.filter((product) => Boolean(product.imageUri)).length;
-      setSyncMessage(`Synced ${cloudData.outlets.length} outlet(s), ${cloudData.categories.length} category(s), and ${cloudData.products.length} product(s), including ${productImageCount} image(s).`);
+      setSyncMessage(t('cloudSyncSummary', { outlets: cloudData.outlets.length, categories: cloudData.categories.length, products: cloudData.products.length, images: productImageCount }));
       return cloudData;
     } catch (error) {
-      setSyncMessage(error instanceof Error ? error.message : 'Cloud sync failed. Cached data remains available.');
+      setSyncMessage(error instanceof Error ? error.message : t('cloudSyncFailed'));
       throw error;
     } finally {
       setIsSyncing(false);
@@ -228,9 +230,9 @@ export function RootApp() {
       try {
         const result = await uploadPendingPrintJobs(cloudSession);
         const historyMessage = result.attempted > 0 ? result.message : 'Print history already synced';
-        setSyncMessage(`${historyMessage}. Master data refreshed with ${productImageCount} product image(s).`);
+        setSyncMessage(`${historyMessage}. ${t('masterDataRefreshed', { images: productImageCount })}`);
       } catch (error) {
-        setSyncMessage(`Master data refreshed with ${productImageCount} product image(s). Print history upload failed: ${error instanceof Error ? error.message : 'try again later.'}`);
+        setSyncMessage(`${t('masterDataRefreshed', { images: productImageCount })} ${t('printHistoryUploadFailed', { error: error instanceof Error ? error.message : t('tryAgainLater') })}`);
       }
     } catch {
       // syncFromCloud already set the user-facing message.
@@ -264,7 +266,7 @@ export function RootApp() {
         const result = await uploadPendingPrintJobs(currentSession);
 
         if (!cancelled && result.attempted > 0) {
-          setSyncMessage(`${result.message}. Print history auto-synced.`);
+          setSyncMessage(`${result.message}. ${t('printHistoryAutoSynced')}`);
         }
       } catch (error) {
         if (!cancelled) {
@@ -783,7 +785,7 @@ export function RootApp() {
   }, []);
 
   if (!hasLoadedAdminData || !hasLoadedCloudSession) {
-    return <LoginScreen isLoading onLogin={signIn} errorMessage="Loading saved login..." />;
+    return <LoginScreen isLoading onLogin={signIn} errorMessage={t('loadingSavedLogin')} />;
   }
 
   if (!cloudSession) {

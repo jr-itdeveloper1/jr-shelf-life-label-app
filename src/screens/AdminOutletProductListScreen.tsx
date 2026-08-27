@@ -1,7 +1,9 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { AdminListRow } from '../components/AdminListRow';
+import { LanguageToggle } from '../components/LanguageToggle';
 import type { Outlet, OutletProduct, Product } from '../domain/models';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors } from '../theme/colors';
 
 type Props = {
@@ -19,6 +21,7 @@ export function AdminOutletProductListScreen({
   onSelectOutlet,
   onBack,
 }: Props) {
+  const { t } = useLanguage();
   const getProductCounts = (outlet: Outlet) => {
     const eligibleProducts = products.filter(
       (product) => product.source === 'company' || product.outletId === outlet.id,
@@ -31,16 +34,14 @@ export function AdminOutletProductListScreen({
       return setting?.active ?? true;
     });
 
-    return `${visibleProducts.length}/${eligibleProducts.length} visible`;
+    return t('visibleCount', { visible: visibleProducts.length, total: eligibleProducts.length });
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.back} onPress={onBack}>
-        {'< Admin'}
-      </Text>
-      <Text style={styles.title}>Outlet Product Lists</Text>
-      <Text style={styles.subtitle}>Choose which products each outlet can see on the print screen.</Text>
+      <View style={styles.topRow}><Text style={styles.back} onPress={onBack}>{`‹ ${t('admin')}`}</Text><LanguageToggle /></View>
+      <Text style={styles.title}>{t('outletProductLists')}</Text>
+      <Text style={styles.subtitle}>{t('outletProductListsSubtitle')}</Text>
       <FlatList
         data={outlets}
         keyExtractor={(outlet) => outlet.id}
@@ -48,7 +49,7 @@ export function AdminOutletProductListScreen({
         renderItem={({ item }) => (
           <AdminListRow
             title={item.name}
-            subtitle={`Short code ${item.shortCode}`}
+            subtitle={t('shortCodeValue', { code: item.shortCode })}
             badge={getProductCounts(item)}
             onPress={() => onSelectOutlet(item)}
           />
@@ -70,6 +71,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
   },
+  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   title: {
     marginTop: 18,
     color: colors.text,

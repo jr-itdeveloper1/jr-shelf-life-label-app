@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { formatLabelDateNumeric, formatLabelTimeNumeric } from '../domain/shelfLife';
 import { compactTimestampLabelBitmapSpec, timestampLabelBitmapSpec } from '../services/labelBitmap';
 import { colors } from '../theme/colors';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export type TimestampLabelMode = 'full' | 'compact';
 
@@ -24,6 +25,7 @@ export function TimestampLabelPreview({
   onChangeMode,
   labelRef,
 }: Props) {
+  const { t } = useLanguage();
   const previewSpec = mode === 'compact' ? compactTimestampLabelBitmapSpec : timestampLabelBitmapSpec;
   const timestampText = includeTime
     ? formatLabelDateNumeric(timestamp) + ' ' + formatLabelTimeNumeric(timestamp)
@@ -33,7 +35,7 @@ export function TimestampLabelPreview({
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.titleRow}>
-          <Text style={styles.title}>Timestamp Preview</Text>
+          <Text style={styles.title}>{t('timestampPreview')}</Text>
         </View>
         {onChangeMode ? (
           <View style={styles.modeSwitch}>
@@ -41,13 +43,13 @@ export function TimestampLabelPreview({
               style={[styles.modeButton, mode === 'full' && styles.modeButtonActive]}
               onPress={() => onChangeMode('full')}
             >
-              <Text style={mode === 'full' ? styles.modeTextActive : styles.modeText}>Normal</Text>
+              <Text style={mode === 'full' ? styles.modeTextActive : styles.modeText}>{t('normal')}</Text>
             </Pressable>
             <Pressable
               style={[styles.modeButton, mode === 'compact' && styles.modeButtonActive]}
               onPress={() => onChangeMode('compact')}
             >
-              <Text style={mode === 'compact' ? styles.modeTextActive : styles.modeText}>Compact</Text>
+              <Text style={mode === 'compact' ? styles.modeTextActive : styles.modeText}>{t('compact')}</Text>
             </Pressable>
           </View>
         ) : null}

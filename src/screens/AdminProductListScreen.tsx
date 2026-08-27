@@ -2,9 +2,11 @@ import { useMemo, useState } from 'react';
 import { FlatList, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { AppIcon } from '../components/AppIcon';
+import { LanguageToggle } from '../components/LanguageToggle';
 import { getProductImageSource } from '../data/productImages';
 import { getCategoryColor } from '../domain/categoryColors';
 import type { Product, ProductCategory } from '../domain/models';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors } from '../theme/colors';
 
 type Props = {
@@ -25,9 +27,10 @@ export function AdminProductListScreen({
   const [selectedCategoryId, setSelectedCategoryId] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [filtersExpanded, setFiltersExpanded] = useState(false);
+  const { language, t } = useLanguage();
 
   const getCategoryName = (product: Product) =>
-    categories.find((category) => category.id === product.categoryId)?.name ?? 'Uncategorized';
+    categories.find((category) => category.id === product.categoryId)?.name ?? t('uncategorized');
 
   const categoryCounts = useMemo(
     () =>
@@ -51,11 +54,11 @@ export function AdminProductListScreen({
   );
   const customProductCount = products.filter((product) => product.source === 'outlet').length;
   const hasCustomProducts = customProductCount > 0;
-  const allChip = { id: 'all', label: 'All', count: products.length, color: getCategoryColor('all') };
+  const allChip = { id: 'all', label: t('all'), count: products.length, color: getCategoryColor('all') };
   const chips = [
     allChip,
     ...categoryChips,
-    ...(hasCustomProducts ? [{ id: 'custom', label: 'Custom', count: customProductCount, color: getCategoryColor('custom') }] : []),
+    ...(hasCustomProducts ? [{ id: 'custom', label: t('custom'), count: customProductCount, color: getCategoryColor('custom') }] : []),
   ];
   const selectedChip = chips.find((chip) => chip.id === selectedCategoryId) ?? allChip;
   const quickCategoryChips = [...categoryChips].sort((left, right) => right.count - left.count).slice(0, 2);
@@ -82,11 +85,9 @@ export function AdminProductListScreen({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.back} onPress={onBack}>
-        {'< Admin'}
-      </Text>
+      <View style={styles.topRow}><Text style={styles.back} onPress={onBack}>{`‹ ${t('admin')}`}</Text><LanguageToggle /></View>
       <View style={styles.header}>
-        <Text style={styles.title}>Products</Text>
+        <Text style={styles.title}>{t('products')}</Text>
         <Pressable style={styles.addButton} onPress={onAddProduct}>
           <AppIcon name="plus" size={22} color={colors.surface} />
         </Pressable>
@@ -95,7 +96,7 @@ export function AdminProductListScreen({
         style={styles.searchBox}
         value={searchQuery}
         onChangeText={setSearchQuery}
-        placeholder="Search product/code"
+        placeholder={t('searchProductCode')}
       />
       <View style={styles.filterArea}>
         <View style={styles.filterRow}>
@@ -126,7 +127,7 @@ export function AdminProductListScreen({
           </View>
           {filtersExpanded || hiddenChipCount > 0 ? (
             <Pressable
-              accessibilityLabel={filtersExpanded ? 'Close filters' : 'Open filters'}
+              accessibilityLabel={filtersExpanded ? t('closeFilters') : t('openFilters')}
               style={[styles.filterButton, filtersExpanded && styles.filterButtonActive]}
               onPress={() => setFiltersExpanded((currentValue) => !currentValue)}
             >
@@ -142,8 +143,8 @@ export function AdminProductListScreen({
         {filtersExpanded ? (
           <View style={styles.filterPanel}>
             <View style={styles.filterPanelHeader}>
-              <Text style={styles.filterPanelTitle}>Category</Text>
-              <Text style={styles.filterPanelMeta}>{filteredProducts.length} shown</Text>
+              <Text style={styles.filterPanelTitle}>{t('category')}</Text>
+              <Text style={styles.filterPanelMeta}>{t('categoryShown', { count: filteredProducts.length })}</Text>
             </View>
             <ScrollView
               style={styles.filterOptionsScroll}
@@ -190,8 +191,8 @@ export function AdminProductListScreen({
         contentContainerStyle={styles.list}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text style={styles.emptyTitle}>No products found</Text>
-            <Text style={styles.emptyText}>Try another category or search term.</Text>
+            <Text style={styles.emptyTitle}>{t('noProductsFound')}</Text>
+            <Text style={styles.emptyText}>{t('tryCategorySearch')}</Text>
           </View>
         }
         renderItem={({ item }) => {
@@ -203,12 +204,12 @@ export function AdminProductListScreen({
                   <Image source={imageSource} style={styles.thumbImage} />
                 ) : (
                   <Text style={styles.thumbText} numberOfLines={2}>
-                    {item.nameEn}
+                    {language === 'zh-CN' ? item.nameZh : item.nameEn}
                   </Text>
                 )}
               </View>
               <View style={styles.productText}>
-                <Text style={styles.productName}>{item.nameEn}</Text>
+                <Text style={styles.productName}>{language === 'zh-CN' ? item.nameZh : item.nameEn}</Text>
                 <Text style={styles.productMeta}>
                   {item.productCode} | {getCategoryName(item)}
                 </Text>
@@ -216,7 +217,7 @@ export function AdminProductListScreen({
                   {item.storageMethod.en} {item.storageMethod.zh}
                 </Text>
               </View>
-              {item.source === 'outlet' ? <Text style={styles.badge}>Custom</Text> : null}
+              {item.source === 'outlet' ? <Text style={styles.badge}>{t('custom')}</Text> : null}
             </Pressable>
           );
         }}
@@ -237,6 +238,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
   },
+  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

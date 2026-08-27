@@ -3,6 +3,7 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { getProductImageSource } from '../data/productImages';
 import type { Product } from '../domain/models';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors } from '../theme/colors';
 
 type Props = {
@@ -12,7 +13,11 @@ type Props = {
 };
 
 export const ProductTile = memo(function ProductTile({ product, onPress, mode = 'compact' }: Props) {
+  const { language } = useLanguage();
   const imageSource = useMemo(() => getProductImageSource(product.imageUri), [product.imageUri]);
+  const primaryName = language === 'zh-CN' ? product.nameZh : product.nameEn;
+  const secondaryName = language === 'zh-CN' ? product.nameEn : product.nameZh;
+  const storageMethod = language === 'zh-CN' ? product.storageMethod.zh : product.storageMethod.en;
 
   if (mode === 'regular') {
     return (
@@ -28,23 +33,23 @@ export const ProductTile = memo(function ProductTile({ product, onPress, mode = 
         ) : (
           <View style={styles.imageFallback}>
             <Text style={styles.fallbackName} numberOfLines={2}>
-              {product.nameEn}
+              {primaryName}
             </Text>
             <Text style={styles.fallbackNameZh} numberOfLines={1}>
-              {product.nameZh}
+              {secondaryName}
             </Text>
           </View>
         )}
         <View style={styles.regularBody}>
           <Text style={styles.regularName} numberOfLines={1}>
-            {product.nameEn}
+            {primaryName}
           </Text>
           <Text style={styles.regularNameZh} numberOfLines={1}>
-            {product.nameZh}
+            {secondaryName}
           </Text>
           <View style={styles.regularMetaRow}>
             <Text style={styles.storageBadge} numberOfLines={1}>
-              {product.storageMethod.en}
+              {storageMethod}
             </Text>
             <Text style={styles.regularCode} numberOfLines={1}>
               {product.productCode}
@@ -63,10 +68,10 @@ export const ProductTile = memo(function ProductTile({ product, onPress, mode = 
     >
       <View style={styles.compactBody}>
         <Text style={styles.name} numberOfLines={2}>
-          {product.nameEn}
+          {primaryName}
         </Text>
         <Text style={styles.nameZh} numberOfLines={1}>
-          {product.nameZh}
+          {secondaryName}
         </Text>
       </View>
       <Text style={styles.code} numberOfLines={1}>

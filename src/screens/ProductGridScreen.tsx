@@ -6,8 +6,10 @@ import type { ListRenderItemInfo } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppIcon } from '../components/AppIcon';
+import { LanguageToggle } from '../components/LanguageToggle';
 import { ProductTile } from '../components/ProductTile';
 import type { Outlet, Product } from '../domain/models';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors } from '../theme/colors';
 
 export type ProductViewMode = 'compact' | 'regular';
@@ -48,6 +50,7 @@ export function ProductGridScreen({
   onSignOut,
 }: Props) {
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const productColumns = 2;
 
@@ -59,9 +62,9 @@ export function ProductGridScreen({
   const productCountText = useMemo(
     () =>
       trimmedSearchQuery.length > 0
-        ? `${filteredProducts.length} of ${products.length} products`
-        : `${products.length} products`,
-    [filteredProducts.length, products.length, trimmedSearchQuery.length],
+        ? t('productsShown', { shown: filteredProducts.length, total: products.length })
+        : t('productCount', { count: products.length }),
+    [filteredProducts.length, products.length, t, trimmedSearchQuery.length],
   );
   const productGridItems: Array<Product | null> = useMemo(
     () => (filteredProducts.length % productColumns === 0 ? filteredProducts : [...filteredProducts, null]),
@@ -84,7 +87,7 @@ export function ProductGridScreen({
     const permission = await Camera.requestCameraPermissionsAsync();
 
     if (!permission.granted) {
-      Alert.alert('Camera Permission Needed', 'Please allow camera access to scan product codes.');
+      Alert.alert(t('cameraPermissionTitle'), t('cameraPermissionMessage'));
       return;
     }
 
@@ -104,36 +107,39 @@ export function ProductGridScreen({
           return;
         }
 
-        Alert.alert('Product Not Found', `No visible product matched scanned code: ${event.data}`);
+        Alert.alert(t('productNotFound'), t('scannedProductNotFound', { code: event.data }));
       });
 
       await CameraView.launchScanner({ barcodeTypes });
     } catch (error) {
       subscription?.remove();
-      Alert.alert('Scan Error', error instanceof Error ? error.message : 'Unable to open scanner.');
+      Alert.alert(t('scanError'), error instanceof Error ? error.message : t('unableToOpenScanner'));
     }
-  }, [onSelectProduct, products]);
+  }, [onSelectProduct, products, t]);
 
   return (
     <View style={[styles.container, { paddingTop: Math.max(insets.top + 12, 34) }]}>
       <View style={styles.topBar}>
         <View style={styles.outletBlock}>
-          <Text style={styles.outletLabel}>Outlet</Text>
+          <Text style={styles.outletLabel}>{t('outlet')}</Text>
           <Text style={styles.outletLine} numberOfLines={1}>
             {outlet.name}
           </Text>
         </View>
+        <View style={styles.topBarActions}>
+          <LanguageToggle />
         {canChangeOutlet ? (
           <Pressable style={styles.outletChangeButton} onPress={onChangeOutlet}>
             <AppIcon name="change" size={16} color={colors.primary} />
-            <Text style={styles.outletChangeText}>Change</Text>
+            <Text style={styles.outletChangeText}>{t('change')}</Text>
           </Pressable>
         ) : null}
+        </View>
       </View>
 
       <View style={styles.categoryBar}>
         <View style={styles.categoryTextBlock}>
-          <Text style={styles.categoryLabel}>Category</Text>
+          <Text style={styles.categoryLabel}>{t('category')}</Text>
           <Text style={[styles.categoryName, { color: toolbarTint }]} numberOfLines={1}>
             {categoryName}
           </Text>
@@ -152,7 +158,7 @@ export function ProductGridScreen({
               onPress={onChangeCategory}
               android_ripple={{ color: toolbarRipple, borderless: false }}
             >
-              <Text style={[styles.categoryButtonText, { color: toolbarTint }]}>Change</Text>
+              <Text style={[styles.categoryButtonText, { color: toolbarTint }]}>{t('change')}</Text>
             </Pressable>
           ) : null}
           <Pressable
@@ -161,7 +167,7 @@ export function ProductGridScreen({
             android_ripple={{ color: 'rgba(255, 255, 255, 0.18)', borderless: false }}
           >
             <AppIcon name="history" size={14} color={colors.surface} />
-            <Text style={styles.timestampText}>Timestamp</Text>
+            <Text style={styles.timestampText}>{t('timestamp')}</Text>
           </Pressable>
         </View>
       </View>
@@ -177,7 +183,7 @@ export function ProductGridScreen({
             android_ripple={{ color: 'rgba(15, 118, 110, 0.16)', borderless: false }}
           >
             <Text style={viewMode === 'compact' ? styles.modeOptionTextActive : styles.modeOptionTextInactive}>
-              Compact
+              {t('compact')}
             </Text>
           </Pressable>
           <Pressable
@@ -189,7 +195,7 @@ export function ProductGridScreen({
             android_ripple={{ color: 'rgba(15, 118, 110, 0.16)', borderless: false }}
           >
             <Text style={viewMode === 'regular' ? styles.modeOptionTextActive : styles.modeOptionTextInactive}>
-              Regular
+              {t('regular')}
             </Text>
           </Pressable>
         </View>
@@ -203,7 +209,7 @@ export function ProductGridScreen({
           style={styles.searchBox}
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholder="Search name or code"
+          placeholder={t('searchNameCode')}
         />
         <Pressable
           style={styles.scanButton}
@@ -213,14 +219,14 @@ export function ProductGridScreen({
           <View style={styles.scanIconBox}>
             <AppIcon name="scan" size={14} color={colors.surface} />
           </View>
-          <Text style={styles.scanText}>Scan</Text>
+          <Text style={styles.scanText}>{t('scan')}</Text>
         </Pressable>
       </View>
 
       {filteredProducts.length === 0 ? (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyTitle}>No products found</Text>
-          <Text style={styles.emptyText}>Try another search or change category.</Text>
+          <Text style={styles.emptyTitle}>{t('noProductsFound')}</Text>
+          <Text style={styles.emptyText}>{t('noProductsSearchHint')}</Text>
         </View>
       ) : (
         <FlatList
@@ -244,19 +250,19 @@ export function ProductGridScreen({
       <View style={[styles.bottomNav, { paddingBottom: Math.max(insets.bottom, 12) }]}>
         <Pressable style={[styles.navItem, styles.navItemSelected]}>
           <AppIcon name="grid" size={19} color={colors.primary} />
-          <Text style={styles.navItemActive}>Products</Text>
+          <Text style={styles.navItemActive}>{t('products')}</Text>
         </Pressable>
         <Pressable style={styles.navItem} onPress={onOpenHistory}>
           <AppIcon name="history" size={19} color={colors.textMuted} />
-          <Text style={styles.navItemText}>History</Text>
+          <Text style={styles.navItemText}>{t('history')}</Text>
         </Pressable>
         <Pressable style={styles.navItem} onPress={onOpenAdmin}>
           <AppIcon name="admin" size={19} color={colors.textMuted} />
-          <Text style={styles.navItemText}>Manage</Text>
+          <Text style={styles.navItemText}>{t('manage')}</Text>
         </Pressable>
         <Pressable style={styles.navItem} onPress={onSignOut}>
           <AppIcon name="signOut" size={19} color={colors.textMuted} />
-          <Text style={styles.navItemText}>Sign Out</Text>
+          <Text style={styles.navItemText}>{t('signOut')}</Text>
         </Pressable>
       </View>
     </View>
@@ -277,6 +283,7 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 10,
   },
+  topBarActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   outletBlock: {
     flex: 1,
   },

@@ -4,8 +4,10 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppIcon } from '../components/AppIcon';
+import { LanguageToggle } from '../components/LanguageToggle';
 import { getCategoryColor } from '../domain/categoryColors';
 import type { Outlet, Product, ProductCategory } from '../domain/models';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors } from '../theme/colors';
 
 type CategoryVectorIconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
@@ -36,6 +38,7 @@ export function CategorySelectionScreen({
   onSignOut,
 }: Props) {
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
   const categoryCounts = products.reduce((counts, product) => {
     counts.set(product.categoryId, (counts.get(product.categoryId) ?? 0) + 1);
     return counts;
@@ -45,7 +48,7 @@ export function CategorySelectionScreen({
     ? categories
     : categories.filter((category) => categoryCounts.has(category.id));
   const categoryOptions = [
-    { id: 'all', name: 'All Products', color: getCategoryColor('all'), count: products.length, icon: 'view-grid' as CategoryVectorIconName },
+    { id: 'all', name: t('allProducts'), color: getCategoryColor('all'), count: products.length, icon: 'view-grid' as CategoryVectorIconName },
     ...visibleCategories.map((category) => ({
       id: category.id,
       name: category.name,
@@ -54,7 +57,7 @@ export function CategorySelectionScreen({
       icon: getCategoryIcon(category.id, category.name),
     })),
     ...(customProductCount > 0
-      ? [{ id: 'custom', name: 'Custom', color: getCategoryColor('custom'), count: customProductCount, icon: 'store-outline' as CategoryVectorIconName }]
+      ? [{ id: 'custom', name: t('custom'), color: getCategoryColor('custom'), count: customProductCount, icon: 'store-outline' as CategoryVectorIconName }]
       : []),
   ];
   const categoryGridItems: Array<(typeof categoryOptions)[number] | null> =
@@ -64,23 +67,24 @@ export function CategorySelectionScreen({
     <View style={[styles.container, { paddingTop: Math.max(insets.top + 12, 34) }]}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.outletLabel}>Current Outlet</Text>
+          <Text style={styles.outletLabel}>{t('currentOutlet')}</Text>
           <Text style={styles.outlet}>{outlet.name}</Text>
         </View>
         <View style={styles.headerActions}>
+          <LanguageToggle />
           {canChangeOutlet ? (
             <Pressable style={styles.changeButton} onPress={onChangeOutlet}>
               <AppIcon name="change" size={16} color={colors.primary} />
-              <Text style={styles.changeText}>Change</Text>
+              <Text style={styles.changeText}>{t('change')}</Text>
             </Pressable>
           ) : null}
           <Pressable style={styles.timestampButton} onPress={onOpenTimestamp}>
             <AppIcon name="history" size={16} color={colors.surface} />
-            <Text style={styles.timestampText}>Timestamp</Text>
+            <Text style={styles.timestampText}>{t('timestamp')}</Text>
           </Pressable>
         </View>
       </View>
-      <Text style={styles.title}>Choose Category</Text>
+      <Text style={styles.title}>{t('chooseCategory')}</Text>
       <FlatList
         key="category-columns"
         data={categoryGridItems}
@@ -116,7 +120,7 @@ export function CategorySelectionScreen({
                 </View>
                 <View style={styles.categoryText}>
                   <Text style={styles.categoryName} numberOfLines={2}>{item.name}</Text>
-                  <Text style={styles.categoryMeta}>{item.count} products</Text>
+                  <Text style={styles.categoryMeta}>{t('productCount', { count: item.count })}</Text>
                 </View>
               </Pressable>
             ) : null}
@@ -126,19 +130,19 @@ export function CategorySelectionScreen({
       <View style={[styles.bottomNav, { paddingBottom: Math.max(insets.bottom, 12) }]}>
         <Pressable style={[styles.navItem, styles.navItemSelected]}>
           <AppIcon name="grid" size={19} color={colors.primary} />
-          <Text style={styles.navItemActive}>Products</Text>
+          <Text style={styles.navItemActive}>{t('products')}</Text>
         </Pressable>
         <Pressable style={styles.navItem} onPress={onOpenHistory}>
           <AppIcon name="history" size={19} color={colors.textMuted} />
-          <Text style={styles.navItemText}>History</Text>
+          <Text style={styles.navItemText}>{t('history')}</Text>
         </Pressable>
         <Pressable style={styles.navItem} onPress={onOpenAdmin}>
           <AppIcon name="admin" size={19} color={colors.textMuted} />
-          <Text style={styles.navItemText}>Manage</Text>
+          <Text style={styles.navItemText}>{t('manage')}</Text>
         </Pressable>
         <Pressable style={styles.navItem} onPress={onSignOut}>
           <AppIcon name="signOut" size={19} color={colors.textMuted} />
-          <Text style={styles.navItemText}>Sign Out</Text>
+          <Text style={styles.navItemText}>{t('signOut')}</Text>
         </Pressable>
       </View>
     </View>

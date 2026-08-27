@@ -4,6 +4,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AdminListRow } from '../components/AdminListRow';
 import { AppIcon } from '../components/AppIcon';
+import { LanguageToggle } from '../components/LanguageToggle';
+import { useLanguage } from '../i18n/LanguageContext';
 import { getPairedBluetoothPrinters, type BluetoothPrinterDevice } from '../services/printerService';
 import { colors } from '../theme/colors';
 
@@ -39,6 +41,7 @@ export function AdminHomeScreen({
   onSignOut,
 }: Props) {
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
   const [pairedPrinters, setPairedPrinters] = useState<BluetoothPrinterDevice[]>([]);
 
   useEffect(() => {
@@ -66,16 +69,15 @@ export function AdminHomeScreen({
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.eyebrow}>Cloud Account</Text>
-        <Text style={styles.title}>{canManageData ? 'Manage App Data' : 'Outlet Tools'}</Text>
+        <View style={styles.titleRow}><View><Text style={styles.eyebrow}>{t('cloudAccount')}</Text><Text style={styles.title}>{canManageData ? t('manageAppData') : t('outletTools')}</Text></View><LanguageToggle /></View>
         <Text style={styles.subtitle}>
           {canManageData
-            ? 'Cloud records sync to this device. Printing remains available offline.'
-            : 'Outlet users can sync assigned outlet data and manage this device printer.'}
+            ? t('adminCompanySubtitle')
+            : t('adminOutletSubtitle')}
         </Text>
         <View style={styles.actionRow}>
           <Pressable style={[styles.actionButton, isSyncing && styles.actionButtonDisabled]} disabled={isSyncing} onPress={onSyncNow}>
-            <Text style={styles.actionText}>{isSyncing ? 'Syncing' : 'Sync Now'}</Text>
+            <Text style={styles.actionText}>{isSyncing ? t('syncing') : t('syncNow')}</Text>
           </Pressable>
         </View>
         {syncMessage ? <Text style={styles.syncMessage}>{syncMessage}</Text> : null}
@@ -84,36 +86,36 @@ export function AdminHomeScreen({
             <>
               <AdminListRow
                 icon="tag"
-                title="Product Categories"
-                subtitle="Synced from cloud categories"
+                title={t('productCategories')}
+                subtitle={t('categoriesCloudSubtitle')}
                 onPress={onOpenCategories}
               />
               <AdminListRow
                 icon="product"
-                title="Products"
-                subtitle="Synced product details, shelf life, and images"
+                title={t('products')}
+                subtitle={t('productsCloudSubtitle')}
                 onPress={onOpenProducts}
               />
-              <AdminListRow icon="store" title="Outlets" subtitle="Synced outlet records" onPress={onOpenOutlets} />
+              <AdminListRow icon="store" title={t('outlets')} subtitle={t('outletsCloudSubtitle')} onPress={onOpenOutlets} />
               <AdminListRow
                 icon="list"
-                title="Outlet Product Lists"
-                subtitle="Cloud availability by outlet"
+                title={t('outletProductLists')}
+                subtitle={t('availabilityCloudSubtitle')}
                 onPress={onOpenOutletProducts}
               />
             </>
           ) : null}
           <AdminListRow
             icon="printer"
-            title="Printers"
-            subtitle={printerNames || 'Select or remove printer while online'}
+            title={t('printers')}
+            subtitle={printerNames || t('printerSelectOnline')}
             badge={pairedPrinters.length > 0 ? `${pairedPrinters.length}` : undefined}
             onPress={onOpenPrinters}
           />
           <AdminListRow
             icon="importExport"
-            title="Import / Export Data"
-            subtitle="Excel import and local JSON backup"
+            title={t('importExportData')}
+            subtitle={t('backupSubtitle')}
             onPress={onOpenBackupExport}
           />
         </View>
@@ -121,19 +123,19 @@ export function AdminHomeScreen({
       <View style={[styles.bottomNav, { paddingBottom: Math.max(insets.bottom, 12) }]}>
         <Pressable style={styles.navItem} onPress={onOpenProductPage}>
           <AppIcon name="grid" size={19} color={colors.textMuted} />
-          <Text style={styles.navItemText}>Products</Text>
+          <Text style={styles.navItemText}>{t('products')}</Text>
         </Pressable>
         <Pressable style={styles.navItem} onPress={onOpenHistory}>
           <AppIcon name="history" size={19} color={colors.textMuted} />
-          <Text style={styles.navItemText}>History</Text>
+          <Text style={styles.navItemText}>{t('history')}</Text>
         </Pressable>
         <Pressable style={[styles.navItem, styles.navItemSelected]}>
           <AppIcon name="admin" size={19} color={colors.primary} />
-          <Text style={styles.navItemActive}>Manage</Text>
+          <Text style={styles.navItemActive}>{t('manage')}</Text>
         </Pressable>
         <Pressable style={styles.navItem} onPress={onSignOut}>
           <AppIcon name="signOut" size={19} color={colors.textMuted} />
-          <Text style={styles.navItemText}>Sign Out</Text>
+          <Text style={styles.navItemText}>{t('signOut')}</Text>
         </Pressable>
       </View>
     </View>
@@ -150,6 +152,7 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     paddingBottom: 112,
   },
+  titleRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 },
   eyebrow: {
     color: colors.textMuted,
     fontSize: 11,

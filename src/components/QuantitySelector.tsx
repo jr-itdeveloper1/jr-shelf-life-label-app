@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../theme/colors';
+import { useLanguage } from '../i18n/LanguageContext';
 
 type Props = {
   quantity: number;
@@ -10,6 +11,7 @@ type Props = {
 const PRESETS = [1, 2, 5, 10];
 
 export function QuantitySelector({ quantity, onChange }: Props) {
+  const { t } = useLanguage();
   const setQuantity = (nextQuantity: number) => {
     onChange(Math.max(1, nextQuantity));
   };
@@ -17,7 +19,7 @@ export function QuantitySelector({ quantity, onChange }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Quantity</Text>
+        <Text style={styles.title}>{t('quantity')}</Text>
         <View style={styles.stepper}>
           <Pressable style={styles.stepperButton} onPress={() => setQuantity(quantity - 1)}>
             <Text style={styles.stepperText}>-</Text>
@@ -42,7 +44,7 @@ export function QuantitySelector({ quantity, onChange }: Props) {
         ))}
       </View>
       {quantity > 5 ? (
-        <Text style={styles.warning}>Printing more than 5 labels will require confirmation.</Text>
+        <Text style={styles.warning}>{t('quantityWarning')}</Text>
       ) : null}
     </View>
   );

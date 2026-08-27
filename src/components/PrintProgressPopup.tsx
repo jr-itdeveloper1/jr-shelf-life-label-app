@@ -1,6 +1,7 @@
 import { ActivityIndicator, Modal, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../theme/colors';
+import { useLanguage } from '../i18n/LanguageContext';
 import { AppIcon } from './AppIcon';
 
 export type PrintProgressStatus = 'printing' | 'success' | 'warning' | null;
@@ -10,14 +11,15 @@ type Props = {
 };
 
 export function PrintProgressPopup({ status }: Props) {
+  const { t } = useLanguage();
   const isVisible = status !== null;
   const isSuccess = status === 'success';
   const isWarning = status === 'warning';
   const label = status === 'printing'
-    ? 'Printing...'
+    ? t('printing')
     : isSuccess
-      ? 'Printed'
-      : 'Print failed';
+      ? t('printed')
+      : t('printFailed');
 
   return (
     <Modal transparent visible={isVisible} animationType="fade" statusBarTranslucent>

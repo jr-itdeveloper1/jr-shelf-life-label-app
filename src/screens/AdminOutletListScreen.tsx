@@ -3,7 +3,9 @@ import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-na
 
 import { AdminListRow } from '../components/AdminListRow';
 import { AppIcon } from '../components/AppIcon';
+import { LanguageToggle } from '../components/LanguageToggle';
 import type { Outlet, ProductCategory } from '../domain/models';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors } from '../theme/colors';
 
 type Props = {
@@ -22,6 +24,7 @@ export function AdminOutletListScreen({
   onBack,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
+  const { t } = useLanguage();
   const getCustomCategory = (outlet: Outlet) =>
     categories.find((category) => category.scope === 'outlet' && category.codePrefix === outlet.shortCode);
   const filteredOutlets = outlets.filter((outlet) => {
@@ -36,11 +39,9 @@ export function AdminOutletListScreen({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.back} onPress={onBack}>
-        {'< Admin'}
-      </Text>
+      <View style={styles.topRow}><Text style={styles.back} onPress={onBack}>{`‹ ${t('admin')}`}</Text><LanguageToggle /></View>
       <View style={styles.header}>
-        <Text style={styles.title}>Outlets</Text>
+        <Text style={styles.title}>{t('outlets')}</Text>
         <Pressable style={styles.addButton} onPress={onAddOutlet}>
           <AppIcon name="plus" size={22} color={colors.surface} />
         </Pressable>
@@ -49,7 +50,7 @@ export function AdminOutletListScreen({
         style={styles.searchBox}
         value={searchQuery}
         onChangeText={setSearchQuery}
-        placeholder="Search outlet"
+        placeholder={t('searchOutlet')}
       />
       <FlatList
         data={filteredOutlets}
@@ -61,7 +62,7 @@ export function AdminOutletListScreen({
             <AdminListRow
               icon="store"
               title={item.name}
-              subtitle={`Short code ${item.shortCode} | ${customCategory?.name ?? 'No custom category yet'}`}
+              subtitle={t('outletSubtitle', { code: item.shortCode, category: customCategory?.name ?? t('noCustomCategory') })}
               badge={item.shortCode}
               onPress={() => onSelectOutlet(item)}
             />
@@ -84,6 +85,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
   },
+  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

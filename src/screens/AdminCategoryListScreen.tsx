@@ -3,8 +3,10 @@ import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-na
 
 import { AdminListRow } from '../components/AdminListRow';
 import { AppIcon } from '../components/AppIcon';
+import { LanguageToggle } from '../components/LanguageToggle';
 import { getCategoryColor } from '../domain/categoryColors';
 import type { Product, ProductCategory } from '../domain/models';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors } from '../theme/colors';
 
 type Props = {
@@ -23,6 +25,7 @@ export function AdminCategoryListScreen({
   onBack,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
+  const { t } = useLanguage();
   const filteredCategories = categories.filter((category) => {
     const query = searchQuery.trim().toLowerCase();
 
@@ -35,11 +38,9 @@ export function AdminCategoryListScreen({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.back} onPress={onBack}>
-        {'< Admin'}
-      </Text>
+      <View style={styles.topRow}><Text style={styles.back} onPress={onBack}>{`‹ ${t('admin')}`}</Text><LanguageToggle /></View>
       <View style={styles.header}>
-        <Text style={styles.title}>Product Categories</Text>
+        <Text style={styles.title}>{t('productCategories')}</Text>
         <Pressable style={styles.addButton} onPress={onAddCategory}>
           <AppIcon name="plus" size={22} color={colors.surface} />
         </Pressable>
@@ -48,7 +49,7 @@ export function AdminCategoryListScreen({
         style={styles.searchBox}
         value={searchQuery}
         onChangeText={setSearchQuery}
-        placeholder="Search category"
+        placeholder={t('searchCategory')}
       />
       <FlatList
         data={filteredCategories}
@@ -60,7 +61,7 @@ export function AdminCategoryListScreen({
             <AdminListRow
               colorSwatch={getCategoryColor(item)}
               title={item.name}
-              subtitle={`${count} products | ${item.scope === 'outlet' ? 'Outlet custom' : 'Company'} | Tap to edit`}
+              subtitle={t('categoryListSubtitle', { count, scope: item.scope === 'outlet' ? t('outletCustom') : t('company') })}
               badge={item.codePrefix}
               onPress={() => onSelectCategory(item)}
             />
@@ -83,6 +84,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
   },
+  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

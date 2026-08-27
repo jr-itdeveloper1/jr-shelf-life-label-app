@@ -4,8 +4,10 @@ import type { ListRenderItemInfo, StyleProp, TextStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppIcon } from '../components/AppIcon';
+import { LanguageToggle } from '../components/LanguageToggle';
 import type { PrintJob } from '../domain/models';
 import { formatLabelDate } from '../domain/shelfLife';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors } from '../theme/colors';
 
 type Props = {
@@ -17,6 +19,7 @@ type Props = {
 
 export function PrintHistoryScreen({ printJobs, onOpenProducts, onOpenAdmin, onSignOut }: Props) {
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
   const sortedPrintJobs = useMemo(
     () =>
       [...printJobs].sort(
@@ -38,29 +41,27 @@ export function PrintHistoryScreen({ printJobs, onOpenProducts, onOpenAdmin, onS
     [printJobs],
   );
   const syncSummary = failedSyncCount > 0
-    ? `${failedSyncCount} sync failed`
+    ? t('failedSyncCount', { count: failedSyncCount })
     : pendingSyncCount > 0
-      ? `${pendingSyncCount} pending sync`
-      : 'All synced';
+      ? t('pendingSyncCount', { count: pendingSyncCount })
+      : t('allSynced');
   const listHeader = useMemo(
     () => (
       <View style={styles.titleBlock}>
-        <Text style={styles.title}>Print History</Text>
-        <Text style={styles.subtitle}>
-          {printJobs.length} jobs | {totalLabels} labels | {syncSummary}
-        </Text>
+        <View style={styles.titleRow}><Text style={styles.title}>{t('printHistory')}</Text><LanguageToggle /></View>
+        <Text style={styles.subtitle}>{t('historySummary', { jobs: printJobs.length, labels: totalLabels, sync: syncSummary })}</Text>
       </View>
     ),
-    [printJobs.length, syncSummary, totalLabels],
+    [printJobs.length, syncSummary, t, totalLabels],
   );
   const listEmpty = useMemo(
     () => (
       <View style={styles.emptyState}>
-        <Text style={styles.emptyTitle}>No prints yet</Text>
-        <Text style={styles.emptyText}>Printed labels will appear here with time and quantity.</Text>
+        <Text style={styles.emptyTitle}>{t('noPrintsYet')}</Text>
+        <Text style={styles.emptyText}>{t('noPrintsYetMessage')}</Text>
       </View>
     ),
-    [],
+    [t],
   );
   const keyExtractor = useCallback((printJob: PrintJob) => printJob.id, []);
   const renderPrintJob = useCallback(
@@ -87,19 +88,19 @@ export function PrintHistoryScreen({ printJobs, onOpenProducts, onOpenAdmin, onS
       <View style={[styles.bottomNav, { paddingBottom: Math.max(insets.bottom, 12) }]}>
         <Pressable style={styles.navItem} onPress={onOpenProducts}>
           <AppIcon name="grid" size={19} color={colors.textMuted} />
-          <Text style={styles.navItemText}>Products</Text>
+          <Text style={styles.navItemText}>{t('products')}</Text>
         </Pressable>
         <Pressable style={[styles.navItem, styles.navItemSelected]}>
           <AppIcon name="history" size={19} color={colors.primary} />
-          <Text style={styles.navItemActive}>History</Text>
+          <Text style={styles.navItemActive}>{t('history')}</Text>
         </Pressable>
         <Pressable style={styles.navItem} onPress={onOpenAdmin}>
           <AppIcon name="admin" size={19} color={colors.textMuted} />
-          <Text style={styles.navItemText}>Manage</Text>
+          <Text style={styles.navItemText}>{t('manage')}</Text>
         </Pressable>
         <Pressable style={styles.navItem} onPress={onSignOut}>
           <AppIcon name="signOut" size={19} color={colors.textMuted} />
-          <Text style={styles.navItemText}>Sign Out</Text>
+          <Text style={styles.navItemText}>{t('signOut')}</Text>
         </Pressable>
       </View>
     </View>
@@ -117,6 +118,7 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 112,
   },
+  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   titleBlock: {
     marginBottom: 2,
   },
@@ -299,25 +301,28 @@ type PrintHistoryRowProps = {
 };
 
 const PrintHistoryRow = memo(function PrintHistoryRow({ printJob }: PrintHistoryRowProps) {
+  const { language, t } = useLanguage();
   const syncStatus = getPrintJobSyncStatus(printJob);
-  const syncStatusMeta = getPrintJobSyncStatusMeta(printJob);
+  const syncStatusMeta = getPrintJobSyncStatusMeta(printJob, t);
+  const primaryName = language === 'zh-CN' ? printJob.productNameZh : printJob.productNameEn;
+  const secondaryName = language === 'zh-CN' ? printJob.productNameEn : printJob.productNameZh;
 
   return (
     <View style={styles.row}>
       <View style={styles.rowHeader}>
         <View style={styles.productText}>
-          <Text style={styles.name}>{printJob.productNameEn}</Text>
-          <Text style={styles.nameZh}>{printJob.productNameZh}</Text>
+          <Text style={styles.name}>{primaryName}</Text>
+          <Text style={styles.nameZh}>{secondaryName}</Text>
         </View>
-        <Text style={styles.quantity}>Qty {printJob.quantity}</Text>
+        <Text style={styles.quantity}>{t('qty', { quantity: printJob.quantity })}</Text>
       </View>
       <View style={styles.detailRow}>
-        <Text style={styles.label}>Printed</Text>
+        <Text style={styles.label}>{t('printed')}</Text>
         <Text style={styles.value}>{formatLabelDate(new Date(printJob.printedAt))}</Text>
       </View>
       {printJob.labelType === 'timestamp' ? null : (
         <View style={styles.detailRow}>
-          <Text style={styles.label}>Use By</Text>
+          <Text style={styles.label}>{t('useBy')}</Text>
           <Text style={styles.value}>{formatLabelDate(new Date(getPrintJobExpiryTime(printJob)))}</Text>
         </View>
       )}
@@ -325,7 +330,7 @@ const PrintHistoryRow = memo(function PrintHistoryRow({ printJob }: PrintHistory
         <Text style={styles.code}>{printJob.productCode}</Text>
         <Text style={styles.outlet}>{printJob.outletName}</Text>
         {printJob.printerName ? <Text style={styles.outlet}>{printJob.printerName}</Text> : null}
-        <Text style={styles.status}>{printJob.status === 'printed' ? 'Printed' : 'Saved'}</Text>
+        <Text style={styles.status}>{printJob.status === 'printed' ? t('printed') : t('saved')}</Text>
         <Text style={[styles.syncStatus, getPrintJobSyncStatusStyle(syncStatus)]}>{syncStatusMeta.label}</Text>
       </View>
       {syncStatusMeta.detail ? <Text style={styles.syncDetail}>{syncStatusMeta.detail}</Text> : null}
@@ -358,23 +363,23 @@ function getPrintJobSyncStatusStyle(syncStatus: ReturnType<typeof getPrintJobSyn
   return styles.syncStatus_pending;
 }
 
-function getPrintJobSyncStatusMeta(printJob: PrintJob) {
+function getPrintJobSyncStatusMeta(printJob: PrintJob, t: ReturnType<typeof useLanguage>['t']) {
   const syncStatus = getPrintJobSyncStatus(printJob);
 
   if (syncStatus === 'synced') {
     return {
-      label: 'Synced',
-      detail: printJob.syncedAt ? `Synced ${formatLabelDate(new Date(printJob.syncedAt))}` : '',
+      label: t('synced'),
+      detail: printJob.syncedAt ? t('syncedAt', { time: formatLabelDate(new Date(printJob.syncedAt)) }) : '',
     };
   }
 
   if (syncStatus === 'syncing') {
-    return { label: 'Syncing', detail: '' };
+    return { label: t('syncing'), detail: '' };
   }
 
   if (syncStatus === 'failed') {
-    return { label: 'Sync Failed', detail: printJob.syncError ?? 'Will retry on next sync.' };
+    return { label: t('syncFailed'), detail: printJob.syncError ?? t('retryNextSync') };
   }
 
-  return { label: 'Pending Sync', detail: '' };
+  return { label: t('syncPending'), detail: '' };
 }

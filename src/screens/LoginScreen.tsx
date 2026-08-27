@@ -1,8 +1,12 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { getCloudApiBaseUrl } from '../services/cloudApi';
 import { colors } from '../theme/colors';
+import { LanguageToggle } from '../components/LanguageToggle';
+import { useLanguage } from '../i18n/LanguageContext';
+
+const privacyPolicyUrl = 'https://labelprinter.jrgroup.com.sg/privacy-policy';
 
 type Props = {
   isLoading?: boolean;
@@ -11,6 +15,7 @@ type Props = {
 };
 
 export function LoginScreen({ isLoading = false, errorMessage, onLogin }: Props) {
+  const { t } = useLanguage();
   const [email, setEmail] = useState('hueying@jrgroup.com.sg');
   const [password, setPassword] = useState('ChangeMe123!');
   const [localError, setLocalError] = useState('');
@@ -19,11 +24,11 @@ export function LoginScreen({ isLoading = false, errorMessage, onLogin }: Props)
     setLocalError('');
     const normalizedEmail = email.trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      setLocalError('Enter a valid email address.');
+      setLocalError(t('invalidEmail'));
       return;
     }
     if (password.length < 8) {
-      setLocalError('Password must be at least 8 characters.');
+      setLocalError(t('passwordTooShort'));
       return;
     }
     await onLogin(normalizedEmail, password);
@@ -31,14 +36,13 @@ export function LoginScreen({ isLoading = false, errorMessage, onLogin }: Props)
 
   return (
     <View style={styles.container}>
+      <View style={styles.languageRow}><LanguageToggle /></View>
       <View style={styles.card}>
-        <Text style={styles.eyebrow}>JR Label Cloud</Text>
-        <Text style={styles.title}>Shelf Life Label Printing</Text>
-        <Text style={styles.subtitle}>
-          Sign in to sync product shelf life rules, print labels, and keep outlet print history up to date.
-        </Text>
+        <Text style={styles.eyebrow}>{t('jrLabelCloud')}</Text>
+        <Text style={styles.title}>{t('shelfLifeLabelPrinting')}</Text>
+        <Text style={styles.subtitle}>{t('loginSubtitle')}</Text>
         <View style={styles.form}>
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>{t('email')}</Text>
           <TextInput
             autoCapitalize="none"
             autoCorrect={false}
@@ -48,7 +52,7 @@ export function LoginScreen({ isLoading = false, errorMessage, onLogin }: Props)
             editable={!isLoading}
             onChangeText={setEmail}
           />
-          <Text style={styles.label}>Password</Text>
+          <Text style={styles.label}>{t('password')}</Text>
           <TextInput
             secureTextEntry
             style={styles.input}
@@ -58,10 +62,17 @@ export function LoginScreen({ isLoading = false, errorMessage, onLogin }: Props)
           />
           {localError || errorMessage ? <Text style={styles.error}>{localError || errorMessage}</Text> : null}
           <Pressable style={[styles.button, isLoading && styles.buttonDisabled]} disabled={isLoading} onPress={() => void submit()}>
-            <Text style={styles.buttonText}>{isLoading ? 'Signing in...' : 'Sign in'}</Text>
+            <Text style={styles.buttonText}>{isLoading ? t('signingIn') : t('signIn')}</Text>
           </Pressable>
         </View>
-        <Text style={styles.footer}>API: {getCloudApiBaseUrl()}</Text>
+        <Pressable
+          style={styles.privacyLink}
+          onPress={() => void Linking.openURL(privacyPolicyUrl)}
+          accessibilityRole="link"
+        >
+          <Text style={styles.privacyLinkText}>{t('privacyPolicy')}</Text>
+        </Pressable>
+        <Text style={styles.footer}>{t('apiLabel', { url: getCloudApiBaseUrl() })}</Text>
       </View>
     </View>
   );
@@ -74,6 +85,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     padding: 18,
   },
+  languageRow: { position: 'absolute', top: 48, right: 18, zIndex: 2 },
   card: {
     borderRadius: 10,
     borderWidth: 1,
@@ -141,6 +153,16 @@ const styles = StyleSheet.create({
     color: colors.surface,
     fontSize: 15,
     fontWeight: '900',
+  },
+  privacyLink: {
+    marginTop: 14,
+    alignSelf: 'flex-start',
+  },
+  privacyLinkText: {
+    color: colors.primary,
+    fontSize: 13,
+    fontWeight: '900',
+    textDecorationLine: 'underline',
   },
   footer: {
     marginTop: 14,

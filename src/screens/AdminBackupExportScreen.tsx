@@ -6,6 +6,7 @@ import * as XLSX from 'xlsx';
 
 import { StickyBackHeader } from '../components/StickyBackHeader';
 import type { AppDataImport, Outlet, OutletProduct, PrintJob, Product, ProductCategory } from '../domain/models';
+import { useLanguage } from '../i18n/LanguageContext';
 import { colors } from '../theme/colors';
 
 type Props = {
@@ -29,6 +30,7 @@ export function AdminBackupExportScreen({
   onImportData,
   onBack,
 }: Props) {
+  const { t } = useLanguage();
   const [lastExportUri, setLastExportUri] = useState<string | null>(null);
   const [lastImportSummary, setLastImportSummary] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -49,7 +51,7 @@ export function AdminBackupExportScreen({
 
   const exportExcel = async () => {
     if (!FileSystem.documentDirectory) {
-      Alert.alert('Export unavailable', 'The app document folder is not available on this device.');
+      Alert.alert(t('exportUnavailable'), t('documentFolderUnavailable'));
       return;
     }
 
@@ -67,9 +69,9 @@ export function AdminBackupExportScreen({
       const fileUri = await saveWorkbookFile(fileName, workbookBase64);
 
       setLastExportUri(fileUri);
-      Alert.alert('Export complete', 'Excel workbook exported successfully.');
+      Alert.alert(t('exportComplete'), t('exportCompleteMessage'));
     } catch (error) {
-      Alert.alert('Export failed', error instanceof Error ? error.message : 'Unable to create Excel workbook.');
+      Alert.alert(t('exportFailed'), error instanceof Error ? error.message : t('unableCreateWorkbook'));
     } finally {
       setIsExporting(false);
     }
@@ -94,7 +96,7 @@ export function AdminBackupExportScreen({
 
       const file = result.assets[0];
       if (!file) {
-        Alert.alert('Import failed', 'No file was selected.');
+        Alert.alert(t('importFailed'), t('noFileSelected'));
         return;
       }
 
@@ -112,24 +114,24 @@ export function AdminBackupExportScreen({
         (importData.printJobs?.length ?? 0);
 
       if (totalRows === 0) {
-        Alert.alert('No importable rows', 'No valid rows were found in Categories, Outlets, Products, OutletProducts, or PrintJobs sheets.');
+        Alert.alert(t('noImportableRows'), t('noValidRows'));
         return;
       }
 
       onImportData(importData);
 
       const summary = [
-        `${importData.categories?.length ?? 0} categories`,
-        `${importData.outlets?.length ?? 0} outlets`,
-        `${importData.products?.length ?? 0} products`,
-        `${importData.outletProducts?.length ?? 0} outlet product settings`,
-        `${importData.printJobs?.length ?? 0} print jobs`,
+        t('importedCategories', { count: importData.categories?.length ?? 0 }),
+        t('importedOutlets', { count: importData.outlets?.length ?? 0 }),
+        t('importedProducts', { count: importData.products?.length ?? 0 }),
+        t('importedOutletSettings', { count: importData.outletProducts?.length ?? 0 }),
+        t('importedPrintJobs', { count: importData.printJobs?.length ?? 0 }),
       ].join(', ');
 
       setLastImportSummary(`${file.name}: ${summary}`);
-      Alert.alert('Import complete', summary);
+      Alert.alert(t('importComplete'), summary);
     } catch (error) {
-      Alert.alert('Import failed', error instanceof Error ? error.message : 'Unable to import Excel workbook.');
+      Alert.alert(t('importFailed'), error instanceof Error ? error.message : t('unableImportWorkbook'));
     } finally {
       setIsImporting(false);
     }
@@ -137,20 +139,20 @@ export function AdminBackupExportScreen({
 
   return (
     <View style={styles.container}>
-      <StickyBackHeader label="< Admin" onPress={onBack} />
+      <StickyBackHeader label={t('admin')} onPress={onBack} />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Import / Export Data</Text>
+        <Text style={styles.title}>{t('importExportData')}</Text>
         <Text style={styles.subtitle}>
-          Export current app data to an Excel workbook or import admin data from Excel.
+          {t('importExportSubtitle')}
         </Text>
 
         <View style={styles.panel}>
-          <Text style={styles.panelTitle}>Included Data</Text>
-          <SummaryRow label="Outlets" value={outlets.length} />
-          <SummaryRow label="Product Categories" value={categories.length} />
-          <SummaryRow label="Products" value={products.length} />
-          <SummaryRow label="Outlet Product Settings" value={outletProducts.length} />
-          <SummaryRow label="Print History" value={printJobs.length} />
+          <Text style={styles.panelTitle}>{t('includedData')}</Text>
+          <SummaryRow label={t('outlets')} value={outlets.length} />
+          <SummaryRow label={t('productCategories')} value={categories.length} />
+          <SummaryRow label={t('products')} value={products.length} />
+          <SummaryRow label={t('outletProductSettings')} value={outletProducts.length} />
+          <SummaryRow label={t('printHistory')} value={printJobs.length} />
         </View>
 
         <Pressable
@@ -158,7 +160,7 @@ export function AdminBackupExportScreen({
           onPress={exportExcel}
           disabled={isExporting}
         >
-          <Text style={styles.exportButtonText}>{isExporting ? 'Exporting...' : 'Export Excel Workbook'}</Text>
+          <Text style={styles.exportButtonText}>{isExporting ? t('exporting') : t('exportWorkbook')}</Text>
         </Pressable>
 
         <Pressable
@@ -166,35 +168,31 @@ export function AdminBackupExportScreen({
           onPress={importExcel}
           disabled={isImporting}
         >
-          <Text style={styles.importButtonText}>{isImporting ? 'Importing...' : 'Import Excel Workbook'}</Text>
+          <Text style={styles.importButtonText}>{isImporting ? t('importing') : t('importWorkbook')}</Text>
         </Pressable>
 
         <View style={styles.formatPanel}>
-          <Text style={styles.pathTitle}>Excel Sheet Names</Text>
-          <Text style={styles.pathText}>
-            Exported sheets: Categories, Outlets, Products, OutletProducts, PrintJobs. Import supports all exported sheets.
-          </Text>
+          <Text style={styles.pathTitle}>{t('excelSheetNames')}</Text>
+          <Text style={styles.pathText}>{t('sheetNamesDescription')}</Text>
         </View>
 
         {lastExportUri ? (
           <View style={styles.pathPanel}>
-            <Text style={styles.pathTitle}>Last Export</Text>
+            <Text style={styles.pathTitle}>{t('lastExport')}</Text>
             <Text style={styles.pathText}>{lastExportUri}</Text>
           </View>
         ) : null}
 
         {lastImportSummary ? (
           <View style={styles.pathPanel}>
-            <Text style={styles.pathTitle}>Last Import</Text>
+            <Text style={styles.pathTitle}>{t('lastImport')}</Text>
             <Text style={styles.pathText}>{lastImportSummary}</Text>
           </View>
         ) : null}
 
         <View style={styles.notePanel}>
-          <Text style={styles.noteTitle}>Local Data</Text>
-          <Text style={styles.noteText}>
-            Import updates this device's local app data and will be kept for offline use.
-          </Text>
+          <Text style={styles.noteTitle}>{t('localData')}</Text>
+          <Text style={styles.noteText}>{t('localDataNote')}</Text>
         </View>
       </ScrollView>
     </View>

@@ -5,6 +5,7 @@ import {
   usePrinterReadiness,
 } from '../hooks/usePrinterReadiness';
 import { colors } from '../theme/colors';
+import { useLanguage } from '../i18n/LanguageContext';
 
 type Props = {
   readiness?: PrinterReadinessState;
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export function PrinterReadinessBadge({ readiness: providedReadiness, onRefresh }: Props) {
+  const { t } = useLanguage();
   const internalReadiness = usePrinterReadiness(!providedReadiness);
   const readiness = providedReadiness ?? internalReadiness.readiness;
   const refreshReadiness = onRefresh ?? internalReadiness.refreshReadiness;
@@ -24,7 +26,7 @@ export function PrinterReadinessBadge({ readiness: providedReadiness, onRefresh 
     >
       <View style={[styles.dot, styles[`dot_${readiness.status}`]]} />
       <Text style={[styles.label, styles[`label_${readiness.status}`]]} numberOfLines={1}>
-        {readiness.label}
+        {t(readiness.status === 'checking' ? 'checking' : readiness.status === 'ready' ? 'printerReady' : readiness.status === 'missing' ? 'noPrinter' : readiness.status === 'offline' ? 'printerOffline' : 'checkPrinter')}
       </Text>
     </Pressable>
   );

@@ -5,6 +5,7 @@ import type { Product } from '../domain/models';
 import { calculateExpiry, formatLabelDate, formatLabelDateNumeric, formatLabelTimeNumeric } from '../domain/shelfLife';
 import { compactProductLabelBitmapSpec, labelBitmapSpec } from '../services/labelBitmap';
 import { colors } from '../theme/colors';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const chineseFontFamily = Platform.select({
   ios: 'Heiti SC',
@@ -29,6 +30,7 @@ type Props = {
 };
 
 export function LabelPreview({ product, openedAt, mode = 'full', onChangeMode, labelRef }: Props) {
+  const { t } = useLanguage();
   const expiresAt = calculateExpiry(openedAt, product.daysToExpire, product.hoursToExpire);
   const previewSpec = mode === 'compact' ? compactProductLabelBitmapSpec : labelBitmapSpec;
   const compactOpenLine = `OPEN  : ${formatLabelDateNumeric(openedAt)} ${formatLabelTimeNumeric(openedAt)}`;
@@ -38,7 +40,7 @@ export function LabelPreview({ product, openedAt, mode = 'full', onChangeMode, l
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.titleRow}>
-          <Text style={styles.title}>Label Preview</Text>
+          <Text style={styles.title}>{t('labelPreview')}</Text>
           <Text style={styles.sizeHint}>({previewSpec.widthMm} x {previewSpec.heightMm})</Text>
         </View>
         {onChangeMode ? (
@@ -47,13 +49,13 @@ export function LabelPreview({ product, openedAt, mode = 'full', onChangeMode, l
               style={[styles.modeButton, mode === 'full' && styles.modeButtonActive]}
               onPress={() => onChangeMode('full')}
             >
-              <Text style={mode === 'full' ? styles.modeTextActive : styles.modeText}>Normal</Text>
+              <Text style={mode === 'full' ? styles.modeTextActive : styles.modeText}>{t('normal')}</Text>
             </Pressable>
             <Pressable
               style={[styles.modeButton, mode === 'compact' && styles.modeButtonActive]}
               onPress={() => onChangeMode('compact')}
             >
-              <Text style={mode === 'compact' ? styles.modeTextActive : styles.modeText}>Compact</Text>
+              <Text style={mode === 'compact' ? styles.modeTextActive : styles.modeText}>{t('compact')}</Text>
             </Pressable>
           </View>
         ) : null}
