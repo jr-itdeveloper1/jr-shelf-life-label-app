@@ -203,11 +203,8 @@ export function TimestampPrintScreen({ outlet, onPrint, onSelectPrinter, onBack,
       return;
     }
 
-    void savePrintJob().catch((error: unknown) => {
-      const errorMessage = error instanceof Error
-        ? error.message
-        : t('bluetoothTimestampError');
-      showPrintResult('warning', 1300, () => setPrintError(errorMessage));
+    void savePrintJob().catch(() => {
+      showPrintResult('warning', 1300, () => setPrintError(t('bluetoothTimestampError')));
     });
   };
 

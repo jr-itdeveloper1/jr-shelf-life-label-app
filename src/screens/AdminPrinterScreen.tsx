@@ -47,7 +47,7 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
       setSelectedPrinterAddress(preferredPrinter?.address ?? '');
       setIsRemoveMode(false);
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : t('loadPrintersError'));
+      setErrorMessage(t('loadPrintersError'));
     } finally {
       setIsLoading(false);
     }
@@ -74,11 +74,10 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
       try {
         await syncSelectedPrinter(session, printer, outlet.id);
       } catch (syncError) {
-        const message = syncError instanceof Error ? syncError.message : t('syncSelectedPrinterError');
-        setWarningMessage(t('printerSelectedSyncFailed', { error: message }));
+        setWarningMessage(t('printerSelectedSyncFailed', { error: t('syncSelectedPrinterError') }));
       }
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : t('selectPrinterError'));
+      setErrorMessage(t('selectPrinterError'));
     } finally {
       setIsSyncingPrinter(false);
     }
@@ -95,11 +94,10 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
       try {
         await removeSyncedPrinter(session);
       } catch (syncError) {
-        const message = syncError instanceof Error ? syncError.message : t('unselectPrinterOnlineError');
-        setWarningMessage(t('printerUnselectedSyncFailed', { error: message }));
+        setWarningMessage(t('printerUnselectedSyncFailed', { error: t('unselectPrinterOnlineError') }));
       }
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : t('unselectPrinterError'));
+      setErrorMessage(t('unselectPrinterError'));
     } finally {
       setIsSyncingPrinter(false);
     }
@@ -139,8 +137,7 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
         try {
           await removeSyncedPrinter(session);
         } catch (syncError) {
-          const message = syncError instanceof Error ? syncError.message : t('removePrinterOnlineError');
-          setWarningMessage(t('printerRemovedSyncFailed', { error: message }));
+          setWarningMessage(t('printerRemovedSyncFailed', { error: t('removePrinterOnlineError') }));
         }
       }
 
@@ -149,7 +146,7 @@ export function AdminPrinterScreen({ session, outlet, backLabel = '< Admin', onB
         currentPrinters.filter((currentPrinter) => currentPrinter.address !== printer.address),
       );
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : t('removePrinterError'));
+      setErrorMessage(t('removePrinterError'));
     } finally {
       setIsSyncingPrinter(false);
     }

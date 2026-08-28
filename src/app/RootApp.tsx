@@ -135,12 +135,12 @@ export function RootApp() {
       setSyncMessage(t('cloudSyncSummary', { outlets: cloudData.outlets.length, categories: cloudData.categories.length, products: cloudData.products.length, images: productImageCount }));
       return cloudData;
     } catch (error) {
-      setSyncMessage(error instanceof Error ? error.message : t('cloudSyncFailed'));
+      setSyncMessage(t('cloudSyncFailed'));
       throw error;
     } finally {
       setIsSyncing(false);
     }
-  }, [applyCloudData]);
+  }, [applyCloudData, t]);
 
   const signIn = useCallback(async (email: string, password: string) => {
     setIsSigningIn(true);
@@ -151,11 +151,11 @@ export function RootApp() {
       await syncFromCloud(session);
       setScreen('outlets');
     } catch (error) {
-      setLoginError(error instanceof Error ? error.message : 'Unable to sign in.');
+      setLoginError(t('unableSignIn'));
     } finally {
       setIsSigningIn(false);
     }
-  }, [syncFromCloud]);
+  }, [syncFromCloud, t]);
 
   const signOut = useCallback(async () => {
     await clearCloudSession();
@@ -169,13 +169,13 @@ export function RootApp() {
 
   const uploadPendingPrintJobs = useCallback(async (session: CloudSession) => {
     if (isAutoSyncingPrintHistoryRef.current) {
-      return { attempted: 0, uploaded: 0, message: 'Print history sync already running' };
+      return { attempted: 0, uploaded: 0, message: t('printHistorySyncAlreadyRunning') };
     }
 
     const pendingPrintJobs = getPrintJobsForSync(printJobsRef.current);
 
     if (pendingPrintJobs.length === 0) {
-      return { attempted: 0, uploaded: 0, message: 'Print history already synced' };
+      return { attempted: 0, uploaded: 0, message: t('printHistoryAlreadySynced') };
     }
 
     const pendingPrintJobIds = new Set(pendingPrintJobs.map((printJob) => printJob.id));
@@ -203,10 +203,10 @@ export function RootApp() {
       return {
         attempted: pendingPrintJobs.length,
         uploaded: result.uploaded,
-        message: result.message,
+        message: t('printHistorySyncComplete', { count: result.uploaded }),
       };
     } catch (error) {
-      const syncError = error instanceof Error ? error.message : 'Print history sync failed.';
+      const syncError = t('printHistorySyncFailed');
 
       setPrintJobs((currentPrintJobs) =>
         currentPrintJobs.map((printJob) =>
@@ -220,7 +220,7 @@ export function RootApp() {
     } finally {
       isAutoSyncingPrintHistoryRef.current = false;
     }
-  }, []);
+  }, [t]);
 
   const syncNow = useCallback(async () => {
     if (!cloudSession) return;
@@ -229,15 +229,15 @@ export function RootApp() {
       const productImageCount = cloudData.products.filter((product) => Boolean(product.imageUri)).length;
       try {
         const result = await uploadPendingPrintJobs(cloudSession);
-        const historyMessage = result.attempted > 0 ? result.message : 'Print history already synced';
+        const historyMessage = result.attempted > 0 ? result.message : t('printHistoryAlreadySynced');
         setSyncMessage(`${historyMessage}. ${t('masterDataRefreshed', { images: productImageCount })}`);
       } catch (error) {
-        setSyncMessage(`${t('masterDataRefreshed', { images: productImageCount })} ${t('printHistoryUploadFailed', { error: error instanceof Error ? error.message : t('tryAgainLater') })}`);
+        setSyncMessage(`${t('masterDataRefreshed', { images: productImageCount })} ${t('printHistoryUploadFailed', { error: t('tryAgainLater') })}`);
       }
     } catch {
       // syncFromCloud already set the user-facing message.
     }
-  }, [cloudSession, syncFromCloud, uploadPendingPrintJobs]);
+  }, [cloudSession, syncFromCloud, t, uploadPendingPrintJobs]);
 
   useEffect(() => {
     cloudSessionRef.current = cloudSession;
@@ -270,7 +270,7 @@ export function RootApp() {
         }
       } catch (error) {
         if (!cancelled) {
-          setSyncMessage(error instanceof Error ? error.message : 'Print history auto-sync failed.');
+          setSyncMessage(t('printHistoryAutoSyncFailed'));
         }
       }
     };
@@ -283,7 +283,7 @@ export function RootApp() {
       cancelled = true;
       clearInterval(intervalId);
     };
-  }, [cloudSession, hasLoadedAdminData, hasLoadedCloudSession, uploadPendingPrintJobs]);
+  }, [cloudSession, hasLoadedAdminData, hasLoadedCloudSession, t, uploadPendingPrintJobs]);
 
   const openAppShortcut = useCallback((url: string) => {
     const shortcutTarget = (url

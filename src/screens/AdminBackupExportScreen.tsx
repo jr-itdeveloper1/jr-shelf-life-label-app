@@ -71,7 +71,7 @@ export function AdminBackupExportScreen({
       setLastExportUri(fileUri);
       Alert.alert(t('exportComplete'), t('exportCompleteMessage'));
     } catch (error) {
-      Alert.alert(t('exportFailed'), error instanceof Error ? error.message : t('unableCreateWorkbook'));
+      Alert.alert(t('exportFailed'), t('unableCreateWorkbook'));
     } finally {
       setIsExporting(false);
     }
@@ -131,7 +131,7 @@ export function AdminBackupExportScreen({
       setLastImportSummary(`${file.name}: ${summary}`);
       Alert.alert(t('importComplete'), summary);
     } catch (error) {
-      Alert.alert(t('importFailed'), error instanceof Error ? error.message : t('unableImportWorkbook'));
+      Alert.alert(t('importFailed'), t('unableImportWorkbook'));
     } finally {
       setIsImporting(false);
     }

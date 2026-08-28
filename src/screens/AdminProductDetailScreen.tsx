@@ -77,7 +77,7 @@ export function AdminProductDetailScreen({
         setImageUri(result.assets[0].uri);
       }
     } catch (error) {
-      Alert.alert(t('imagePickerError'), error instanceof Error ? error.message : t('unableOpenImagePicker'));
+      Alert.alert(t('imagePickerError'), t('unableOpenImagePicker'));
     }
   };
 

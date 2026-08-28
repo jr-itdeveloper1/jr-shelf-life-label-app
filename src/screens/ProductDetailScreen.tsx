@@ -155,11 +155,8 @@ export function ProductDetailScreen({
     void savePrintJob().catch(handlePrintError);
   };
 
-  const handlePrintError = (error: unknown) => {
-    const errorMessage = error instanceof Error
-      ? error.message
-      : t('bluetoothPrintError');
-    showPrintResult('warning', 1300, () => setPrintError(errorMessage));
+  const handlePrintError = () => {
+    showPrintResult('warning', 1300, () => setPrintError(t('bluetoothPrintError')));
   };
 
   return (

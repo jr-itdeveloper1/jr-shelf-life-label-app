@@ -113,7 +113,7 @@ export function ProductGridScreen({
       await CameraView.launchScanner({ barcodeTypes });
     } catch (error) {
       subscription?.remove();
-      Alert.alert(t('scanError'), error instanceof Error ? error.message : t('unableToOpenScanner'));
+      Alert.alert(t('scanError'), t('unableToOpenScanner'));
     }
   }, [onSelectProduct, products, t]);
 
