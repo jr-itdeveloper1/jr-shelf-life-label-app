@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
+import * as FileSystem from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 
 import type { Outlet, OutletProduct, PrintJob, Product, ProductCategory } from '../domain/models';
@@ -7,6 +8,7 @@ import type { BluetoothPrinterDevice } from './printerService';
 const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL ?? 'https://labelprinter.jrgroup.com.sg/api/backend';
 const sessionStorageKey = 'jr-label-cloud-session-v1';
 const deviceIdentifierStorageKey = 'jr-label-cloud-device-id-v1';
+const productImageCacheDirectory = `${FileSystem.cacheDirectory ?? ''}product-images/`;
 
 export type CloudUserRole = 'COMPANY_ADMIN' | 'OUTLET_USER';
 
@@ -97,7 +99,7 @@ export async function fetchCloudBootstrap(session: CloudSession): Promise<CloudA
   return {
     categories: body.categories,
     outlets: body.outlets,
-    products: body.products.map(toMobileProduct),
+    products: await Promise.all(body.products.map((product) => toMobileProduct(product, session))),
     outletProducts: body.outletProducts,
   };
 }
@@ -170,7 +172,7 @@ async function getCloudDeviceIdentifier() {
   return identifier;
 }
 
-function toMobileProduct(product: ApiProduct): Product {
+async function toMobileProduct(product: ApiProduct, session: CloudSession): Promise<Product> {
   return {
     id: product.id,
     outletId: product.outletId ?? undefined,
@@ -185,9 +187,46 @@ function toMobileProduct(product: ApiProduct): Product {
       en: product.storageMethodEn,
       zh: product.storageMethodZh,
     },
-    imageUri: product.imageUri ?? undefined,
+    imageUri: await cachedProductImageUri(product, session),
     active: product.active,
   };
+}
+
+async function cachedProductImageUri(product: ApiProduct, session: CloudSession) {
+  const imageUri = product.imageUri;
+  if (!imageUri || !isStoredProductImageUri(imageUri) || !FileSystem.cacheDirectory) {
+    return imageUri ?? undefined;
+  }
+
+  const remoteUri = imageUri.startsWith('http') ? imageUri : `${apiBaseUrl}${imageUri}`;
+  const cacheFileName = productImageCacheFileName(product.id, imageUri);
+  const localUri = `${productImageCacheDirectory}${cacheFileName}`;
+
+  try {
+    await FileSystem.makeDirectoryAsync(productImageCacheDirectory, { intermediates: true });
+    const existingFile = await FileSystem.getInfoAsync(localUri);
+    if (existingFile.exists) return localUri;
+
+    const download = await FileSystem.downloadAsync(remoteUri, localUri, {
+      headers: { Authorization: `Bearer ${session.accessToken}` },
+    });
+    return download.status >= 200 && download.status < 300 ? download.uri : undefined;
+  } catch {
+    // The cache may be unavailable while offline. Do not retain a protected remote
+    // URL because React Native Image cannot attach the required bearer token.
+    return undefined;
+  }
+}
+
+function isStoredProductImageUri(imageUri: string) {
+  return imageUri.startsWith('/product-images/') || imageUri.includes('/product-images/');
+}
+
+function productImageCacheFileName(productId: string, imageUri: string) {
+  const sourceFileName = imageUri.split('/').pop()?.split('?')[0] ?? 'image';
+  const safeSourceFileName = sourceFileName.replace(/[^A-Za-z0-9._-]/g, '');
+  const safeProductId = productId.replace(/[^A-Za-z0-9_-]/g, '');
+  return `${safeProductId}-${safeSourceFileName || 'image'}`;
 }
 
 function toApiMessage(body: unknown, fallback: string) {
